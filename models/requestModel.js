@@ -1,17 +1,12 @@
 import mongoose from "mongoose";
-import { ranks, regions, statuses } from "../util/datalist";
+import { ranks, regions, roles, statuses } from "../util/datalist";
 
 const requestSchema = mongoose.Schema(
   {
-    division: {
+    rank: {
       type: String,
       required: true,
       enum: ranks,
-    },
-    rank: {
-      type: Number,
-      required: true,
-      enum: [1, 2, 3, 4],
     },
     opgg: {
       type: String,
@@ -20,10 +15,10 @@ const requestSchema = mongoose.Schema(
     role: {
       type: String,
       required: true,
+      enum: roles,
     },
     champions: {
-      type: Number,
-      required: true,
+      type: String,
     },
     timezone: {
       type: String,
@@ -37,14 +32,9 @@ const requestSchema = mongoose.Schema(
       enum: regions,
       required: true,
     },
-    user: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
     mentor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-    },
-    link: {
-      type: String,
-      required: false,
     },
     status: {
       type: String,
@@ -70,6 +60,5 @@ const requestSchema = mongoose.Schema(
   }
 );
 
-const Request = mongoose.model("Request", requestSchema);
-
-export default Request;
+export default mongoose.models.Request ||
+  mongoose.model("Request", requestSchema);

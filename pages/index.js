@@ -1,7 +1,7 @@
-import Head from 'next/head'
-import { connectToDatabase } from '../util/mongodb'
+import Head from "next/head";
+import Link from "next/link";
 
-export default function Home({ isConnected }) {
+export default function Home() {
   return (
     <div className="container">
       <Head>
@@ -11,29 +11,24 @@ export default function Home({ isConnected }) {
 
       <main>
         <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js with MongoDB!</a>
+          Welcome to{" "}
+          <a href="https://discord.gg/summonerschool">Summoner School</a>{" "}
+          Discord Mentor Request Site
         </h1>
 
-        {isConnected ? (
-          <h2 className="subtitle">You are connected to MongoDB</h2>
-        ) : (
-          <h2 className="subtitle">
-            You are NOT connected to MongoDB. Check the <code>README.md</code>{' '}
-            for instructions.
-          </h2>
-        )}
-
-        <p className="description">
+        {/* <p className="description">
           Get started by editing <code>pages/index.js</code>
-        </p>
+        </p> */}
 
         <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+          <Link href="/request">
+            <a className="card">
+              <h3>Make a new request &rarr;</h3>
+              <p>Fill out a new mentor request</p>
+            </a>
+          </Link>
 
-          <a href="https://nextjs.org/learn" className="card">
+          {/* <a href="https://nextjs.org/learn" className="card">
             <h3>Learn &rarr;</h3>
             <p>Learn about Next.js in an interactive course with quizzes!</p>
           </a>
@@ -54,20 +49,9 @@ export default function Home({ isConnected }) {
             <p>
               Instantly deploy your Next.js site to a public URL with Vercel.
             </p>
-          </a>
+          </a> */}
         </div>
       </main>
-
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
-        </a>
-      </footer>
 
       <style jsx>{`
         .container {
@@ -138,33 +122,17 @@ export default function Home({ isConnected }) {
           font-size: 2rem;
         }
 
-        .description {
-          line-height: 1.5;
-          font-size: 1.5rem;
-        }
-
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
-
         .grid {
           display: flex;
           align-items: center;
           justify-content: center;
           flex-wrap: wrap;
-
           max-width: 800px;
           margin-top: 3rem;
         }
 
         .card {
           margin: 1rem;
-          flex-basis: 45%;
           padding: 1.5rem;
           text-align: left;
           color: inherit;
@@ -219,15 +187,20 @@ export default function Home({ isConnected }) {
         }
       `}</style>
     </div>
-  )
+  );
 }
 
-export async function getServerSideProps(context) {
-  const { client } = await connectToDatabase()
+// export async function getServerSideProps(context) {
+//   // const { client, db } = await connectToDatabase();
 
-  const isConnected = await client.isConnected()
+//   // const requests = await db.collection("requests").find({}).toArray();
 
-  return {
-    props: { isConnected },
-  }
-}
+//   // console.log(requests);
+
+//   // const isConnected = await db.isConnected();
+//   // const requests = await db.collection("requests").find({});
+
+//   return {
+//     props: {},
+//   };
+// }
