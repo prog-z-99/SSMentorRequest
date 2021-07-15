@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 import { withFormik } from "formik";
-import { Button } from "@material-ui/core";
 import { ranks, regions, roles } from "../util/datalist";
 import { FormSelect, FormTextField, StyledForm } from "./Styles";
 import axios from "axios";
@@ -27,12 +26,14 @@ const timeZone = () => {
   return zones;
 };
 
-const UpdateAddress = (props) => {
+const MentorRequestForm = (props) => {
   const { isValid, values, errors, handleChange, handleBlur, setFieldValue } =
     props;
 
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const handleSubmit = async () => {
+    setLoading(true);
     if (isValid) {
       await axios
         .post("/api/request/create", values)
@@ -46,6 +47,7 @@ const UpdateAddress = (props) => {
           );
         });
     }
+    setLoading(false);
   };
 
   const onChange = (obj, field) => {
@@ -112,9 +114,11 @@ const UpdateAddress = (props) => {
         onBlur={handleBlur}
       />
 
-      <Button onClick={handleSubmit}>check values</Button>
+      <button onClick={handleSubmit} disabled={loading}>
+        Send Request
+      </button>
     </StyledForm>
   );
 };
 
-export default FormEnhancer(UpdateAddress);
+export default FormEnhancer(MentorRequestForm);

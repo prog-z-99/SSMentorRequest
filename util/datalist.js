@@ -26,6 +26,6 @@ export const regions = [
   "Garena",
 ];
 
-export const userType = ["user", "mentor", "admin"];
+export const userType = ["user", "mentor", "admin", "god"];
 
 export const roles = ["Top", "Jungle", "Mid", "ADC", "Support"];

@@ -5,6 +5,7 @@ const userSchema = mongoose.Schema(
     discordId: {
       type: String,
       required: true,
+      unique: true,
     },
     discordName: {
       type: String,
@@ -20,6 +21,4 @@ const userSchema = mongoose.Schema(
   }
 );
 
-const User = mongoose.model("User", userSchema);
-
-export default User;
+export default mongoose.models.User || mongoose.model("User", userSchema);

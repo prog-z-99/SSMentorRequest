@@ -1,5 +1,3 @@
-import { Button } from "@material-ui/core";
-
 export default function Terms({ setTerms }) {
   return (
     <>
@@ -43,10 +41,19 @@ export default function Terms({ setTerms }) {
         least 25 total ranked games played this season - Must be a fairly close
         game - no one-sided stomps - Must be serious about improvement
       </p>
-      <Button variant="outlined" onClick={() => setTerms(true)}>
+      <button variant="outlined" onClick={() => setTerms(true)}>
         By clicking this box, you acknowledge that you have read all of the
         above.
-      </Button>
+      </button>
     </>
+  );
+}
+
+export function Pending() {
+  return (
+    <p>
+      Sorry, either your request is currently pending, or it hasn't been long
+      since your last session was finished.
+    </p>
   );
 }

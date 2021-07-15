@@ -6,10 +6,12 @@
     "start": "next start"
   },
   "dependencies": {
-    "@material-ui/core": "^4.12.1",
+    "antd": "^4.16.7",
     "axios": "^0.21.1",
+    "babel-preset-next": "^1.4.0",
     "discord-oauth2": "^2.7.0",
     "formik": "^2.2.9",
+    "moment": "^2.29.1",
     "mongodb": "^3.5.9",
     "mongoose": "^5.13.2",
     "next": "latest",

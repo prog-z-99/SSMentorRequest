@@ -3,6 +3,15 @@ import { ranks, regions, roles, statuses } from "../util/datalist";
 
 const requestSchema = mongoose.Schema(
   {
+    discordId: {
+      type: String,
+      required: true,
+      unique: false,
+    },
+    discordName: {
+      type: String,
+      required: true,
+    },
     rank: {
       type: String,
       required: true,

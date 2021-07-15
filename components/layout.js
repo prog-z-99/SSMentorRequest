@@ -1,14 +1,13 @@
-import Header from '../components/header'
-import Footer from '../components/footer'
+import Header from "../components/header";
+import Footer from "../components/footer";
+import { PageWrappaer } from "./Styles";
 
-export default function Layout ({children}) {
+export default function Layout({ children }) {
   return (
-    <>
-      <Header/>
-      <main>
-        {children}
-      </main>
-      <Footer/>
-    </>
-  )
+    <PageWrappaer>
+      <Header />
+      <main>{children}</main>
+      <Footer />
+    </PageWrappaer>
+  );
 }

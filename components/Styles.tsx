@@ -1,11 +1,18 @@
-import { TextField } from "@material-ui/core";
 import { Form } from "formik";
 import Select from "react-select";
 import styled from "styled-components";
 
+export const PageWrappaer = styled.div`
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  width: 100%;
+`;
+
 export const FormWrapper = styled.div`
   display: flex;
-  justify-content: center;
+  margin: 0 auto;
+  align-items: center;
   flex-direction: column;
   max-width: 900px;
 `;
@@ -19,6 +26,8 @@ export const StyledForm = styled(Form)`
 
 const FieldWrapper = styled.div`
   width: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 const FieldTitle = styled.h4``;
@@ -33,6 +42,25 @@ const ErrorText = styled.span`
   font-weight: 400;
   line-height: 1.66;
   letter-spacing: 0.03333em;
+`;
+
+const FieldInput = styled.input`
+  height: 2em;
+`;
+
+export const TableSelect = styled(Select)`
+  &.Problem {
+    color: red;
+  }
+  &.Not-Accepted {
+    color: yellow;
+  }
+  &.Completed {
+    background-color: green;
+  }
+  &.In-Progress {
+    background-color: lightblue;
+  }
 `;
 
 export const FormSelect: React.FC<any> = ({
@@ -62,18 +90,13 @@ export const FormTextField: React.FC<any> = ({
   return (
     <FieldWrapper>
       <FieldTitle>{title}</FieldTitle>
-      <TextField
-        fullWidth
-        {...props}
-        helperText={errorText}
-        defaultValue=""
-        error={errorText ? true : false}
-      />
+      <FieldInput type="text" {...props} />
+      <ErrorText>{errorText}</ErrorText>
     </FieldWrapper>
   );
 };
 
-const formatter = (list) => {
+export const formatter = (list) => {
   return list.map((item) => {
     return { value: item, label: item };
   });
