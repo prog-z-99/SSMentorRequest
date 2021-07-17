@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { userType } from "../util/datalist";
 
 const userSchema = mongoose.Schema(
   {
@@ -13,6 +14,7 @@ const userSchema = mongoose.Schema(
     },
     userType: {
       type: String,
+      enum: userType,
       default: "user",
     },
   },

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { connectToDatabase } from "../util/mongodb";
 import User from "../models/userModel";
 import Request from "../models/requestModel";
@@ -5,74 +6,120 @@ import { getSession } from "next-auth/client";
 import Layout from "../components/layout";
 import { Table } from "antd";
 import "antd/lib/table/style/index.css";
-import "antd/lib/pagination/style/index.css";
 import moment from "moment";
 
 import { ranks, statuses } from "../util/datalist";
 // import Select from "react-select";
-import { formatter, TableSelect } from "../components/Styles";
+import {
+  formatterColored,
+  TableSelect,
+  getStatusColor,
+} from "../components/Styles";
+import axios from "axios";
 
 export default function Mentors({ session, requests }) {
+  const [query, setQuery] = useState({});
   const columns = [
     {
       dataIndex: "createdAt",
       title: "Created",
-      sorter: (a, b) => a.createdAt - b.createdAt,
+      sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
     },
     {
       dataIndex: "discordName",
       title: "Discord Username",
-      sorter: (a, b) => {},
+      sorter: (a, b) => `${a.discordName}`.localeCompare(b.discordName),
     },
     {
       dataIndex: "rank",
       title: "Rank",
-      sorter: (a, b) => {
-        ranks.indexOf(a.rank) - ranks.indexOf(b.rank);
-      },
+      sorter: (a, b) => ranks.indexOf(a.rank) - ranks.indexOf(b.rank),
     },
-    { dataIndex: "region", title: "Region" },
+    {
+      dataIndex: "region",
+      title: "Region",
+      sorter: (a, b) => a.region.localeCompare(b.region),
+    },
     { dataIndex: "opgg", title: "OP.GG" },
-    { dataIndex: "role", title: "Role" },
+    {
+      dataIndex: "role",
+      title: "Role",
+      sorter: (a, b) => a.role.localeCompare(b.role),
+    },
     { dataIndex: "champions", title: "Champions" },
     { dataIndex: "timezone", title: "Time Zone" },
     { dataIndex: "info", title: "Additional Information", ellipsis: true },
     {
       dataIndex: "status",
       title: "Status",
+      render: (text, record, index) => (
+        <TableSelect
+          className={text}
+          options={formatterColored(statuses)}
+          defaultValue={{
+            label: text,
+            value: text,
+            color: getStatusColor(text),
+          }}
+          styles={colourStyles}
+          onChange={(e) => handleStatusChange(e, record.id)}
+        />
+      ),
+      width: 200,
     },
+    {
+      dataIndex: "accepted",
+      title: "Accepted Date",
+      sorter: (a, b) =>
+        a.accepted && b.accepted
+          ? new Date(a.accepted) - new Date(b.accepted)
+          : 0,
+    },
+    {
+      dataIndex: "completed",
+      title: "Completed Date",
+      sorter: (a, b) => new Date(a.completed) - new Date(b.completed),
+    },
+    { dataIndex: "mentor", title: "Accepted Mentor" },
   ];
   const dot = (color = "#ccc") => ({
     alignItems: "center",
     display: "flex",
+    backgroundColor: color,
 
     ":before": {
       backgroundColor: color,
       borderRadius: 10,
       content: '" "',
       display: "block",
-      marginRight: 8,
+      marginRight: "8px",
       height: 10,
       width: 10,
     },
   });
 
-  const styles = {
-    input: (styles) => ({ ...styles, ...dot() }),
+  const handleStatusChange = async ({ value }, id) => {
+    await axios
+      .put("/api/request/change", { id, value })
+      .then(() => {
+        alert("successfully changed");
+      })
+      .catch(() => {
+        alert("error, some shit gone wrong. nag Z about this");
+      });
+  };
+
+  const colourStyles = {
+    placeholder: (styles) => ({ ...styles, ...dot() }),
+    singleValue: (styles, { data }) => ({ ...styles, ...dot(data.color) }),
   };
   const rows = requests.map((item) => {
     return {
       ...item,
       key: item.id,
       createdAt: moment(item.createdAt).format("l"),
-      status: (
-        <TableSelect
-          className={item.status}
-          options={formatter(statuses)}
-          defaultValue={{ label: item.status, value: item.status }}
-          styles={styles}
-        />
-      ),
+      completed: item.completed ? moment(item.completed).format("l") : "",
+      accepted: item.accepted ? moment(item.accepted).format("l") : "",
     };
   });
 
@@ -84,7 +131,7 @@ export default function Mentors({ session, requests }) {
           columns={columns}
           density="compact"
           autoHeight
-          scroll={{ x: 1300 }}
+          pagination={false}
         />
       </div>
     </Layout>
@@ -115,6 +162,7 @@ export async function getServerSideProps(context) {
 
   const requests = await Request.find({})
     .select(" -updatedAt -__v")
+    .populate("mentor")
     .then((items) => {
       return items.map((item) => {
         return {
@@ -132,6 +180,7 @@ export async function getServerSideProps(context) {
           discordId: item.discordId,
           accepted: item.accepted?.toString() || null,
           completed: item.completed?.toString() || null,
+          mentor: item.mentor?.discordName || null,
         };
       });
     });

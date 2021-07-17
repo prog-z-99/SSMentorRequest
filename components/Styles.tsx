@@ -48,20 +48,7 @@ const FieldInput = styled.input`
   height: 2em;
 `;
 
-export const TableSelect = styled(Select)`
-  &.Problem {
-    color: red;
-  }
-  &.Not-Accepted {
-    color: yellow;
-  }
-  &.Completed {
-    background-color: green;
-  }
-  &.In-Progress {
-    background-color: lightblue;
-  }
-`;
+export const TableSelect = styled(Select)``;
 
 export const FormSelect: React.FC<any> = ({
   title,
@@ -100,4 +87,23 @@ export const formatter = (list) => {
   return list.map((item) => {
     return { value: item, label: item };
   });
+};
+
+export const formatterColored = (list) => {
+  return list.map((item) => {
+    return { value: item, label: item, color: getStatusColor(item) };
+  });
+};
+
+export const getStatusColor = (status) => {
+  switch (status) {
+    case "Not Accepted":
+      return "#D7E2EA";
+    case "Completed":
+      return "#abd67d";
+    case "In-Progress":
+      return "#50B4D8";
+    case "Problem":
+      return "#c83349";
+  }
 };
