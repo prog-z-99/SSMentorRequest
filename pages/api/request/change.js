@@ -27,13 +27,15 @@ export default async (req, res) => {
             break;
           case "Not Accepted":
             request.mentor = null;
+            request.accepted = null;
+            request.completed = null;
             break;
           case "Completed":
             request.completed = new Date();
             break;
         }
       }
-      const state = await request.save();
+      await request.save();
       res.status(200).send("Success!");
     } else {
       res.status(401).send({

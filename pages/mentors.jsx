@@ -14,6 +14,7 @@ import {
   formatterColored,
   TableSelect,
   getStatusColor,
+  Expanded,
 } from "../components/Styles";
 import axios from "axios";
 
@@ -48,7 +49,7 @@ export default function Mentors({ session, requests }) {
     },
     { dataIndex: "champions", title: "Champions" },
     { dataIndex: "timezone", title: "Time Zone" },
-    { dataIndex: "info", title: "Additional Information", ellipsis: true },
+    // { dataIndex: "info", title: "Additional Information", ellipsis: true },
     {
       dataIndex: "status",
       title: "Status",
@@ -66,21 +67,22 @@ export default function Mentors({ session, requests }) {
         />
       ),
       width: 200,
+      sorter: (a, b) => a.status.localeCompare(b.status),
     },
-    {
-      dataIndex: "accepted",
-      title: "Accepted Date",
-      sorter: (a, b) =>
-        a.accepted && b.accepted
-          ? new Date(a.accepted) - new Date(b.accepted)
-          : 0,
-    },
-    {
-      dataIndex: "completed",
-      title: "Completed Date",
-      sorter: (a, b) => new Date(a.completed) - new Date(b.completed),
-    },
-    { dataIndex: "mentor", title: "Accepted Mentor" },
+    // {
+    //   dataIndex: "accepted",
+    //   title: "Accepted Date",
+    //   sorter: (a, b) =>
+    //     a.accepted && b.accepted
+    //       ? new Date(a.accepted) - new Date(b.accepted)
+    //       : 0,
+    // },
+    // {
+    //   dataIndex: "completed",
+    //   title: "Completed Date",
+    //   sorter: (a, b) => new Date(a.completed) - new Date(b.completed),
+    // },
+    // { dataIndex: "mentor", title: "Accepted Mentor" },
   ];
   const dot = (color = "#ccc") => ({
     alignItems: "center",
@@ -132,6 +134,17 @@ export default function Mentors({ session, requests }) {
           density="compact"
           autoHeight
           pagination={false}
+          expandable={{
+            expandedRowRender: (item) => (
+              <Expanded>
+                <p> Notes: {item.info} </p>
+                <p>Accepted At: {item.accepted}</p>
+                <p>Accepted Mentor: {item.mentor}</p>
+                <p>Completed At: {item.completed}</p>
+                <p>Discord ID: {item.discordId}</p>
+              </Expanded>
+            ),
+          }}
         />
       </div>
     </Layout>

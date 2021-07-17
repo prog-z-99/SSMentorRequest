@@ -107,3 +107,9 @@ export const getStatusColor = (status) => {
       return "#c83349";
   }
 };
+
+export const Expanded = styled.div`
+  p {
+    margin: 0;
+  }
+`;
