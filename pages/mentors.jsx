@@ -67,7 +67,7 @@ export default function Mentors({ session, requests }) {
         />
       ),
       width: 200,
-      sorter: (a, b) => a.status.localeCompare(b.status),
+      sorter: (a, b) => statuses.indexOf(a.status) - statuses.indexOf(b.status),
     },
     // {
     //   dataIndex: "accepted",
