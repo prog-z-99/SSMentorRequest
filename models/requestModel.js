@@ -63,6 +63,10 @@ const requestSchema = mongoose.Schema(
       type: String,
       required: false,
     },
+    archived: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

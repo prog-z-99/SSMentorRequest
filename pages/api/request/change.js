@@ -10,28 +10,42 @@ export default async (req, res) => {
     if (session) {
       await connectToDatabase();
       const { user } = session;
+
       await Request.syncIndexes();
 
       const request = await Request.findOne({ _id: req.body.id });
-      const mentor = await User.findOne({ discordId: user.id });
+      const mentor = await User.findOne({
+        discordId: user.id,
+        userType: { $ne: "user" },
+      });
 
       if (!request || !mentor) {
         res.status(400).send({ error: "I uh... what?" });
       } else {
-        request.mentor = mentor._id;
-        request.status = req.body.value;
+        switch (req.body.type) {
+          case "status":
+            request.mentor = mentor._id;
+            request.status = req.body.value;
 
-        switch (req.body.value) {
-          case "In-Progress":
-            request.accepted = new Date();
+            switch (req.body.value) {
+              case "In-Progress":
+                request.accepted = new Date();
+                break;
+              case "Not Accepted":
+                request.mentor = null;
+                request.accepted = null;
+                request.completed = null;
+                break;
+              case "Completed":
+                request.completed = new Date();
+                break;
+            }
             break;
-          case "Not Accepted":
-            request.mentor = null;
-            request.accepted = null;
-            request.completed = null;
+          case "remarks":
+            request.remarks = req.body.value;
             break;
-          case "Completed":
-            request.completed = new Date();
+          case "archive":
+            request.archived = true;
             break;
         }
       }

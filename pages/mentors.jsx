@@ -15,10 +15,11 @@ import {
   TableSelect,
   getStatusColor,
   Expanded,
+  Remarks,
 } from "../components/Styles";
 import axios from "axios";
 
-export default function Mentors({ session, requests }) {
+export default function Mentors({ session, requests, isAdmin }) {
   const [query, setQuery] = useState({});
   const columns = [
     {
@@ -102,7 +103,7 @@ export default function Mentors({ session, requests }) {
 
   const handleStatusChange = async ({ value }, id) => {
     await axios
-      .put("/api/request/change", { id, value })
+      .put("/api/request/change", { id, value, type: "status" })
       .then(() => {
         alert("successfully changed");
       })
@@ -125,6 +126,14 @@ export default function Mentors({ session, requests }) {
     };
   });
 
+  const handleArchive = (id) => {
+    if (confirm("Are you sure you want to archive this request?")) {
+      axios.put("/api/request/change", { id, type: "archive" });
+      console.log("archiving");
+    } else console.log("not");
+    console.log("general test");
+  };
+
   return (
     <Layout>
       <div>
@@ -142,6 +151,12 @@ export default function Mentors({ session, requests }) {
                 <p>Accepted Mentor: {item.mentor}</p>
                 <p>Completed At: {item.completed}</p>
                 <p>Discord ID: {item.discordId}</p>
+                <Remarks id={item.id} content={item.remarks} />
+                {isAdmin && (
+                  <a onClick={() => handleArchive(item.id)}>
+                    ARCHIVE THIS REQUEST
+                  </a>
+                )}
               </Expanded>
             ),
           }}
@@ -153,6 +168,7 @@ export default function Mentors({ session, requests }) {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
+  let isAdmin = false;
 
   if (!session) {
     return {
@@ -173,7 +189,9 @@ export async function getServerSideProps(context) {
     };
   }
 
-  const requests = await Request.find({})
+  if (user.userType == "admin" || user.userType == "god") isAdmin = true;
+
+  const requests = await Request.find({ archived: { $ne: true } })
     .select(" -updatedAt -__v")
     .populate("mentor")
     .then((items) => {
@@ -194,6 +212,7 @@ export async function getServerSideProps(context) {
           accepted: item.accepted?.toString() || null,
           completed: item.completed?.toString() || null,
           mentor: item.mentor?.discordName || null,
+          remarks: item.remarks || null,
         };
       });
     });
@@ -202,6 +221,7 @@ export async function getServerSideProps(context) {
     props: {
       session,
       requests,
+      isAdmin,
     },
   };
 }

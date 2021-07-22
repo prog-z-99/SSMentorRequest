@@ -1,4 +1,6 @@
+import axios from "axios";
 import { Form } from "formik";
+import { useState } from "react";
 import Select from "react-select";
 import styled from "styled-components";
 
@@ -113,3 +115,29 @@ export const Expanded = styled.div`
     margin: 0;
   }
 `;
+
+export const Clickable = styled.a`
+  cursor: link;
+`;
+
+export const Remarks: React.FC<any> = ({ id, content }) => {
+  const [input, setInput] = useState(false);
+  const [value, setValue] = useState(content);
+  const handleType = ({ target: { value } }) => {
+    setValue(value);
+  };
+  const handleSubmit = async () => {
+    await axios.put("/api/request/change", { id, value, type: "remarks" });
+    setInput(false);
+  };
+  return input ? (
+    <FieldWrapper>
+      <FieldInput value={value} onChange={handleType} />
+      <button onClick={handleSubmit}>submit</button>
+    </FieldWrapper>
+  ) : (
+    <FieldWrapper>
+      <a onClick={() => setInput(true)}>Remarks: {value}</a>
+    </FieldWrapper>
+  );
+};
