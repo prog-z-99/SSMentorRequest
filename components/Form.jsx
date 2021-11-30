@@ -9,7 +9,7 @@ import { useRouter } from "next/dist/client/router";
 const FormEnhancer = withFormik({
   validationSchema: Yup.object().shape({
     rank: Yup.string().required("Please select your Rank "),
-    opgg: Yup.string().required("Please enter your OP.GG link"),
+    summonerName: Yup.string().required("Please enter your Summoner Name"),
     role: Yup.string().required("Please select your role"),
     region: Yup.string().required("Please select your region"),
     timezone: Yup.string().required("Please select your timezone"),
@@ -74,13 +74,13 @@ const MentorRequestForm = (props) => {
         onChange={onChange}
       />
       <FormTextField
-        title="Op.gg (If Garena or another non op.gg region, simply insert summoner name)"
-        id="opgg"
-        placeholder="OP.GG"
-        value={values.opgg}
+        title="Summoner name"
+        id="summonerName"
+        placeholder="Summoner name"
+        value={values.summonerName}
         onChange={handleChange}
         onBlur={handleBlur}
-        errorText={errors.opgg}
+        errorText={errors.summonerName}
       />
       <FormSelect
         title="Role"

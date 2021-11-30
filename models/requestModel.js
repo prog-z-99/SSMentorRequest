@@ -19,7 +19,9 @@ const requestSchema = mongoose.Schema(
     },
     opgg: {
       type: String,
-      required: true,
+    },
+    summonerName: {
+      type: String,
     },
     role: {
       type: String,

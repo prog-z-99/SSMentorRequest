@@ -18,9 +18,11 @@ import {
   Remarks,
 } from "../components/Styles";
 import axios from "axios";
+import { checkAdmin } from "../util/helper";
 
 export default function Mentors({ session, requests, isAdmin }) {
   const [query, setQuery] = useState({});
+
   const columns = [
     {
       dataIndex: "createdAt",
@@ -30,6 +32,15 @@ export default function Mentors({ session, requests, isAdmin }) {
     {
       dataIndex: "discordName",
       title: "Discord Username",
+      render: (text) => (
+        <div
+          onClick={() => {
+            navigator.clipboard.writeText(text);
+          }}
+        >
+          {text}
+        </div>
+      ),
       sorter: (a, b) => `${a.discordName}`.localeCompare(b.discordName),
     },
     {
@@ -42,7 +53,15 @@ export default function Mentors({ session, requests, isAdmin }) {
       title: "Region",
       sorter: (a, b) => a.region.localeCompare(b.region),
     },
-    { dataIndex: "opgg", title: "OP.GG" },
+    {
+      dataIndex: "summonerName",
+      title: "OP.GG",
+      render: (text, record, index) => (
+        <a href={`https://${record.region}.op.gg/summoner/userName=${text}`}>
+          {text}
+        </a>
+      ),
+    },
     {
       dataIndex: "role",
       title: "Role",
@@ -153,9 +172,9 @@ export default function Mentors({ session, requests, isAdmin }) {
                 <p>Discord ID: {item.discordId}</p>
                 <Remarks id={item.id} content={item.remarks} />
                 {isAdmin && (
-                  <a onClick={() => handleArchive(item.id)}>
+                  <button onClick={() => handleArchive(item.id)}>
                     ARCHIVE THIS REQUEST
-                  </a>
+                  </button>
                 )}
               </Expanded>
             ),
@@ -168,7 +187,6 @@ export default function Mentors({ session, requests, isAdmin }) {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-  let isAdmin = false;
 
   if (!session) {
     return {
@@ -189,8 +207,6 @@ export async function getServerSideProps(context) {
     };
   }
 
-  if (user.userType == "admin" || user.userType == "god") isAdmin = true;
-
   const requests = await Request.find({ archived: { $ne: true } })
     .select(" -updatedAt -__v")
     .populate("mentor")
@@ -201,11 +217,11 @@ export async function getServerSideProps(context) {
           status: item.status,
           rank: item.rank,
           region: item.region,
-          opgg: item.opgg,
+          summonerName: item.summonerName || item.opgg || "what",
           role: item.role,
-          champions: item.champions,
+          champions: item.champions || null,
           timezone: item.timezone,
-          info: item.info,
+          info: item.info || null,
           createdAt: item.createdAt.toString(),
           discordName: item.discordName,
           discordId: item.discordId,
@@ -221,7 +237,7 @@ export async function getServerSideProps(context) {
     props: {
       session,
       requests,
-      isAdmin,
+      isAdmin: checkAdmin(user),
     },
   };
 }

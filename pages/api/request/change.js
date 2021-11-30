@@ -11,8 +11,6 @@ export default async (req, res) => {
       await connectToDatabase();
       const { user } = session;
 
-      await Request.syncIndexes();
-
       const request = await Request.findOne({ _id: req.body.id });
       const mentor = await User.findOne({
         discordId: user.id,
