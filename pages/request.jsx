@@ -41,28 +41,25 @@ export async function getServerSideProps(context) {
 
   const request = await Request.findOne({ discordId: session.user.id });
   if (request) {
-    if (request?.completedAt) {
-      const monthAgo = new Date();
-      monthAgo.setMonth(monthAgo.getMonth() - 1);
-      const then = new Date(request.completedAt);
-      if (monthAgo > then) {
-        return {
-          props: {
-            session,
-          },
-        };
-      }
+    if (!request.completed || wasMonthAgo(request.completed)) {
+      return {
+        props: {
+          session,
+          requestPending: true,
+        },
+      };
     }
-    return {
-      props: {
-        session,
-        requestPending: true,
-      },
-    };
   }
   return {
     props: {
       session,
     },
   };
+}
+
+function wasMonthAgo(completed) {
+  const monthAgo = new Date();
+  monthAgo.setMonth(monthAgo.getMonth() - 1);
+  const then = new Date(completed);
+  return monthAgo < then;
 }

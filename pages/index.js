@@ -16,10 +16,6 @@ export default function Home() {
           Discord Mentor Request Site
         </h1>
 
-        {/* <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p> */}
-
         <div className="grid">
           <Link href="/request">
             <a className="card">

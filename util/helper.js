@@ -3,5 +3,5 @@ export function checkAdmin(user) {
 }
 
 export function isMentor(user) {
-  return isAdmin(user) || user.userType == "mentor";
+  return checkAdmin(user) || user.userType == "mentor";
 }

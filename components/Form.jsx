@@ -65,7 +65,6 @@ const MentorRequestForm = (props) => {
         onChange={onChange}
         error={errors.rank}
       />
-
       <FormSelect
         title="Region"
         name="region"

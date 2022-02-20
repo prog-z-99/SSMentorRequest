@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { connectToDatabase } from "../util/mongodb";
-import User from "../models/userModel";
 import Request from "../models/requestModel";
-import { getSession } from "next-auth/client";
+import { useSession } from "next-auth/client";
 import Layout from "../components/layout";
 import { Table } from "antd";
 import "antd/lib/table/style/index.css";
@@ -18,10 +17,39 @@ import {
   Remarks,
 } from "../components/Styles";
 import axios from "axios";
-import { checkAdmin } from "../util/helper";
+import { checkAdmin, isMentor } from "../util/helper";
+import { useRouter } from "next/dist/client/router";
 
-export default function Mentors({ session, requests, isAdmin }) {
+export default function Mentors({ requests }) {
+  const [session, loading] = useSession();
+  const router = useRouter();
+  const [isLogged, setIsLogged] = useState(false);
   const [query, setQuery] = useState({});
+  const [user, setUser] = useState({});
+
+  useEffect(async () => {
+    if (!loading)
+      if (!session) {
+        router.push("/api/auth/signin");
+      } else {
+        await fetch("/api/user")
+          .then((response) => response.json())
+          .then((data) => {
+            if (isMentor(data)) setIsLogged(true);
+            setUser(data);
+          });
+      }
+  }, [loading]);
+
+  if (!isLogged)
+    return (
+      <>
+        either loading or broken or you don;t have access. wait for a minute and
+        if it doesn't work refresh
+        <br />
+        If it doesn't work still let Z know
+      </>
+    );
 
   const columns = [
     {
@@ -171,7 +199,7 @@ export default function Mentors({ session, requests, isAdmin }) {
                 <p>Completed At: {item.completed}</p>
                 <p>Discord ID: {item.discordId}</p>
                 <Remarks id={item.id} content={item.remarks} />
-                {isAdmin && (
+                {checkAdmin(user) && (
                   <button onClick={() => handleArchive(item.id)}>
                     ARCHIVE THIS REQUEST
                   </button>
@@ -185,28 +213,8 @@ export default function Mentors({ session, requests, isAdmin }) {
   );
 }
 
-export async function getServerSideProps(context) {
-  const session = await getSession(context);
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/api/auth/signin",
-      },
-    };
-  }
+export async function getStaticProps(context) {
   await connectToDatabase();
-
-  const user = await User.findOne({ discordId: session.user.id });
-
-  if (!user || user.userType == "user") {
-    return {
-      redirect: {
-        destination: "/",
-      },
-    };
-  }
-
   const requests = await Request.find({ archived: { $ne: true } })
     .select(" -updatedAt -__v")
     .populate("mentor")
@@ -222,11 +230,11 @@ export async function getServerSideProps(context) {
           champions: item.champions || null,
           timezone: item.timezone,
           info: item.info || null,
-          createdAt: item.createdAt.toString(),
+          createdAt: item.createdAt.toISOString(),
           discordName: item.discordName,
           discordId: item.discordId,
-          accepted: item.accepted?.toString() || null,
-          completed: item.completed?.toString() || null,
+          accepted: item.accepted?.toISOString() || null,
+          completed: item.completed?.toISOString() || null,
           mentor: item.mentor?.discordName || null,
           remarks: item.remarks || null,
         };
@@ -235,9 +243,8 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
-      session,
       requests,
-      isAdmin: checkAdmin(user),
     },
+    revalidate: 10,
   };
 }

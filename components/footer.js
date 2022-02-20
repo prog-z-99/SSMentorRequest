@@ -6,7 +6,7 @@ export default function Footer() {
       <hr />
       <ul className={styles.navItems}>
         <li className={styles.navItem}>
-          <em>made by Z - Crackhead Jhin#9093</em>
+          <em>made by Z.#9093</em>
         </li>
       </ul>
     </footer>
