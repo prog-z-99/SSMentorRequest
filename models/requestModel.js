@@ -75,5 +75,5 @@ const requestSchema = mongoose.Schema(
   }
 );
 
-export default mongoose.models.Request ||
+export default mongoose.models?.Request ||
   mongoose.model("Request", requestSchema);

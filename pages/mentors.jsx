@@ -1,14 +1,10 @@
 import { useState, useEffect } from "react";
-import { connectToDatabase } from "../util/mongodb";
-import Request from "../models/requestModel";
 import { useSession } from "next-auth/client";
 import Layout from "../components/layout";
 import { Table } from "antd";
 import "antd/lib/table/style/index.css";
 import moment from "moment";
-
 import { ranks, statuses } from "../util/datalist";
-// import Select from "react-select";
 import {
   formatterColored,
   TableSelect,
@@ -32,12 +28,12 @@ export default function Mentors({ requests }) {
       if (!session) {
         router.push("/api/auth/signin");
       } else {
-        await fetch("/api/user")
-          .then((response) => response.json())
-          .then((data) => {
-            if (isMentor(data)) setIsLogged(true);
-            setUser(data);
-          });
+        await axios.get("/api/user").then((response) => {
+          if (isMentor(response.data)) {
+            setIsLogged(true);
+            setUser(response.data);
+          }
+        });
       }
   }, [loading]);
 
@@ -176,9 +172,12 @@ export default function Mentors({ requests }) {
   const handleArchive = (id) => {
     if (confirm("Are you sure you want to archive this request?")) {
       axios.put("/api/request/change", { id, type: "archive" });
-      console.log("archiving");
     } else console.log("not");
-    console.log("general test");
+  };
+  const handleDelete = (id) => {
+    if (confirm("Are you ABSOLUTELY sure you want to delete this request?")) {
+      axios.put("/api/request/change", { id, type: "delete" });
+    } else console.log("not");
   };
 
   return (
@@ -200,9 +199,14 @@ export default function Mentors({ requests }) {
                 <p>Discord ID: {item.discordId}</p>
                 <Remarks id={item.id} content={item.remarks} />
                 {checkAdmin(user) && (
-                  <button onClick={() => handleArchive(item.id)}>
-                    ARCHIVE THIS REQUEST
-                  </button>
+                  <>
+                    <button onClick={() => handleArchive(item.id)}>
+                      ARCHIVE THIS REQUEST
+                    </button>
+                    <button onClick={() => handleDelete(item.id)}>
+                      DELETE THIS REQUEST
+                    </button>
+                  </>
                 )}
               </Expanded>
             ),
@@ -214,37 +218,13 @@ export default function Mentors({ requests }) {
 }
 
 export async function getStaticProps(context) {
-  await connectToDatabase();
-  const requests = await Request.find({ archived: { $ne: true } })
-    .select(" -updatedAt -__v")
-    .populate("mentor")
-    .then((items) => {
-      return items.map((item) => {
-        return {
-          id: item._id.toString(),
-          status: item.status,
-          rank: item.rank,
-          region: item.region,
-          summonerName: item.summonerName || item.opgg || "what",
-          role: item.role,
-          champions: item.champions || null,
-          timezone: item.timezone,
-          info: item.info || null,
-          createdAt: item.createdAt.toISOString(),
-          discordName: item.discordName,
-          discordId: item.discordId,
-          accepted: item.accepted?.toISOString() || null,
-          completed: item.completed?.toISOString() || null,
-          mentor: item.mentor?.discordName || null,
-          remarks: item.remarks || null,
-        };
-      });
-    });
+  const requests = (await axios.get(`${process.env.NEXTAUTH_URL}/api/request`))
+    .data;
 
   return {
     props: {
       requests,
     },
-    revalidate: 10,
+    revalidate: 1,
   };
 }
