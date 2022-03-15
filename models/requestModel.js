@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { ranks, regions, roles, statuses } from "../util/datalist";
+import User from "./userModel";
 
 const requestSchema = mongoose.Schema(
   {
@@ -75,5 +76,5 @@ const requestSchema = mongoose.Schema(
   }
 );
 
-export default mongoose.models?.Request ||
+export default mongoose.models.Request ||
   mongoose.model("Request", requestSchema);

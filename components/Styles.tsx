@@ -120,6 +120,22 @@ export const Clickable = styled.a`
   cursor: link;
 `;
 
+export const Tooltip = styled.p`
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: -5px;
+  left: 105%;
+`;
+
 export const Remarks: React.FC<any> = ({ id, content }) => {
   const [input, setInput] = useState(false);
   const [value, setValue] = useState(content);

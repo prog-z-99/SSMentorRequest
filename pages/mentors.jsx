@@ -15,6 +15,7 @@ import {
 import axios from "axios";
 import { checkAdmin, isMentor } from "../util/helper";
 import { useRouter } from "next/dist/client/router";
+import { getAllRequests } from "./api/request";
 
 export default function Mentors({ requests }) {
   const [session, loading] = useSession();
@@ -196,7 +197,10 @@ export default function Mentors({ requests }) {
                 <p>Accepted At: {item.accepted}</p>
                 <p>Accepted Mentor: {item.mentor}</p>
                 <p>Completed At: {item.completed}</p>
-                <p>Discord ID: {item.discordId}</p>
+                <p className="tooltip">
+                  Discord ID: {item.discordId}
+                  <span className="tooltiptext">Click to copy</span>
+                </p>
                 <Remarks id={item.id} content={item.remarks} />
                 {checkAdmin(user) && (
                   <>
@@ -218,8 +222,7 @@ export default function Mentors({ requests }) {
 }
 
 export async function getStaticProps(context) {
-  const requests = (await axios.get(`${process.env.NEXTAUTH_URL}/api/request`))
-    .data;
+  const requests = await getAllRequests();
 
   return {
     props: {
