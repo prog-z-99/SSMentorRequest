@@ -1,11 +1,7 @@
-import { getSession } from "next-auth/client";
-import { connectToDatabase } from "../../util/mongodb";
-import User from "../../models/userModel";
-
+import { getSessionUser } from "../../util/databaseAccess";
 export default async (req, res) => {
-  if (req.method === "GET") {
-    const session = await getSession({ req });
-    const user = await User.findOne({ discordId: session.user.id });
+  if (req.method === "POST") {
+    const user = await getSessionUser(req.body);
     res.status(200).send(user);
   } else {
     res.status(404);

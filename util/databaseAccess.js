@@ -1,5 +1,6 @@
 import { connectToDatabase } from "./mongodb";
 import Request from "../models/requestModel";
+import User from "../models/userModel";
 
 connectToDatabase();
 
@@ -50,4 +51,8 @@ function wasMonthAgo(completed) {
   monthAgo.setMonth(monthAgo.getMonth() - 1);
   const then = new Date(completed);
   return monthAgo < then;
+}
+
+export async function getSessionUser(session) {
+  return await User.findOne({ discordId: session.user.id });
 }

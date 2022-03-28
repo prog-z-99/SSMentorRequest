@@ -29,7 +29,7 @@ export default function Mentors({ requests }) {
       if (!session) {
         router.push("/api/auth/signin");
       } else {
-        await axios.get("/api/user").then((response) => {
+        await axios.post("/api/user", session).then((response) => {
           if (isMentor(response.data)) {
             setIsLogged(true);
             setUser(response.data);
