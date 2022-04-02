@@ -4,7 +4,7 @@ import { withFormik } from "formik";
 import { ranks, regions, roles } from "../util/datalist";
 import { FormSelect, FormTextField, StyledForm } from "./Styles";
 import axios from "axios";
-import { useRouter } from "next/dist/client/router";
+import { useRouter } from "next/router";
 
 const FormEnhancer = withFormik({
   validationSchema: Yup.object().shape({

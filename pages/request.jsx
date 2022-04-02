@@ -5,12 +5,15 @@ import Terms, { Pending } from "../components/Terms";
 import { FormWrapper } from "../components/Styles";
 import axios from "axios";
 import Form from "../components/Form";
+import { useRouter } from "next/router";
 
 export default function Page() {
   const [terms, setTerms] = useState(false);
   const [content, setContent] = useState(null);
   const [session, loading] = useSession();
   const [requestPending, setRequestPending] = useState(false);
+
+  const router = useRouter();
 
   useEffect(async () => {
     if (!loading)

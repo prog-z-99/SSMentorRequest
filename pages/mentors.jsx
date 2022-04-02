@@ -14,7 +14,7 @@ import {
 } from "../components/Styles";
 import axios from "axios";
 import { checkAdmin, isMentor } from "../util/helper";
-import { useRouter } from "next/dist/client/router";
+import { useRouter } from "next/router";
 import { getAllRequests } from "../util/databaseAccess";
 
 export default function Mentors({ requests }) {

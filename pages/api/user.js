@@ -1,4 +1,5 @@
 import { getSessionUser } from "../../util/databaseAccess";
+
 export default async (req, res) => {
   if (req.method === "POST") {
     const user = await getSessionUser(req.body);
