@@ -1,6 +1,7 @@
 import { connectToDatabase } from "./mongodb";
 import Request from "../models/requestModel";
 import User from "../models/userModel";
+import { isMentor } from "./helper";
 
 connectToDatabase();
 
@@ -55,4 +56,18 @@ function wasMonthAgo(completed) {
 
 export async function getSessionUser(session) {
   return await User.findOne({ discordId: session.user.id });
+}
+
+export async function tryRegisterMentor(session) {
+  const user = await getSessionUser(session);
+  if (!user) {
+    const newUser = new User({
+      discordName: `${session.user.name}#${session.user.discriminator}`,
+      discordId: session.user.id,
+    });
+    await newUser.save();
+    return 0;
+  }
+  if (isMentor(user)) return 1;
+  return 2;
 }
