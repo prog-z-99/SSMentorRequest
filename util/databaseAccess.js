@@ -2,32 +2,33 @@ import { connectToDatabase } from "./mongodb";
 import Request from "../models/requestModel";
 import User from "../models/userModel";
 import { isMentor } from "./helper";
+import mongoose from "mongoose";
 
 connectToDatabase();
 
 export async function getAllRequests() {
-  return await Request.find({ archived: { $ne: true } })
+  const requests = await Request.find({
+    archived: { $ne: true },
+  })
     .populate({ path: "mentor", model: "User" })
-    .then((items) =>
-      items.map((item) => ({
-        id: item._id.toString(),
-        status: item.status,
-        rank: item.rank,
-        region: item.region,
-        summonerName: item.summonerName || item.opgg || "what",
-        role: item.role,
-        champions: item.champions || null,
-        timezone: item.timezone,
-        info: item.info || null,
-        createdAt: item.createdAt.toISOString(),
-        discordName: item.discordName,
-        discordId: item.discordId,
-        accepted: item.accepted?.toISOString() || null,
-        completed: item.completed?.toISOString() || null,
-        mentor: item.mentor?.discordName || null,
-        remarks: item.remarks || null,
-      }))
-    );
+    .then((items) => cleaner(items));
+  return requests;
+}
+
+export async function getAllMentors() {
+  return await User.find({ userType: "mentor" }).then((mentors) =>
+    mentors.map((mentor) => ({
+      discordId: mentor.discordId,
+      discordName: mentor.discordName,
+      _id: mentor._id.toString(),
+    }))
+  );
+}
+
+export async function getMentorRequests(userId) {
+  return await Request.find({ mentor: mongoose.Types.ObjectId(userId) })
+    .sort({ completed: -1 })
+    .then((items) => cleaner(items));
 }
 
 export async function isRequestPending(session) {
@@ -70,4 +71,25 @@ export async function tryRegisterMentor(session) {
   }
   if (isMentor(user)) return 1;
   return 2;
+}
+
+function cleaner(items) {
+  return items.map((item) => ({
+    id: item._id.toString(),
+    status: item.status,
+    rank: item.rank,
+    region: item.region,
+    summonerName: item.summonerName || item.opgg || "what",
+    role: item.role,
+    champions: item.champions || null,
+    timezone: item.timezone,
+    info: item.info || null,
+    createdAt: item.createdAt.toISOString(),
+    discordName: item.discordName,
+    discordId: item.discordId,
+    accepted: item.accepted?.toISOString() || null,
+    completed: item.completed?.toISOString() || null,
+    mentor: item.mentor?.discordName || null,
+    remarks: item.remarks || null,
+  }));
 }
