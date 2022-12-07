@@ -3,10 +3,12 @@ import { useSession } from "next-auth/client";
 import { useState, useEffect } from "react";
 import Layout from "../components/layout";
 import Link from "next/link";
+import { useRouter } from "next/dist/client/router";
 
 export default function Mentors() {
-  const [content, setContent] = useState("Loading...");
+  const [content, setContent] = useState("");
   const [session, loading] = useSession();
+  const router = useRouter();
 
   const handleOnClick = async () => {
     const data = (await axios.post("/api/user/mentor", session)).data;
@@ -19,7 +21,7 @@ export default function Mentors() {
       case 1:
         setContent(
           <>
-            Mentor registered! You can head over to{" "}
+            Mentor already registered! You can head over to{" "}
             <Link href="https://ssmentor-request.vercel.app/mentors">
               this link
             </Link>{" "}
@@ -44,6 +46,7 @@ export default function Mentors() {
   return (
     <Layout>
       <button onClick={handleOnClick}>Click here to apply for mentor</button>
+      <br />
       {content}
     </Layout>
   );

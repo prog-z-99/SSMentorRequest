@@ -16,11 +16,12 @@ export async function getAllRequests() {
 }
 
 export async function getAllMentors() {
-  return await User.find({ userType: "mentor" }).then((mentors) =>
+  return await User.find().then((mentors) =>
     mentors.map((mentor) => ({
       discordId: mentor.discordId,
       discordName: mentor.discordName,
       _id: mentor._id.toString(),
+      userType: mentor.userType,
     }))
   );
 }
@@ -71,6 +72,28 @@ export async function tryRegisterMentor(session) {
   }
   if (isMentor(user)) return 1;
   return 2;
+}
+
+export async function editUser(body) {
+  try {
+    const { userID, command } = body;
+    const user = await User.findById(userID);
+    switch (command) {
+      case "SET_MENTOR":
+        user.userType = "mentor";
+        break;
+      case "SET_USER":
+        user.userType = "user";
+        break;
+      case "SET_ADMIN":
+        user.userType = "admin";
+        break;
+    }
+    await user.save();
+    return `Sucessfully edited to ${command}`;
+  } catch {
+    return `Error trying to run ${command}`;
+  }
 }
 
 function cleaner(items) {
