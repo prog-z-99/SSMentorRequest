@@ -7,7 +7,6 @@ import { userSelectCommand, userType } from "../util/datalist";
 import axios from "axios";
 
 export const AdminComponent = ({ mentors }) => {
-  console.log(mentors);
   return (
     <MentorsWrapper>
       <Table striped>
@@ -36,7 +35,6 @@ const UserTypeSelect = ({ user }) => {
       userID: user._id,
       command: userSelectCommand(value),
     });
-    console.log(data);
   };
   return (
     <Select
@@ -48,7 +46,6 @@ const UserTypeSelect = ({ user }) => {
 };
 
 export const MentorDetails = ({ mentor, requests }) => {
-  console.log(requests);
   return (
     <MentorsWrapper>
       {mentor.discordName}
