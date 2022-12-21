@@ -1,3 +1,5 @@
+import { Button } from "@mantine/core";
+
 export default function Terms({ setTerms }) {
   return (
     <>
@@ -41,10 +43,10 @@ export default function Terms({ setTerms }) {
         least 25 total ranked games played this season - Must be a fairly close
         game - no one-sided stomps - Must be serious about improvement
       </p>
-      <button variant="outlined" onClick={() => setTerms(true)}>
+      <Button variant="outlined" onClick={() => setTerms(true)}>
         By clicking this box, you acknowledge that you have read all of the
         above.
-      </button>
+      </Button>
     </>
   );
 }

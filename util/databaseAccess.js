@@ -3,14 +3,66 @@ import Request from "../models/requestModel";
 import User from "../models/userModel";
 import { isMentor } from "./helper";
 import mongoose from "mongoose";
+import { ObjectID } from "mongodb";
+import dayjs from "dayjs";
 
 connectToDatabase();
 
-export async function getAllRequests() {
+export async function testRequest() {
   const requests = await Request.find({
     archived: { $ne: true },
+    $or: [
+      {
+        $and: [
+          { status: "Completed" },
+          {
+            completed: { $gte: threeMonthsAgo },
+          },
+        ],
+      },
+      {
+        $and: [
+          { status: "Problem" },
+          {
+            createdAt: { $gte: threeMonthsAgo },
+          },
+        ],
+      },
+      { status: { $nin: ["Completed", "Problem"] } },
+    ],
+  });
+
+  return requests;
+}
+
+export async function getAllRequests() {
+  const now = new Date();
+  const threeMonthsAgo = new Date(now.setMonth(now.getMonth() - 3));
+  const requests = await Request.find({
+    archived: { $ne: true },
+    $or: [
+      {
+        $and: [
+          { status: "Completed" },
+          {
+            completed: { $gte: threeMonthsAgo },
+          },
+        ],
+      },
+      {
+        $and: [
+          { status: "Problem" },
+          {
+            createdAt: { $gte: threeMonthsAgo },
+          },
+        ],
+      },
+      { status: { $nin: ["Completed", "Problem"] } },
+    ],
   })
     .populate({ path: "mentor", model: "User" })
+    // .limit(15)
+    .sort({ createdAt: 1 })
     .then((items) => cleaner(items));
   return requests;
 }
@@ -96,13 +148,89 @@ export async function editUser(body) {
   }
 }
 
+export async function changeRequest(body) {
+  const { user } = body.session;
+
+  const request = await Request.findOne({ _id: body.id });
+  const mentor = await User.findOne({
+    discordId: user.id,
+    userType: { $ne: "user" },
+  });
+
+  if (!request || !mentor) {
+    throw { error: "I uh... what?" };
+  }
+
+  if (body.type == "delete") {
+    await Request.deleteOne({
+      _id: ObjectID(request._id),
+    });
+
+    return "Success";
+  }
+
+  switch (body.type) {
+    case "status":
+      request.mentor = mentor._id;
+      request.status = body.value;
+
+      switch (body.value) {
+        case "In-Progress":
+          request.accepted = new Date();
+          break;
+        case "Not Accepted":
+          request.mentor = null;
+          request.accepted = null;
+          request.completed = null;
+          break;
+        case "Completed":
+          request.completed = new Date();
+          break;
+        case "Problem":
+          request.completed = new Date();
+          break;
+      }
+      break;
+    case "remarks":
+      request.remarks = body.value;
+      break;
+    case "archive":
+      request.archived = true;
+      break;
+  }
+  await request.save();
+}
+
+export async function createRequest(body) {
+  const {
+    session: { user },
+    values,
+  } = body;
+
+  const hasRequest = await Request.findOne({
+    discordId: values.discordId,
+  });
+
+  if (hasRequest) {
+    throw res.status(401).send("user already has request");
+  }
+
+  const request = new Request({
+    ...values,
+    discordName: `${user.name}#${user.discriminator}`,
+    discordId: user.id,
+  });
+
+  return await request.save();
+}
+
 function cleaner(items) {
   return items.map((item) => ({
     id: item._id.toString(),
     status: item.status,
     rank: item.rank,
     region: item.region,
-    summonerName: item.summonerName || item.opgg || "what",
+    summonerName: item.summonerName || item.opgg || "what?",
     role: item.role,
     champions: item.champions || null,
     timezone: item.timezone,

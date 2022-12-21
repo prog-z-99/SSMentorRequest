@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Layout from "../components/layout";
 import Link from "next/link";
 import { useRouter } from "next/dist/client/router";
+import MentorForm from "../components/MentorForm";
+import { Button } from "@mantine/core";
 
 export default function Mentors() {
   const [content, setContent] = useState("");
@@ -45,9 +47,12 @@ export default function Mentors() {
 
   return (
     <Layout>
-      <button onClick={handleOnClick}>Click here to apply for mentor</button>
+      {/* <FormWrapper> */}
+      {/* <MentorForm /> */}
+      <Button onClick={handleOnClick}>Click here to apply for mentor</Button>
       <br />
       {content}
+      {/* </FormWrapper> */}
     </Layout>
   );
 }

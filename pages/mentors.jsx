@@ -1,153 +1,221 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import { useSession } from "next-auth/client";
 import Layout from "../components/layout";
-import { Table } from "antd";
-import "antd/lib/table/style/index.css";
-import moment from "moment";
-import { ranks, statuses } from "../util/datalist";
+import dayjs from "dayjs";
 import {
-  formatterColored,
-  TableSelect,
+  Select,
+  Table,
+  Button,
+  Text,
+  Container,
+  Group,
+  Mark,
+} from "@mantine/core";
+import {
+  ranks,
+  rtFields,
+  rtHeader,
+  rtTitles,
+  statuses,
+} from "../util/datalist";
+import {
   getStatusColor,
-  Expanded,
   Remarks,
+  getStatusIcon,
+  ClickToCopy,
 } from "../components/Styles";
 import axios from "axios";
-import { checkAdmin, isMentor } from "../util/helper";
+import {
+  checkAdmin,
+  copyClip,
+  getAllChampions,
+  isMentor,
+} from "../util/helper";
 import { useRouter } from "next/router";
-import { getAllRequests } from "../util/databaseAccess";
 
-export default function Mentors({ requests }) {
+export default function Mentors({}) {
   const [session, loading] = useSession();
+  const [requests, setRequests] = useState();
   const router = useRouter();
-  const [isLogged, setIsLogged] = useState(false);
-  const [query, setQuery] = useState({});
+  const [query, setQuery] = useState();
   const [user, setUser] = useState({});
 
   useEffect(async () => {
-    if (!loading)
-      if (!session) {
-        router.push("/api/auth/signin");
-      } else {
-        await axios.post("/api/user", session).then((response) => {
-          if (isMentor(response.data)) {
-            setIsLogged(true);
-            setUser(response.data);
-          }
-        });
-      }
+    if (loading) return;
+    if (!session) {
+      router.push("/api/auth/signin");
+    } else {
+      axios.get("/api/request").then(({ data }) => setRequests(data));
+      await axios.post("/api/user", session).then((response) => {
+        if (isMentor(response.data)) {
+          setUser(response.data);
+        }
+      });
+    }
   }, [loading]);
 
-  if (!isLogged)
+  useEffect(() => {
+    if (query) {
+      const { type, sorter, reverse } = query;
+      if (type === "sort") {
+        setRequests([
+          ...requests.sort((a, b) => sorter(reverse ? b : a, reverse ? a : b)),
+        ]);
+      }
+    }
+  }, [query]);
+
+  if (!session)
     return (
-      <>
-        either loading or broken or you don;t have access. wait for a minute and
-        if it doesn't work refresh
+      <Text>
+        Loading mentor details...
         <br />
-        If it doesn't work still let Z know
-      </>
+        If this persists, notify Z on discord
+      </Text>
     );
 
-  const columns = [
-    {
-      dataIndex: "createdAt",
-      title: "Created",
-      sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
-    },
-    {
-      dataIndex: "discordName",
-      title: "Discord Username",
-      render: (text) => (
-        <div
+  if (!requests) return <Text>Loading requests, wait a min</Text>;
+
+  const TableHeader = ({ header }) => {
+    if (!header.sorter) {
+      return <th>{header.title}</th>;
+    }
+
+    const handleHeaderClick = (header) => {
+      if (header.sorter) {
+        setQuery({
+          type: "sort",
+          sorter: header.sorter,
+          reverse: query?.sorter == header.sorter && !query.reverse,
+        });
+      }
+    };
+    return (
+      <th>
+        <Button onClick={() => handleHeaderClick(header)}>
+          {header.title}
+        </Button>
+      </th>
+    );
+  };
+
+  return (
+    <Layout>
+      <div>
+        <Table highlightOnHover striped>
+          <thead>
+            <tr>
+              {rtHeader.map((header) => (
+                <TableHeader header={header} />
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {requests.map((row, i) => (
+              <RequestRow
+                row={row}
+                i={i}
+                isAdmin={checkAdmin(user)}
+                session={session}
+              />
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    </Layout>
+  );
+}
+
+const RequestRow = ({ row, i, isAdmin, session }) => {
+  const [rowOpen, setRowOpen] = useState(false);
+
+  return (
+    <>
+      <tr key={`TableRow${i}`}>
+        <td>
+          <Button onClick={() => setRowOpen((o) => !o)}>Details</Button>
+        </td>
+        <td>{dayjs(row.createdAt).format("l")}</td>
+        <td
           onClick={() => {
-            navigator.clipboard.writeText(text);
+            copyClip(row.discordName);
           }}
         >
-          {text}
-        </div>
-      ),
-      sorter: (a, b) => `${a.discordName}`.localeCompare(b.discordName),
-    },
-    {
-      dataIndex: "rank",
-      title: "Rank",
-      sorter: (a, b) => ranks.indexOf(a.rank) - ranks.indexOf(b.rank),
-    },
-    {
-      dataIndex: "region",
-      title: "Region",
-      sorter: (a, b) => a.region.localeCompare(b.region),
-    },
-    {
-      dataIndex: "summonerName",
-      title: "OP.GG",
-      render: (text, record, index) => (
-        <a href={`https://${record.region}.op.gg/summoner/userName=${text}`}>
-          {text}
-        </a>
-      ),
-    },
-    {
-      dataIndex: "role",
-      title: "Role",
-      sorter: (a, b) => a.role.localeCompare(b.role),
-    },
-    { dataIndex: "champions", title: "Champions" },
-    { dataIndex: "timezone", title: "Time Zone" },
-    // { dataIndex: "info", title: "Additional Information", ellipsis: true },
-    {
-      dataIndex: "status",
-      title: "Status",
-      render: (text, record, index) => (
-        <TableSelect
-          className={text}
-          options={formatterColored(statuses)}
-          defaultValue={{
-            label: text,
-            value: text,
-            color: getStatusColor(text),
-          }}
-          styles={colourStyles}
-          onChange={(e) => handleStatusChange(e, record.id)}
-        />
-      ),
-      width: 200,
-      sorter: (a, b) => statuses.indexOf(a.status) - statuses.indexOf(b.status),
-    },
-    // {
-    //   dataIndex: "accepted",
-    //   title: "Accepted Date",
-    //   sorter: (a, b) =>
-    //     a.accepted && b.accepted
-    //       ? new Date(a.accepted) - new Date(b.accepted)
-    //       : 0,
-    // },
-    // {
-    //   dataIndex: "completed",
-    //   title: "Completed Date",
-    //   sorter: (a, b) => new Date(a.completed) - new Date(b.completed),
-    // },
-    // { dataIndex: "mentor", title: "Accepted Mentor" },
-  ];
-  const dot = (color = "#ccc") => ({
-    alignItems: "center",
-    display: "flex",
-    backgroundColor: color,
+          <ClickToCopy>{row.discordName}</ClickToCopy>
+        </td>
+        <td>
+          <a
+            href={`https://${row.region}.op.gg/summoner/userName=${row.summonerName}`}
+          >
+            {row.summonerName}
+          </a>
+        </td>
+        <td>{row.rank}</td>
+        <td>{row.region}</td>
+        <td>{row.role}</td>
+        <td>{row.champions}</td>
+        <td>{row.timezone}</td>
+        <td>
+          <TableSelect request={row} session={session} />
+        </td>
+      </tr>
+      {rowOpen && (
+        <tr>
+          <td colSpan={10}>
+            <Details item={row} isAdmin={isAdmin} session={session} />
+          </td>
+        </tr>
+      )}
+    </>
+  );
+};
 
-    ":before": {
-      backgroundColor: color,
-      borderRadius: 10,
-      content: '" "',
-      display: "block",
-      marginRight: "8px",
-      height: 10,
-      width: 10,
-    },
-  });
+const Details = ({ item, isAdmin, session }) => {
+  const handleArchive = (id) => {
+    if (confirm("Are you sure you want to archive this request?")) {
+      axios.put("/api/request/change", { id, type: "archive", session });
+    } else console.log("not");
+  };
+  const handleDelete = async (id) => {
+    if (confirm("Are you ABSOLUTELY sure you want to delete this request?")) {
+      try {
+        await axios.put("/api/request/change", { id, type: "delete", session });
+        alert("Request deleted");
+      } catch {
+        alert("Something didn't work. Notify Z if the request is not deleted");
+      }
+    } else console.log("not");
+  };
+  return (
+    <Container>
+      <Text>Notes: {item.info} </Text>
+      <Text>
+        Accepted At: {item.accepted ? dayjs(item.accepted).format("l") : ""}
+      </Text>
+      <Text>Accepted Mentor: {item.mentor}</Text>
+      <Text>
+        Completed At: {item.completed ? dayjs(item.completed).format("l") : ""}
+      </Text>
+      <ClickToCopy>Discord ID: {item.discordId}</ClickToCopy>
+      <Remarks id={item.id} content={item.remarks} session={session} />
+      {isAdmin && (
+        <>
+          <Button onClick={() => handleArchive(item.id)}>
+            ARCHIVE THIS REQUEST
+          </Button>
+          <Button onClick={() => handleDelete(item.id)}>
+            DELETE THIS REQUEST
+          </Button>
+        </>
+      )}
+    </Container>
+  );
+};
 
-  const handleStatusChange = async ({ value }, id) => {
+const TableSelect = ({ request, session }) => {
+  const handleStatusChange = async (value, id) => {
     await axios
-      .put("/api/request/change", { id, value, type: "status" })
+      .put("/api/request/change", { id, value, type: "status", session })
       .then(() => {
         alert("successfully changed");
       })
@@ -155,79 +223,25 @@ export default function Mentors({ requests }) {
         alert("error, some shit gone wrong. nag Z about this");
       });
   };
-
-  const colourStyles = {
-    placeholder: (styles) => ({ ...styles, ...dot() }),
-    singleValue: (styles, { data }) => ({ ...styles, ...dot(data.color) }),
-  };
-  const rows = requests.map((item) => {
-    return {
-      ...item,
-      key: item.id,
-      createdAt: moment(item.createdAt).format("l"),
-      completed: item.completed ? moment(item.completed).format("l") : "",
-      accepted: item.accepted ? moment(item.accepted).format("l") : "",
-    };
-  });
-
-  const handleArchive = (id) => {
-    if (confirm("Are you sure you want to archive this request?")) {
-      axios.put("/api/request/change", { id, type: "archive" });
-    } else console.log("not");
-  };
-  const handleDelete = (id) => {
-    if (confirm("Are you ABSOLUTELY sure you want to delete this request?")) {
-      axios.put("/api/request/change", { id, type: "delete" });
-    } else console.log("not");
-  };
-
   return (
-    <Layout>
-      <div>
-        <Table
-          dataSource={rows}
-          columns={columns}
-          density="compact"
-          autoHeight
-          pagination={false}
-          expandable={{
-            expandedRowRender: (item) => (
-              <Expanded>
-                <p> Notes: {item.info} </p>
-                <p>Accepted At: {item.accepted}</p>
-                <p>Accepted Mentor: {item.mentor}</p>
-                <p>Completed At: {item.completed}</p>
-                <p className="tooltip">
-                  Discord ID: {item.discordId}
-                  <span className="tooltiptext">Click to copy</span>
-                </p>
-                <Remarks id={item.id} content={item.remarks} />
-                {checkAdmin(user) && (
-                  <>
-                    <button onClick={() => handleArchive(item.id)}>
-                      ARCHIVE THIS REQUEST
-                    </button>
-                    <button onClick={() => handleDelete(item.id)}>
-                      DELETE THIS REQUEST
-                    </button>
-                  </>
-                )}
-              </Expanded>
-            ),
-          }}
-        />
-      </div>
-    </Layout>
+    <Select
+      data={statuses}
+      icon={getStatusIcon(request.status)}
+      value={request.status}
+      onChange={(e) => handleStatusChange(e, request.id)}
+    />
   );
-}
+};
 
-export async function getStaticProps(context) {
-  const requests = await getAllRequests();
+export async function getServerSideProps(context) {
+  // const requests = await getAllRequests();
+
+  const championList = await getAllChampions();
 
   return {
     props: {
-      requests,
+      // requests,
+      championList,
     },
-    revalidate: 1,
   };
 }

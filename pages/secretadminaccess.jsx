@@ -25,11 +25,10 @@ export default function Admins({ mentors }) {
   return <Layout>{content}</Layout>;
 }
 
-export async function getStaticProps(context) {
+export async function getServerSideProps(context) {
   // const requests = await getAllRequests();
   const mentors = await getAllMentors();
   return {
     props: { mentors },
-    revalidate: 1,
   };
 }

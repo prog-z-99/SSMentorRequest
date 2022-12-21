@@ -30,7 +30,7 @@ const requestSchema = mongoose.Schema(
       enum: roles,
     },
     champions: {
-      type: String,
+      type: [String],
     },
     timezone: {
       type: String,

@@ -6,12 +6,27 @@ import { FormWrapper } from "../components/Styles";
 import axios from "axios";
 import Form from "../components/Form";
 import { useRouter } from "next/router";
+import { getAllChampions } from "../util/helper";
 
-export default function Page() {
+export default function Page({ championList }) {
   const [terms, setTerms] = useState(false);
   const [content, setContent] = useState(null);
   const [session, loading] = useSession();
   const [requestPending, setRequestPending] = useState(false);
+
+  async function sendMentorRequest(values) {
+    await axios
+      .post("/api/request/create", { session, values })
+      .then(() => {
+        alert("Request has been sent!");
+        router.push("/");
+      })
+      .catch((error) => {
+        alert(
+          "Error. Please check your form. If this issue persists, please contact the Mod team"
+        );
+      });
+  }
 
   const router = useRouter();
 
@@ -27,7 +42,13 @@ export default function Page() {
   useEffect(() => {
     if (requestPending) setContent(<Pending />);
     else if (!terms) setContent(<Terms setTerms={setTerms} />);
-    else setContent(<Form />);
+    else
+      setContent(
+        <Form
+          championList={championList}
+          sendMentorRequest={sendMentorRequest}
+        />
+      );
   }, [requestPending, terms]);
 
   return (
@@ -38,4 +59,10 @@ export default function Page() {
       </FormWrapper>
     </Layout>
   );
+}
+
+export async function getStaticProps(context) {
+  const championList = await getAllChampions();
+
+  return { props: { championList } };
 }

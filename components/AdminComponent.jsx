@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import styled from "styled-components";
-import moment from "moment";
+import dayjs from "dayjs";
 import { Select, Table } from "@mantine/core";
 import { userSelectCommand, userType } from "../util/datalist";
 import axios from "axios";
@@ -60,18 +60,23 @@ export const MentorDetails = ({ mentor, requests }) => {
           </tr>
         </thead>
         <tbody>
-          {requests?.map((request) => (
-            <tr>
-              <td>{request.status}</td>
-              <td>{moment(request.accepted).format("l")}</td>
-              <td>
-                {request.completed ? moment(request.completed).format("l") : ""}
-              </td>
-              <td>{request.discordName}</td>
-              <td>{request.discordId}</td>
-              <td>{request.remarks}</td>
-            </tr>
-          ))}
+          {requests?.map((request, i) => {
+            console.log(dayjs(request.accepted).format("L"));
+            return (
+              <tr key={`TableRow${i}`}>
+                <td>{request.status}</td>
+                <td>{dayjs(request.accepted).format("L")}</td>
+                <td>
+                  {request.completed
+                    ? dayjs(request.completed).format("L")
+                    : ""}
+                </td>
+                <td>{request.discordName}</td>
+                <td>{request.discordId}</td>
+                <td>{request.remarks}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
     </MentorsWrapper>
