@@ -1,4 +1,4 @@
-import { HoverCard, Select, TextInput, Text } from "@mantine/core";
+import { HoverCard, Select, TextInput, Text, Container } from "@mantine/core";
 import axios from "axios";
 import { Form } from "formik";
 import { useState } from "react";
@@ -11,12 +11,11 @@ export const PageWrappaer = styled.div`
   width: 100%;
 `;
 
-export const FormWrapper = styled.div`
+export const FormWrapper = styled(Container)`
   display: flex;
   margin: 0 auto;
   align-items: center;
   flex-direction: column;
-  max-width: 900px;
 `;
 
 export const StyledForm = styled(Form)`

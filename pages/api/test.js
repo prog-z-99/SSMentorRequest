@@ -1,4 +1,3 @@
-import { getSession } from "next-auth/client";
 import { connectToDatabase } from "../../util/mongodb";
 import Request from "../../models/requestModel";
 import User from "../../models/userModel";

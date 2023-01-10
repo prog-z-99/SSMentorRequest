@@ -17,6 +17,18 @@ const userSchema = mongoose.Schema(
       enum: userType,
       default: "user",
     },
+    isMentorReviewer: {
+      type: Boolean,
+      default: false,
+    },
+    isMentor: {
+      type: Boolean,
+      default: false,
+    },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

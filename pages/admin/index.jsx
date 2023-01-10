@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import axios from "axios";
-import Layout from "../components/layout";
+import Layout from "../../components/layout";
 import { useRouter } from "next/router";
-import { checkAdmin } from "../util/helper";
-import { getAllMentors } from "../util/databaseAccess";
-import { AdminComponent } from "../components/AdminComponent";
+import { checkAdmin } from "../../util/helper";
+import { getAllMentors } from "../../util/databaseAccess";
+import { AdminComponent } from "../../components/AdminComponent";
 
 export default function Admins({ mentors }) {
   const router = useRouter();
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const [content, setContent] = useState("loading");
   useEffect(async () => {
     if (!loading)
@@ -19,6 +20,7 @@ export default function Admins({ mentors }) {
         await axios.post("/api/user", session).then((response) => {
           if (checkAdmin(response.data))
             setContent(<AdminComponent mentors={mentors} />);
+          else router.push("/");
         });
       }
   }, [loading]);

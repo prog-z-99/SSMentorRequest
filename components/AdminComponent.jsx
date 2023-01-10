@@ -14,7 +14,7 @@ export const AdminComponent = ({ mentors }) => {
           {mentors.map((mentor, i) => (
             <tr>
               <td>
-                <Link href={`/secretadminaccess/${mentor._id}`}>
+                <Link href={`/admin/mentors/${mentor._id}`}>
                   <a key={`mentorNo${i}`}>{mentor.discordName}</a>
                 </Link>
               </td>
@@ -46,6 +46,7 @@ const UserTypeSelect = ({ user }) => {
 };
 
 export const MentorDetails = ({ mentor, requests }) => {
+  console.log(requests, mentor);
   return (
     <MentorsWrapper>
       {mentor.discordName}
@@ -60,23 +61,18 @@ export const MentorDetails = ({ mentor, requests }) => {
           </tr>
         </thead>
         <tbody>
-          {requests?.map((request, i) => {
-            console.log(dayjs(request.accepted).format("L"));
-            return (
-              <tr key={`TableRow${i}`}>
-                <td>{request.status}</td>
-                <td>{dayjs(request.accepted).format("L")}</td>
-                <td>
-                  {request.completed
-                    ? dayjs(request.completed).format("L")
-                    : ""}
-                </td>
-                <td>{request.discordName}</td>
-                <td>{request.discordId}</td>
-                <td>{request.remarks}</td>
-              </tr>
-            );
-          })}
+          {requests?.map((request, i) => (
+            <tr key={`TableRow${i}`}>
+              <td>{request.status}</td>
+              <td>{dayjs(request.accepted).format("L")}</td>
+              <td>
+                {request.completed ? dayjs(request.completed).format("L") : ""}
+              </td>
+              <td>{request.discordName}</td>
+              <td>{request.discordId}</td>
+              <td>{request.remarks}</td>
+            </tr>
+          ))}
         </tbody>
       </Table>
     </MentorsWrapper>

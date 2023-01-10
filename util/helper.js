@@ -1,11 +1,11 @@
 import axios from "axios";
 
 export function checkAdmin(user) {
-  return user.userType == "admin" || user.userType == "god";
+  return user.userType == "admin" || user.userType == "god" || user.isAdmin;
 }
 
 export function isMentor(user) {
-  return checkAdmin(user) || user.userType == "mentor";
+  return checkAdmin(user) || user.userType == "mentor" || user.isMentor;
 }
 
 export function copyClip(text) {

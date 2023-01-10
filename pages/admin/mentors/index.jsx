@@ -1,6 +1,6 @@
 import { useState, useEffect, forwardRef } from "react";
-import { useSession } from "next-auth/client";
-import Layout from "../components/layout";
+import { useSession } from "next-auth/react";
+import Layout from "../../../components/layout";
 import dayjs from "dayjs";
 import {
   Select,
@@ -17,24 +17,25 @@ import {
   rtHeader,
   rtTitles,
   statuses,
-} from "../util/datalist";
+} from "../../../util/datalist";
 import {
   getStatusColor,
   Remarks,
   getStatusIcon,
   ClickToCopy,
-} from "../components/Styles";
+} from "../../../components/Styles";
 import axios from "axios";
 import {
   checkAdmin,
   copyClip,
   getAllChampions,
   isMentor,
-} from "../util/helper";
+} from "../../../util/helper";
 import { useRouter } from "next/router";
 
 export default function Mentors({}) {
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const [requests, setRequests] = useState();
   const router = useRouter();
   const [query, setQuery] = useState();
@@ -46,10 +47,10 @@ export default function Mentors({}) {
       router.push("/api/auth/signin");
     } else {
       axios.get("/api/request").then(({ data }) => setRequests(data));
-      await axios.post("/api/user", session).then((response) => {
-        if (isMentor(response.data)) {
-          setUser(response.data);
-        }
+      await axios.post("/api/user", session).then(({ data }) => {
+        if (isMentor(data)) {
+          setUser(data);
+        } else router.push("/");
       });
     }
   }, [loading]);
@@ -105,8 +106,8 @@ export default function Mentors({}) {
         <Table highlightOnHover striped>
           <thead>
             <tr>
-              {rtHeader.map((header) => (
-                <TableHeader header={header} />
+              {rtHeader.map((header, i) => (
+                <TableHeader header={header} key={`tableHeader${i}`} />
               ))}
             </tr>
           </thead>
@@ -114,7 +115,7 @@ export default function Mentors({}) {
             {requests.map((row, i) => (
               <RequestRow
                 row={row}
-                i={i}
+                key={`TableRow${i}`}
                 isAdmin={checkAdmin(user)}
                 session={session}
               />
@@ -126,12 +127,12 @@ export default function Mentors({}) {
   );
 }
 
-const RequestRow = ({ row, i, isAdmin, session }) => {
+const RequestRow = ({ row, isAdmin, session }) => {
   const [rowOpen, setRowOpen] = useState(false);
 
   return (
     <>
-      <tr key={`TableRow${i}`}>
+      <tr>
         <td>
           <Button onClick={() => setRowOpen((o) => !o)}>Details</Button>
         </td>
@@ -161,7 +162,7 @@ const RequestRow = ({ row, i, isAdmin, session }) => {
       </tr>
       {rowOpen && (
         <tr>
-          <td colSpan={10}>
+          <td colSpan={12}>
             <Details item={row} isAdmin={isAdmin} session={session} />
           </td>
         </tr>
@@ -187,7 +188,7 @@ const Details = ({ item, isAdmin, session }) => {
     } else console.log("not");
   };
   return (
-    <Container>
+    <Container fluid>
       <Text>Notes: {item.info} </Text>
       <Text>
         Accepted At: {item.accepted ? dayjs(item.accepted).format("l") : ""}
@@ -233,15 +234,19 @@ const TableSelect = ({ request, session }) => {
   );
 };
 
-export async function getServerSideProps(context) {
-  // const requests = await getAllRequests();
+// export async function getServerSideProps({ req, res }) {
+//   // const requests = await getAllRequests();
+//   res.setHeader(
+//     "Cache-Control",
+//     "public, s-maxage=10, stale-while-revalidate=59"
+//   );
 
-  const championList = await getAllChampions();
+//   const championList = await getAllChampions();
 
-  return {
-    props: {
-      // requests,
-      championList,
-    },
-  };
-}
+//   return {
+//     props: {
+//       // requests,
+//       championList,
+//     },
+//   };
+// }

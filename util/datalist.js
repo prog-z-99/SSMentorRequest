@@ -26,7 +26,7 @@ export const regions = [
   "Garena",
 ];
 
-export const userType = ["user", "mentor", "admin", "god"];
+export const userType = ["user", "mentor", "admin"];
 
 export const userSelectCommand = (type) => `SET_${type.toUpperCase()}`;
 

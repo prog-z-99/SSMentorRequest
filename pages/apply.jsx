@@ -1,15 +1,17 @@
 import axios from "axios";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import Layout from "../components/layout";
 import Link from "next/link";
 import { useRouter } from "next/dist/client/router";
 import MentorForm from "../components/MentorForm";
 import { Button } from "@mantine/core";
+import { FormWrapper } from "../components/Styles";
 
 export default function Mentors() {
   const [content, setContent] = useState("");
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const router = useRouter();
 
   const handleOnClick = async () => {
@@ -35,6 +37,7 @@ export default function Mentors() {
         setContent(
           "request has already been sent. We'll get to it when we get to it"
         );
+        break;
     }
   };
 
@@ -47,12 +50,13 @@ export default function Mentors() {
 
   return (
     <Layout>
-      {/* <FormWrapper> */}
-      {/* <MentorForm /> */}
-      <Button onClick={handleOnClick}>Click here to apply for mentor</Button>
-      <br />
-      {content}
-      {/* </FormWrapper> */}
+      <FormWrapper>
+        {/* <MentorForm /> */}
+        <Button onClick={handleOnClick}>Click here to apply for mentor</Button>
+        <br />
+        <MentorForm />
+        {content}
+      </FormWrapper>
     </Layout>
   );
 }

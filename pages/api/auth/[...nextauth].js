@@ -1,15 +1,30 @@
 import NextAuth from "next-auth";
-import Providers from "next-auth/providers";
+import DiscordProvider from "next-auth/providers/discord";
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
 export default NextAuth({
   // https://next-auth.js.org/configuration/providers
   providers: [
-    Providers.Discord({
+    DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID,
       clientSecret: process.env.DISCORD_CLIENT_SECRET,
-      scope: "identify",
+      authorization: { params: { scope: "identify" } },
+      profile(profile) {
+        if (profile.avatar === null) {
+          const defaultAvatarNumber = parseInt(profile.discriminator) % 5;
+          profile.image_url = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNumber}.png`;
+        } else {
+          const format = profile.avatar.startsWith("a_") ? "gif" : "png";
+          profile.image_url = `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.${format}`;
+        }
+        return {
+          id: profile.id,
+          name: profile.username,
+          image: profile.image_url,
+          discriminator: profile.discriminator,
+        };
+      },
     }),
   ],
 
@@ -19,7 +34,7 @@ export default NextAuth({
     // Use JSON Web Tokens for session instead of database sessions.
     // This option can be used with or without a database for users/accounts.
     // Note: `jwt` is automatically set to `true` if no database is specified.
-    jwt: true,
+    strategy: "jwt",
 
     // Seconds - How long until an idle session expires and is no longer valid.
     // maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -62,27 +77,28 @@ export default NextAuth({
   // when an action is performed.
   // https://next-auth.js.org/configuration/callbacks
   callbacks: {
-    session: async (session, user) => {
-      session.user.discriminator = user.discriminator;
-      session.user.id = user.id;
-      return Promise.resolve(session);
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
     },
-    async jwt(token, user, account, profile, isNewUser) {
-      // Add access_token to the token right after signin
-
-      if (profile) {
-        token.id = profile.id;
-        token.discriminator = profile.discriminator;
+    async session({ session, token }) {
+      console.log("\n Session\n", token);
+      if (token) {
+        session.user.discriminator = token.discriminator;
+        session.user.id = token.id;
       }
-      if (account?.accessToken) {
-        token.accessToken = account.accessToken;
+      return session;
+    },
+    async jwt({ token, profile }) {
+      if (profile) {
+        token.discriminator = profile.discriminator;
+        token.id = profile.id;
       }
       return token;
     },
-    // async signIn(user, account, profile) { return true },
-    // async redirect(url, baseUrl) { return baseUrl },
-    // async session(session, user) { return session },
-    // async jwt(token, user, account, profile, isNewUser) { return token }
   },
 
   // Events are useful for logging

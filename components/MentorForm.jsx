@@ -5,6 +5,7 @@ import { ranks, regions, roles } from "../util/datalist";
 import { FormSelect, FormTextField, StyledForm } from "./Styles";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { Textarea } from "@mantine/core";
 
 const FormEnhancer = withFormik({
   validationSchema: Yup.object().shape({
@@ -59,13 +60,6 @@ const MentorRequestForm = (props) => {
   return (
     <StyledForm onSubmit={handleSubmit}>
       <FormSelect
-        title="Rank"
-        name="rank"
-        options={ranks}
-        onChange={onChange}
-        error={errors.rank}
-      />
-      <FormSelect
         title="Region"
         name="region"
         options={regions}
@@ -88,14 +82,21 @@ const MentorRequestForm = (props) => {
         onChange={onChange}
         error={errors.role}
       />
-      <FormTextField
-        title="Champions"
-        id="champions"
-        placeholder="Champions"
-        value={values.champions}
-        onChange={handleChange}
+      <MultiSelect
+        label={"Champions"}
+        data={championList}
+        error={errors.champions}
+        searchable
+        onChange={(e) => onChange(e, "champions")}
+      />
+      <Textarea
+        label="What made you want to apply as a mentor?"
+        id="appReason"
+        value={values.appReason}
+        error={errors.appReason}
         onBlur={handleBlur}
       />
+
       <FormSelect
         title="Timezone"
         name="timezone"

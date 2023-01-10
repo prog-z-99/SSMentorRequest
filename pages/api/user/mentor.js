@@ -5,6 +5,7 @@ export default async (req, res) => {
     case "POST": {
       const response = await tryRegisterMentor(req.body);
       res.status(200).send(response);
+      break;
     }
     case "EDIT": {
       const response = await editUser(req.body);

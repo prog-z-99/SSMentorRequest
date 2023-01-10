@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import Layout from "../components/layout";
 import Terms, { Pending } from "../components/Terms";
 import { FormWrapper } from "../components/Styles";
@@ -11,7 +11,8 @@ import { getAllChampions } from "../util/helper";
 export default function Page({ championList }) {
   const [terms, setTerms] = useState(false);
   const [content, setContent] = useState(null);
-  const [session, loading] = useSession();
+  const { data: session, status } = useSession();
+  const loading = status === "loading";
   const [requestPending, setRequestPending] = useState(false);
 
   async function sendMentorRequest(values) {
@@ -30,13 +31,15 @@ export default function Page({ championList }) {
 
   const router = useRouter();
 
-  useEffect(async () => {
-    if (!loading)
-      if (!session) {
-        router.push("/api/auth/signin");
-      } else {
-        setRequestPending((await axios.post("/api/request", session)).data);
-      }
+  useEffect(() => {
+    async function waitForLogin() {
+      if (!loading)
+        if (!session) {
+          router.push("/api/auth/signin");
+        } else {
+          setRequestPending((await axios.post("/api/request", session)).data);
+        }
+    }
   }, [loading]);
 
   useEffect(() => {

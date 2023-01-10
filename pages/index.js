@@ -123,7 +123,6 @@ export default function Home() {
           align-items: center;
           justify-content: center;
           flex-wrap: wrap;
-          max-width: 800px;
           margin-top: 3rem;
         }
 
@@ -170,18 +169,3 @@ export default function Home() {
     </div>
   );
 }
-
-// export async function getServerSideProps(context) {
-//   // const { client, db } = await connectToDatabase();
-
-//   // const requests = await db.collection("requests").find({}).toArray();
-
-//   // console.log(requests);
-
-//   // const isConnected = await db.isConnected();
-//   // const requests = await db.collection("requests").find({});
-
-//   return {
-//     props: {},
-//   };
-// }

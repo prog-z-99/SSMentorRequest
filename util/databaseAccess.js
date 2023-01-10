@@ -4,7 +4,6 @@ import User from "../models/userModel";
 import { isMentor } from "./helper";
 import mongoose from "mongoose";
 import { ObjectID } from "mongodb";
-import dayjs from "dayjs";
 
 connectToDatabase();
 
@@ -38,6 +37,7 @@ export async function testRequest() {
 export async function getAllRequests() {
   const now = new Date();
   const threeMonthsAgo = new Date(now.setMonth(now.getMonth() - 3));
+  const yearAgo = new Date(now.setMonth(now.getMonth() - 9));
   const requests = await Request.find({
     archived: { $ne: true },
     $or: [
@@ -53,7 +53,12 @@ export async function getAllRequests() {
         $and: [
           { status: "Problem" },
           {
-            createdAt: { $gte: threeMonthsAgo },
+            $or: [
+              {
+                completed: { $gte: threeMonthsAgo },
+                createdAt: { $gte: yearAgo },
+              },
+            ],
           },
         ],
       },
@@ -68,20 +73,24 @@ export async function getAllRequests() {
 }
 
 export async function getAllMentors() {
-  return await User.find().then((mentors) =>
-    mentors.map((mentor) => ({
-      discordId: mentor.discordId,
-      discordName: mentor.discordName,
-      _id: mentor._id.toString(),
-      userType: mentor.userType,
-    }))
+  return await User.find({ userType: { $nin: ["god", "admin"] } }).then(
+    (mentors) => userCleaner(mentors)
   );
 }
 
-export async function getMentorRequests(userId) {
-  return await Request.find({ mentor: mongoose.Types.ObjectId(userId) })
+export async function getAllUsers() {
+  return await User.find().then((mentors) => userCleaner(mentors));
+}
+
+export async function getMentorRequests(discordId) {
+  const mentor = await User.find({ discordId });
+  const requests = await Request.find({
+    mentor: mongoose.Types.ObjectId(userId),
+  })
     .sort({ completed: -1 })
     .then((items) => cleaner(items));
+
+  return { mentor, requests };
 }
 
 export async function isRequestPending(session) {
@@ -150,6 +159,7 @@ export async function editUser(body) {
 
 export async function changeRequest(body) {
   const { user } = body.session;
+  const now = new Date();
 
   const request = await Request.findOne({ _id: body.id });
   const mentor = await User.findOne({
@@ -176,7 +186,7 @@ export async function changeRequest(body) {
 
       switch (body.value) {
         case "In-Progress":
-          request.accepted = new Date();
+          request.accepted = now;
           break;
         case "Not Accepted":
           request.mentor = null;
@@ -184,10 +194,13 @@ export async function changeRequest(body) {
           request.completed = null;
           break;
         case "Completed":
-          request.completed = new Date();
+          request.completed = now;
           break;
         case "Problem":
-          request.completed = new Date();
+          if (!request.accepted) {
+            request.accepted = now;
+          }
+          request.completed = now;
           break;
       }
       break;
@@ -222,6 +235,15 @@ export async function createRequest(body) {
   });
 
   return await request.save();
+}
+
+function userCleaner(mentors) {
+  return mentors.map((mentor) => ({
+    discordId: mentor.discordId,
+    discordName: mentor.discordName,
+    _id: mentor._id.toString(),
+    userType: mentor.userType,
+  }));
 }
 
 function cleaner(items) {
