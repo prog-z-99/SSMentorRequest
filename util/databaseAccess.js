@@ -4,7 +4,9 @@ import MentorApp from "../models/mentorAppModel";
 import User from "../models/userModel";
 import { checkAdmin, checkMentor, checkReviewer } from "./helper";
 import { ObjectId } from "mongodb";
+import mongoose from "mongoose";
 
+mongoose.set("strictQuery", false);
 connectToDatabase();
 
 export async function testRequest() {
@@ -62,7 +64,7 @@ export async function getAllMentors() {
   const mentors = await User.find({
     $or: [{ userType: "mentor" }, { isMentor: true }],
   })
-    .sort({ discordId: 1 })
+    .sort({ discordName: 1 })
     .lean();
 
   return cleaner(mentors);
@@ -75,7 +77,7 @@ export async function getMentorDetails(id) {
 }
 
 export async function getAllUsers() {
-  const users = await User.find();
+  const users = await User.find().sort({ discordName: 1 });
   const newUsers = await Promise.all(
     users.map(async (mentor) => {
       const lastTaken = (

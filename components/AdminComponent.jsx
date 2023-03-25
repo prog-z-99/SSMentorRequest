@@ -35,11 +35,13 @@ export const AdminComponent = ({ mentors }) => {
               </td>
               <td>
                 {mentor.lastCompleted
-                  ? dayjs(mentor.lastCompleted).format("L")
+                  ? dayjs(mentor.lastCompleted).format("DD / MMM / YYYY")
                   : ""}
               </td>
               <td>
-                {mentor.lastTaken ? dayjs(mentor.lastTaken).format("L") : ""}
+                {mentor.lastTaken
+                  ? dayjs(mentor.lastTaken).format("DD / MMM / YYYY")
+                  : ""}
               </td>
 
               <td>

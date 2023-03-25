@@ -20,7 +20,7 @@ export const RequestRow = ({ row, isAdmin }) => {
         <td>
           <Button onClick={() => setRowOpen((o) => !o)}>Details</Button>
         </td>
-        <td>{dayjs(row.createdAt).format("l")}</td>
+        <td>{dayjs(row.createdAt).format("DD/MMM/YYYY")}</td>
         <td
           onClick={() => {
             copyClip(row.discordName);
@@ -84,12 +84,16 @@ const Details = ({ item, isAdmin }) => {
       <Text>Notes: {item.info} </Text>
       {item.accepted && (
         <>
-          <Text>Accepted At: {dayjs(item.accepted).format("l")}</Text>
+          <Text>
+            Accepted At: {dayjs(item.accepted).format("DD / MMM / YYYY")}
+          </Text>
           <Text>Accepted Mentor: {item.mentor.discordName}</Text>
         </>
       )}
       {item.completed && (
-        <Text>Completed At: {dayjs(item.completed).format("l")}</Text>
+        <Text>
+          Completed At: {dayjs(item.completed).format("DD / MMM / YYYY")}
+        </Text>
       )}
       <ClickToCopy>Discord ID: {item.discordId}</ClickToCopy>
 
