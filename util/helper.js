@@ -9,7 +9,12 @@ export function checkAdmin(user) {
 
 export function checkMentor(user) {
   if (!user) return false;
-  return checkAdmin(user) || user.isMentor;
+  return user.isMentor;
+}
+
+export function checkStaff(user) {
+  if (!user) return false;
+  return checkAdmin(user) || checkMentor(user);
 }
 
 export function checkReviewer(user) {

@@ -2,7 +2,7 @@ import { connectToDatabase } from "./mongodb";
 import Request from "../models/requestModel";
 import MentorApp from "../models/mentorAppModel";
 import User from "../models/userModel";
-import { checkAdmin, checkMentor, checkReviewer } from "./helper";
+import { checkAdmin, checkReviewer, checkStaff } from "./helper";
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 
@@ -62,7 +62,7 @@ export async function getTypeRequests(type) {
 
 export async function getAllMentors() {
   const mentors = await User.find({
-    $or: [{ userType: "mentor" }, { isMentor: true }],
+    $or: [{ isMentor: true }],
   })
     .collation({ locale: "en" })
     .sort("discordName")
@@ -162,8 +162,8 @@ export async function isUserAdmin(id) {
   return checkAdmin(user);
 }
 
-export async function isUserMentor(id) {
-  return checkMentor(await getUserById(id));
+export async function isUserStaff(id) {
+  return checkStaff(await getUserById(id));
 }
 
 export async function isUserReviewer(id) {

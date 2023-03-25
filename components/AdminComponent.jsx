@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React from "react";
 import dayjs from "dayjs";
-import { Button, Select, Switch, Table } from "@mantine/core";
+import { Button, Select, Switch, Table, Text } from "@mantine/core";
 import { fullRanks, userSelectCommand } from "../util/datalist";
 import axios from "axios";
 import { MentorsWrapper } from "./Styles";
@@ -34,14 +34,30 @@ export const AdminComponent = ({ mentors }) => {
                 </Link>
               </td>
               <td>
-                {mentor.lastCompleted
-                  ? dayjs(mentor.lastCompleted).format("DD / MMM / YYYY")
-                  : ""}
+                {mentor.lastCompleted && (
+                  <Text
+                    color={
+                      dayjs(mentor.lastCompleted)
+                        .add(5, "months")
+                        .isBefore(dayjs()) && "red"
+                    }
+                  >
+                    {dayjs(mentor.lastCompleted).format("DD / MMM / YYYY")}
+                  </Text>
+                )}
               </td>
               <td>
-                {mentor.lastTaken
-                  ? dayjs(mentor.lastTaken).format("DD / MMM / YYYY")
-                  : ""}
+                {mentor.lastTaken && (
+                  <Text
+                    color={
+                      dayjs(mentor.lastTaken)
+                        .add(2, "months")
+                        .isBefore(dayjs()) && "red"
+                    }
+                  >
+                    {dayjs(mentor.lastTaken).format("DD / MMM / YYYY")}
+                  </Text>
+                )}
               </td>
 
               <td>

@@ -28,29 +28,11 @@ export const AppList = ({ apps, reviewerId }) => {
         </thead>
         <tbody>
           {apps?.map((app, i) => (
-            <>
-              <tr key={`TableRow${i * 2}`}>
-                <td>
-                  <Text td={app.processed && "line-through"}>
-                    {app.discordName}
-                  </Text>
-                </td>
-                <td>
-                  <ClickToCopy>{app.discordId}</ClickToCopy>
-                </td>
-                <td>{app.rank}</td>
-                <td>{app.yay?.length}</td>
-                <td>{app.nay?.length}</td>
-                <td>{app.meh?.length}</td>
-              </tr>
-              {!app.processed && (
-                <tr key={`TableRow${i * 2 + 1}`}>
-                  <td colSpan={6}>
-                    <AppDetails item={app} reviewerId={reviewerId} />
-                  </td>
-                </tr>
-              )}
-            </>
+            <AppRow
+              app={app}
+              key={`TableRow${i * 2}`}
+              reviewerId={reviewerId}
+            />
           ))}
         </tbody>
       </Table>
@@ -58,9 +40,35 @@ export const AppList = ({ apps, reviewerId }) => {
   );
 };
 
+const AppRow = ({ app, reviewerId }) => {
+  const [open, setOpen] = useState(!app.processed);
+  return (
+    <>
+      <tr onClick={() => setOpen(!open)}>
+        <td>
+          <Text td={app.processed && "line-through"}>{app.discordName}</Text>
+        </td>
+        <td>
+          <ClickToCopy>{app.discordId}</ClickToCopy>
+        </td>
+        <td>{app.rank}</td>
+        <td>{app.yay?.length}</td>
+        <td>{app.nay?.length}</td>
+        <td>{app.meh?.length}</td>
+      </tr>
+      {open && (
+        <tr>
+          <td colSpan={6}>
+            <AppDetails item={app} reviewerId={reviewerId} />
+          </td>
+        </tr>
+      )}
+    </>
+  );
+};
+
 const AppDetails = ({ item, reviewerId }) => {
-  console.log(item);
-  const { yay, nay, meh, discordId, discordName, region } = item;
+  const { yay, nay, meh, discordId, discordName, region, processed } = item;
   const value = useMemo(() => {
     if (yay.includes(reviewerId)) return "yay";
     if (nay.includes(reviewerId)) return "nay";
@@ -74,15 +82,17 @@ const AppDetails = ({ item, reviewerId }) => {
         setVote(e);
       });
   };
-  const handleCreate = () => {
+  const handleAccept = () => {
     axios
       .post("/api/user/mentor", {
-        discordId,
-        discordName,
-        mentorRegion: region,
+        user: { discordId, discordName, mentorRegion: region },
+        command: "ACCEPT",
       })
       .then(({ data }) => alert(data))
       .catch((error) => console.log(error));
+  };
+  const handleDeny = () => {
+    axios.post("api/user/mentor", { user: { discordId }, command: "DENY" });
   };
 
   return (
@@ -119,8 +129,11 @@ const AppDetails = ({ item, reviewerId }) => {
           </Radio.Group>
         </Grid.Col>
         <Grid.Col span={3}>
-          <Button onClick={handleCreate} disabled={yay < 4}>
+          <Button onClick={handleAccept} disabled={processed}>
             Add mentor
+          </Button>
+          <Button onClick={handleDeny} disabled={processed}>
+            Deny
           </Button>
         </Grid.Col>
       </Grid>

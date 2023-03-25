@@ -3,7 +3,7 @@ import {
   createRequest,
   getAllRequests,
   getTypeRequests,
-  isUserMentor,
+  isUserStaff,
 } from "../../util/databaseAccess";
 
 export default async (req, res) => {
@@ -12,11 +12,11 @@ export default async (req, res) => {
     res.status(403).send({ error: "what" });
     return;
   }
-  const fetchIsMentor = isUserMentor(token.sub);
+  const fetchIsStaff = isUserStaff(token.sub);
   try {
     switch (req.method) {
       case "GET": {
-        const isMentor = await fetchIsMentor;
+        const isMentor = await fetchIsStaff;
         if (!isMentor) throw "Not authorized";
 
         const requests = await getAllRequests();
@@ -24,7 +24,7 @@ export default async (req, res) => {
         break;
       }
       case "PUT": {
-        const isMentor = await fetchIsMentor;
+        const isMentor = await fetchIsStaff;
         if (!isMentor) throw "Not authorized";
 
         const requests = await getTypeRequests(req.body.type);

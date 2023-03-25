@@ -1,4 +1,9 @@
-import { editUser, deleteUser, getUserById } from "../../util/databaseAccess";
+import {
+  editUser,
+  deleteUser,
+  getUserById,
+  getAllUsers,
+} from "../../util/databaseAccess";
 import { checkAdmin } from "../../util/helper";
 import { getToken } from "next-auth/jwt";
 
@@ -16,7 +21,8 @@ export default async (req, res) => {
   }
   switch (req.method) {
     case "GET": {
-      res.status(200).send("Authenticated");
+      const response = await getAllUsers();
+      res.status(200).send(response);
       break;
     }
     case "PUT": {
