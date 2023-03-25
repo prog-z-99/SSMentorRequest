@@ -1,35 +1,37 @@
-import { useState, useEffect, React } from "react";
-import { useSession } from "next-auth/react";
-import axios from "axios";
+import { getToken } from "next-auth/jwt";
 import Layout from "../../../components/layout";
-import { useRouter } from "next/router";
-import { checkAdmin } from "../../../util/helper";
-import { getMenteeRequestsByDiscordId } from "../../../util/databaseAccess";
+import {
+  getMenteeRequestsByDiscordId,
+  isUserAdmin,
+} from "../../../util/databaseAccess";
+import React from "react";
 
-export default function MenteeById({ details: { mentor, requests } }) {
-  const router = useRouter();
-  const { data: session, status } = useSession();
-  const loading = status === "loading";
-  const [content, setContent] = useState("loading");
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!loading) {
-        if (!session) {
-          router.push("/api/auth/signin");
-        } else {
-          await axios.post("/api/user", session).then((response) => {
-            if (checkAdmin(response.data)) setContent();
-          });
-        }
-      }
-    };
-    fetchData();
-  }, [loading]);
-  return <Layout>{content}</Layout>;
+export default function MenteeById({ requests }) {
+  return <Layout>soon...</Layout>;
 }
 
-export async function getServerSideProps({ params }) {
+export async function getServerSideProps({ req, params }) {
   const requests = await getMenteeRequestsByDiscordId(params.id);
+  const token = await getToken({ req });
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/api/auth/signin",
+        permanent: false,
+      },
+    };
+  }
+
+  const user = await isUserAdmin(token.sub);
+
+  if (!user)
+    return {
+      redirect: {
+        destination: "/",
+      },
+    };
+
   return {
     props: { requests },
   };

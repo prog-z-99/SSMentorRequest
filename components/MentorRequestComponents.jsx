@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   // getStatusColor,
   Remarks,
@@ -64,11 +64,11 @@ export const RequestRow = ({ row, isAdmin }) => {
 const Details = ({ item, isAdmin }) => {
   const { _id } = item;
 
-  // const handleArchive = () => {
-  //   if (confirm("Are you sure you want to archive this request?")) {
-  //     axios.put("/api/request/change", { _id, type: "archive" });
-  //   } else console.log("not");
-  // };
+  const handleArchive = () => {
+    if (confirm("Are you sure you want to archive this request?")) {
+      axios.put("/api/request/change", { _id, type: "archive" });
+    } else console.log("not");
+  };
   const handleDelete = () => {
     if (confirm("Are you ABSOLUTELY sure you want to delete this request?")) {
       axios
@@ -94,14 +94,11 @@ const Details = ({ item, isAdmin }) => {
       <ClickToCopy>Discord ID: {item.discordId}</ClickToCopy>
 
       <Remarks id={_id} content={item.remarks} />
-
       <br />
-      {isAdmin && (
-        <>
-          {/* <Button onClick={handleArchive}>ARCHIVE THIS REQUEST</Button> */}
-          <Button onClick={handleDelete}>DELETE THIS REQUEST</Button>
-        </>
-      )}
+      <>
+        <Button onClick={handleArchive}>ARCHIVE THIS REQUEST</Button>
+        {isAdmin && <Button onClick={handleDelete}>DELETE THIS REQUEST</Button>}
+      </>
     </Container>
   );
 };
@@ -131,21 +128,21 @@ export const TableHeader = ({ header, setRequests, requests }) => {
   const { title, sorter } = header;
 
   const [asc, setAsc] = useState(false);
-  const ascSort = useMemo(
-    () => sortRequests({ requests, sorter, reverse: true }),
-    [sorter, requests]
-  );
-  const descSort = useMemo(
-    () => sortRequests({ requests, sorter, reverse: false }),
-    [sorter, requests]
-  );
+  // const ascSort = useMemo(
+  //   () => sortRequests({ requests, sorter, reverse: true }),
+  //   [sorter, requests]
+  // );
+  // const descSort = useMemo(
+  //   () => sortRequests({ requests, sorter, reverse: false }),
+  //   [sorter, requests]
+  // );
 
   if (!sorter) {
     return <th>{title}</th>;
   }
 
   const handleClick = () => {
-    setRequests(asc ? ascSort : descSort);
+    setRequests(sortRequests({ requests, sorter, reverse: asc }));
     setAsc(!asc);
   };
 

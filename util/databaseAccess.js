@@ -47,7 +47,6 @@ export async function getAllRequests() {
     // .limit(5)
     .sort({ createdAt: 1 })
     .lean();
-  // .then((items) => cleaner(items));
   return requests;
 }
 
@@ -56,14 +55,15 @@ export async function getTypeRequests(type) {
     .populate({ path: "mentor", model: "User", select: "discordName" })
     .sort({ createdAt: 1 })
     .lean();
-  // .then((items) => cleaner(items));
   return requests;
 }
 
 export async function getAllMentors() {
   const mentors = await User.find({
     $or: [{ userType: "mentor" }, { isMentor: true }],
-  }).lean();
+  })
+    .sort({ discordId: 1 })
+    .lean();
 
   return cleaner(mentors);
 }
@@ -127,7 +127,11 @@ export async function isRequestPending(id) {
 
   const request = temp[0];
 
-  if (request && (!request.completed || wasMonthAgo(request.completed))) {
+  if (
+    request &&
+    (!request.completed ||
+      (wasMonthAgo(request.completed) && !request.archived))
+  ) {
     return true;
   }
 

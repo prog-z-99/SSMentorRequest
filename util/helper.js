@@ -29,7 +29,7 @@ export async function getAllChampions() {
   );
   const latestVersion = versions.data[0];
   const request = await axios.get(
-    `http://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`
+    `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`
   );
   const tempList = [];
   for (let champion in request.data.data) {
