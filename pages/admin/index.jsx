@@ -1,35 +1,41 @@
-import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import axios from "axios";
+import { React } from "react";
 import Layout from "../../components/layout";
-import { useRouter } from "next/router";
-import { checkAdmin } from "../../util/helper";
-import { getAllMentors } from "../../util/databaseAccess";
+import { getAllUsers, isUserAdmin } from "../../util/databaseAccess";
 import { AdminComponent } from "../../components/AdminComponent";
+import { getToken } from "next-auth/jwt";
 
 export default function Admins({ mentors }) {
-  const router = useRouter();
-  const { data: session, status } = useSession();
-  const loading = status === "loading";
-  const [content, setContent] = useState("loading");
-  useEffect(async () => {
-    if (!loading)
-      if (!session) {
-        router.push("/api/auth/signin");
-      } else {
-        await axios.post("/api/user", session).then((response) => {
-          if (checkAdmin(response.data))
-            setContent(<AdminComponent mentors={mentors} />);
-          else router.push("/");
-        });
-      }
-  }, [loading]);
-  return <Layout>{content}</Layout>;
+  return (
+    <Layout>
+      <AdminComponent mentors={mentors} />
+    </Layout>
+  );
 }
 
-export async function getServerSideProps(context) {
-  // const requests = await getAllRequests();
-  const mentors = await getAllMentors();
+export async function getServerSideProps({ req }) {
+  const fetchMentors = getAllUsers();
+  const token = await getToken({ req });
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/api/auth/signin",
+        permanent: false,
+      },
+    };
+  }
+
+  const user = await isUserAdmin(token.sub);
+
+  if (!user)
+    return {
+      redirect: {
+        destination: "/",
+      },
+    };
+
+  const mentors = await fetchMentors;
+
   return {
     props: { mentors },
   };

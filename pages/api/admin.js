@@ -1,26 +1,31 @@
-import { getSessionUser, editUser } from "../../util/databaseAccess";
+import { editUser, deleteUser, getUserById } from "../../util/databaseAccess";
 import { checkAdmin } from "../../util/helper";
-import { getSession } from "next-auth/react";
+import { getToken } from "next-auth/jwt";
 
 export default async (req, res) => {
-  const session = await getSession({ req });
-  if (!session || req.body.user) {
-    res.status(403);
-    return;
-  }
-  const requester = await getSessionUser(session);
-  if (!checkAdmin(requester)) {
-    res.status(403);
-    return;
-  }
+  const token = await getToken({ req });
 
+  if (!token) {
+    res.status(403).send({ error: "what" });
+    return;
+  }
+  const requester = await getUserById(token.sub);
+  if (!checkAdmin(requester)) {
+    res.status(403).send({ error: "Not an admin" });
+    return;
+  }
   switch (req.method) {
-    // case "POST": {
-    //   const response = await tryRegisterMentor(req.body);
-    //   res.status(200).send(response);
-    // }
+    case "GET": {
+      res.status(200).send("Authenticated");
+      break;
+    }
     case "PUT": {
       const response = await editUser(req.body);
+      res.status(200).send(response);
+      break;
+    }
+    case "POST": {
+      const response = await deleteUser(req.body);
       res.status(200).send(response);
       break;
     }

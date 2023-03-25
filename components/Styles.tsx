@@ -1,14 +1,15 @@
 import { HoverCard, Select, TextInput, Text, Container } from "@mantine/core";
 import axios from "axios";
 import { Form } from "formik";
-import { useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
-export const PageWrappaer = styled.div`
+export const PageWrapper = styled.div`
   display: flex;
   position: relative;
   flex-direction: column;
-  width: 100%;
+  min-height: 100vh;
+  margin: 10px;
 `;
 
 export const FormWrapper = styled(Container)`
@@ -18,17 +19,18 @@ export const FormWrapper = styled(Container)`
   flex-direction: column;
 `;
 
+export const MentorsWrapper = styled.div`
+  flex-direction: column;
+  fill: 100%;
+`;
+
 export const StyledForm = styled(Form)`
   display: grid;
   grid-template-columns: 1fr;
   grid-row-gap: 1em;
 `;
 
-const FieldWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-`;
+const FieldWrapper = styled.div``;
 
 const FieldInput = styled.input`
   height: 2em;
@@ -38,7 +40,7 @@ export const ReqTableRow = styled.div`
   flex-direction: column;
 `;
 
-export const FormSelect: React.FC<any> = ({
+export const FormSelect = ({
   title,
   name,
   options,
@@ -47,33 +49,18 @@ export const FormSelect: React.FC<any> = ({
   value,
 }) => {
   return (
-    <FieldWrapper>
-      {/* <FieldTitle>{title}</FieldTitle> */}
-      <Select
-        label={title}
-        error={error}
-        value={value}
-        data={formatter(options)}
-        onChange={(e) => onChange(e, name)}
-      />
-      {/* <ErrorText>{error}</ErrorText> */}
-    </FieldWrapper>
+    <Select
+      label={title}
+      error={error}
+      value={value}
+      data={formatter(options)}
+      onChange={(e) => onChange(e, name)}
+    />
   );
 };
 
-export const FormTextField: React.FC<any> = ({
-  title,
-  errorText,
-  error,
-  ...props
-}) => {
-  return (
-    <FieldWrapper>
-      {/* <FieldTitle>{title}</FieldTitle> */}
-      <TextInput type="text" label={title} error={error} {...props} />
-      {/* <ErrorText>{errorText}</ErrorText> */}
-    </FieldWrapper>
-  );
+export const FormTextField = ({ title, ...props }) => {
+  return <TextInput label={title} {...props} />;
 };
 
 export const formatter = (list) => {
@@ -140,18 +127,16 @@ export const Tooltip = styled.p`
   left: 105%;
 `;
 
-export const Remarks: React.FC<any> = ({ id, content, session }) => {
+export const Remarks = ({ id, content }) => {
   const [input, setInput] = useState(false);
   const [value, setValue] = useState(content);
   const handleType = ({ target: { value } }) => {
     setValue(value);
   };
   const handleSubmit = async () => {
-    await axios.put("/api/request/change", {
-      id,
+    await axios.put(`/api/request/${id}`, {
       value,
       type: "remarks",
-      session,
     });
     setInput(false);
   };

@@ -1,10 +1,7 @@
 import NextAuth from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
-// For more information on each option (and a full list of options) go to
-// https://next-auth.js.org/configuration/options
 export default NextAuth({
-  // https://next-auth.js.org/configuration/providers
   providers: [
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID,
@@ -23,48 +20,16 @@ export default NextAuth({
           name: profile.username,
           image: profile.image_url,
           discriminator: profile.discriminator,
+          email: null,
         };
       },
     }),
   ],
 
-  secret: process.env.SECRET,
-
   session: {
-    // Use JSON Web Tokens for session instead of database sessions.
-    // This option can be used with or without a database for users/accounts.
-    // Note: `jwt` is automatically set to `true` if no database is specified.
     strategy: "jwt",
-
-    // Seconds - How long until an idle session expires and is no longer valid.
-    // maxAge: 30 * 24 * 60 * 60, // 30 days
-
-    // Seconds - Throttle how frequently to write to database to extend a session.
-    // Use it to limit write operations. Set to 0 to always update the database.
-    // Note: This option is ignored if using JSON Web Tokens
-    // updateAge: 24 * 60 * 60, // 24 hours
   },
 
-  // JSON Web tokens are only used for sessions if the `jwt: true` session
-  // option is set - or by default if no database is specified.
-  // https://next-auth.js.org/configuration/options#jwt
-  jwt: {
-    // A secret to use for key generation (you should set this explicitly)
-    // secret: 'INp8IvdIyeMcoGAgFGoA61DdBglwwSqnXJZkgz8PSnw',
-    secret: process.env.SECRET,
-    // Set to true to use encryption (default: false)
-    // encryption: true,
-    // You can define your own encode/decode functions for signing and encryption
-    // if you want to override the default behaviour.
-    // encode: async ({ secret, token, maxAge }) => {},
-    // decode: async ({ secret, token, maxAge }) => {},
-  },
-
-  // You can define custom pages to override the built-in ones. These will be regular Next.js pages
-  // so ensure that they are placed outside of the '/api' folder, e.g. signIn: '/auth/mycustom-signin'
-  // The routes shown here are the default URLs that will be used when a custom
-  // pages is not specified for that route.
-  // https://next-auth.js.org/configuration/pages
   pages: {
     // signIn: '/auth/signin',  // Displays signin buttons
     // signOut: '/auth/signout', // Displays form with sign out button
@@ -73,42 +38,22 @@ export default NextAuth({
     // newUser: null // If set, new users will be directed here on first sign in
   },
 
-  // Callbacks are asynchronous functions you can use to control what happens
-  // when an action is performed.
-  // https://next-auth.js.org/configuration/callbacks
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
-    },
-    async session({ session, token }) {
-      console.log("\n Session\n", token);
+    session: async ({ session, token }) => {
       if (token) {
         session.user.discriminator = token.discriminator;
-        session.user.id = token.id;
+        session.user.id = token.sub;
+        session.user.email = null;
       }
       return session;
     },
-    async jwt({ token, profile }) {
+    jwt: async ({ token, profile }) => {
       if (profile) {
         token.discriminator = profile.discriminator;
-        token.id = profile.id;
       }
       return token;
     },
   },
 
-  // Events are useful for logging
-  // https://next-auth.js.org/configuration/events
-  events: {},
-
-  // You can set the theme to 'light', 'dark' or use 'auto' to default to the
-  // whatever prefers-color-scheme is set to in the browser. Default is 'auto'
   theme: "auto",
-
-  // Enable debug messages in the console if you are having problems
-  debug: false,
 });

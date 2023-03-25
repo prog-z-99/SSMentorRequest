@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { userType } from "../util/datalist";
+import { regions } from "../util/datalist";
 
 const userSchema = mongoose.Schema(
   {
@@ -14,10 +14,8 @@ const userSchema = mongoose.Schema(
     },
     userType: {
       type: String,
-      enum: userType,
-      default: "user",
     },
-    isMentorReviewer: {
+    isReviewer: {
       type: Boolean,
       default: false,
     },
@@ -28,6 +26,25 @@ const userSchema = mongoose.Schema(
     isAdmin: {
       type: Boolean,
       default: false,
+    },
+    isTrial: {
+      type: Boolean,
+      default: false,
+    },
+    bestChampions: {
+      type: [String],
+      default: [],
+    },
+    preferredRoles: {
+      type: [String],
+      default: [],
+    },
+    peakRank: {
+      type: String,
+    },
+    mentorRegion: {
+      type: String,
+      enum: regions,
     },
   },
   {

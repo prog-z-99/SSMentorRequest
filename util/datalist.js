@@ -10,6 +10,18 @@ export const ranks = [
   "Challenger",
 ];
 
+export const fullRanks = () => {
+  const newRanks = [];
+  ranks.map((rank, i) => {
+    if (i < 6) {
+      for (let i = 4; i > 0; i--) {
+        newRanks.push(`${rank} ${i}`);
+      }
+    } else newRanks.push(rank);
+  });
+  return newRanks;
+};
+
 export const statuses = ["Not Accepted", "In-Progress", "Completed", "Problem"];
 
 export const regions = [
@@ -92,4 +104,25 @@ export const rtFields = [
 export const requestTableFormat = rtTitles.map((t, i) => ({
   title: t,
   field: rtFields[i],
+}));
+
+const mentorFormValues = [
+  "What made you want to apply as a mentor?",
+  "Describe the win conditions of your main champion, or any champion of your choosing. The more detail, the better!",
+  "Choose what you believe to be the worst matchup for the champ you chose above, and describe how you would play that matchup. The more detail, the better!",
+  "A user in an educational chat is adamant about a certain aspect to your champ, and you believe it is wrong. It could be the build, the playstyle, or something else. How do you go about explaining to them it is incorrect?",
+  "Do you have mentoring or coaching experience? If so, please describe it. (Links to content you have produced are also acceptable)",
+];
+
+const mentorFormFields = [
+  "appReason",
+  "winConEx",
+  "loseMatchupEx",
+  "rebuttalEx",
+  "experience",
+];
+
+export const mentorFormQuestions = mentorFormValues.map((v, i) => ({
+  field: mentorFormFields[i],
+  title: v,
 }));

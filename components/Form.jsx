@@ -14,8 +14,8 @@ const FormEnhancer = withFormik({
     role: Yup.string().required("Please select your role"),
     region: Yup.string().required("Please select your region"),
     timezone: Yup.string().required("Please select your timezone"),
+    champions: Yup.array().min(1, "Please select at least one champion"),
   }),
-  handleSubmit: () => {},
   validateOnMount: true,
 });
 
@@ -36,11 +36,23 @@ const MentorRequestForm = (props) => {
     handleBlur,
     setFieldValue,
     championList,
-    sendMentorRequest,
   } = props;
 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  async function sendMentorRequest(values) {
+    await axios
+      .post("/api/request", values)
+      .then(() => {
+        alert("Request has been sent!");
+        router.push("/");
+      })
+      .catch(() => {
+        alert(
+          "Error. Please check your form. If this issue persists, please contact the Mod team"
+        );
+      });
+  }
   const handleSubmit = async () => {
     setLoading(true);
     if (isValid) {
@@ -76,6 +88,7 @@ const MentorRequestForm = (props) => {
       <FormTextField
         title="Summoner name"
         id="summonerName"
+        placeholder="Only put in your main account"
         value={values.summonerName}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -110,7 +123,7 @@ const MentorRequestForm = (props) => {
         onBlur={handleBlur}
       />
 
-      <Button onClick={handleSubmit} disabled={loading}>
+      <Button onClick={handleSubmit} disabled={loading || !isValid}>
         Send Request
       </Button>
     </StyledForm>

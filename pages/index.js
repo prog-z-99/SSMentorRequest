@@ -1,11 +1,12 @@
 import Head from "next/head";
 import Link from "next/link";
+import React from "react";
 
 export default function Home() {
   return (
     <div className="container">
       <Head>
-        <title>SS Mentor</title>
+        <title>Summoner School Mentor Requests</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -18,38 +19,27 @@ export default function Home() {
 
         <div className="grid">
           <Link href="/request">
-            <a className="card">
+            <div className="card">
               <h3>Make a new request &rarr;</h3>
               <p>Fill out a new mentor request</p>
-            </a>
+            </div>
           </Link>
-
-          {/* <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className="card"
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="card"
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a> */}
+          <Link href="/apply">
+            <div className="card">
+              <h3>Apply to become mentor &rarr;</h3>
+              <p>Join the Summoner School team</p>
+            </div>
+          </Link>
+          <Link href="/mentors">
+            <div className="card">
+              <h3>Mentor list &rarr;</h3>
+              <p>See the mentoring team</p>
+            </div>
+          </Link>
         </div>
       </main>
 
-      <style jsx>{`
+      <style>{`
         .container {
           min-height: 100vh;
           padding: 0 0.5rem;
@@ -60,7 +50,7 @@ export default function Home() {
         }
 
         main {
-          padding: 5rem 0;
+          /* padding: 5rem 0; */
           flex: 1;
           display: flex;
           flex-direction: column;
@@ -159,12 +149,7 @@ export default function Home() {
           height: 1em;
         }
 
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
-            flex-direction: column;
-          }
-        }
+        
       `}</style>
     </div>
   );

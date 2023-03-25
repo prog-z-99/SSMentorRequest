@@ -1,11 +1,20 @@
 import axios from "axios";
 
+let championList;
+
 export function checkAdmin(user) {
-  return user.userType == "admin" || user.userType == "god" || user.isAdmin;
+  // console.log("checkAdmin: ", user);
+  if (!user) return false;
+  return user.isAdmin || user?.userType == "admin";
 }
 
-export function isMentor(user) {
-  return checkAdmin(user) || user.userType == "mentor" || user.isMentor;
+export function checkMentor(user) {
+  if (!user) return false;
+  return checkAdmin(user) || user.isMentor || user?.userType == "mentor";
+}
+
+export function checkReviewer(user) {
+  return user?.isReviewer;
 }
 
 export function copyClip(text) {
@@ -13,6 +22,8 @@ export function copyClip(text) {
 }
 
 export async function getAllChampions() {
+  if (championList) return championList;
+
   const versions = await axios.get(
     "https://ddragon.leagueoflegends.com/api/versions.json"
   );
@@ -20,10 +31,11 @@ export async function getAllChampions() {
   const request = await axios.get(
     `http://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`
   );
-  const championList = [];
+  const tempList = [];
   for (let champion in request.data.data) {
-    championList.push(request.data.data[champion].name);
+    tempList.push(request.data.data[champion].name);
   }
-  championList.sort();
-  return championList;
+  tempList.sort();
+  championList = tempList;
+  return tempList;
 }

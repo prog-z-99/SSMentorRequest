@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ranks, regions } from "../util/datalist";
+import { regions } from "../util/datalist";
 
 const MentorAppSchema = mongoose.Schema(
   {
@@ -20,14 +20,16 @@ const MentorAppSchema = mongoose.Schema(
       enum: regions,
     },
     rank: {
-      type: string,
-      default: "Iron",
-      enum: ranks,
+      type: String,
+      default: "Iron 4",
     },
     appReason: {
       type: String,
     },
-    matchupEx: {
+    winConEx: {
+      type: String,
+    },
+    loseMatchupEx: {
       type: String,
     },
     rebuttalEx: {
@@ -35,6 +37,22 @@ const MentorAppSchema = mongoose.Schema(
     },
     experience: {
       type: String,
+    },
+    yay: {
+      type: [String],
+      default: [],
+    },
+    nay: {
+      type: [String],
+      default: [],
+    },
+    meh: {
+      type: [String],
+      default: [],
+    },
+    processed: {
+      type: Boolean,
+      default: false,
     },
   },
   {

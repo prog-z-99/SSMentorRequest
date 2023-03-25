@@ -1,45 +1,47 @@
-import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import axios from "axios";
+import { React } from "react";
 import Layout from "../../../components/layout";
-import { useRouter } from "next/router";
-import { checkAdmin } from "../../../util/helper";
-import { getMentorRequests, getAllMentors } from "../../../util/databaseAccess";
+import {
+  getMentorRequests,
+  getUserById,
+  isUserAdmin,
+} from "../../../util/databaseAccess";
 import { MentorDetails } from "../../../components/AdminComponent";
+import { getToken } from "next-auth/jwt";
 
-export default function MentorById({ details }) {
-  const router = useRouter();
-  const { data: session, status } = useSession()
-const loading = status === "loading";
-  const [content, setContent] = useState("loading");
-  useEffect(async () => {
-    if (!loading)
-      if (!session) {
-        router.push("/api/auth/signin");
-      } else {
-        await axios.post("/api/user", session).then((response) => {
-          if (checkAdmin(response.data))
-            setContent(<MentorDetails props={...details} />);
-        });
-      }
-  }, [loading]);
-  return <Layout>{content}</Layout>;
+export default function MentorById({ mentor, requests }) {
+  return (
+    <Layout>
+      <MentorDetails mentor={mentor} requests={requests} />
+    </Layout>
+  );
 }
 
-export async function getServerSideProps({ params }) {
-  const details = await getMentorRequests(params.id);
+export async function getServerSideProps({ params, req }) {
+  const fetchMentor = getUserById(params.id);
+  const token = await getToken({ req });
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/api/auth/signin",
+        permanent: false,
+      },
+    };
+  }
+
+  const user = await isUserAdmin(token.sub);
+  const mentor = await fetchMentor;
+
+  if (!user || !mentor)
+    return {
+      redirect: {
+        destination: "/",
+      },
+    };
+
+  const requests = await getMentorRequests(mentor._id);
+
   return {
-    props: { details },
+    props: { mentor, requests },
   };
 }
-
-// export async function getStaticPaths() {
-//   const mentors = await getAllMentors();
-
-//   const paths = mentors.map((mentor) => ({ params: { id: mentor._id } }));
-
-//   return {
-//     paths,
-//     fallback: "blocking",
-//   };
-// }

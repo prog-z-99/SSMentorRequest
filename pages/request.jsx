@@ -1,58 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import React, { useState } from "react";
 import Layout from "../components/layout";
 import Terms, { Pending } from "../components/Terms";
 import { FormWrapper } from "../components/Styles";
-import axios from "axios";
 import Form from "../components/Form";
-import { useRouter } from "next/router";
 import { getAllChampions } from "../util/helper";
+import { getToken } from "next-auth/jwt";
+import { isRequestPending } from "../util/databaseAccess";
 
-export default function Page({ championList }) {
+export default function Page({ championList, pending }) {
   const [terms, setTerms] = useState(false);
-  const [content, setContent] = useState(null);
-  const { data: session, status } = useSession();
-  const loading = status === "loading";
-  const [requestPending, setRequestPending] = useState(false);
+  let content = <Terms setTerms={setTerms} />;
 
-  async function sendMentorRequest(values) {
-    await axios
-      .post("/api/request/create", { session, values })
-      .then(() => {
-        alert("Request has been sent!");
-        router.push("/");
-      })
-      .catch((error) => {
-        alert(
-          "Error. Please check your form. If this issue persists, please contact the Mod team"
-        );
-      });
-  }
-
-  const router = useRouter();
-
-  useEffect(() => {
-    async function waitForLogin() {
-      if (!loading)
-        if (!session) {
-          router.push("/api/auth/signin");
-        } else {
-          setRequestPending((await axios.post("/api/request", session)).data);
-        }
-    }
-  }, [loading]);
-
-  useEffect(() => {
-    if (requestPending) setContent(<Pending />);
-    else if (!terms) setContent(<Terms setTerms={setTerms} />);
-    else
-      setContent(
-        <Form
-          championList={championList}
-          sendMentorRequest={sendMentorRequest}
-        />
-      );
-  }, [requestPending, terms]);
+  if (pending) content = <Pending />;
+  if (terms) content = <Form championList={championList} />;
 
   return (
     <Layout>
@@ -64,8 +24,18 @@ export default function Page({ championList }) {
   );
 }
 
-export async function getStaticProps(context) {
-  const championList = await getAllChampions();
-
-  return { props: { championList } };
+export async function getServerSideProps({ req }) {
+  const fetchChampionList = getAllChampions();
+  const token = await getToken({ req });
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/api/auth/signin",
+        permanent: false,
+      },
+    };
+  }
+  const pending = await isRequestPending(token.sub);
+  const championList = await fetchChampionList;
+  return { props: { championList, pending } };
 }

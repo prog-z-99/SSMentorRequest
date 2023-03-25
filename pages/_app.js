@@ -1,8 +1,9 @@
 import { MantineProvider } from "@mantine/core";
 import { SessionProvider } from "next-auth/react";
+import React from "react";
 import "./styles.css";
 import dayjs from "dayjs";
-var localizedFormat = require("dayjs/plugin/localizedFormat");
+import localizedFormat from "dayjs/plugin/localizedFormat";
 dayjs.extend(localizedFormat);
 
 // Use the <Provider> to improve performance and allow components that call
@@ -10,7 +11,7 @@ dayjs.extend(localizedFormat);
 export default function App({ Component, pageProps }) {
   return (
     <SessionProvider refetchInterval={5 * 60} session={pageProps.session}>
-      <MantineProvider>
+      <MantineProvider withNormalizeCSS withGlobalStyles>
         <Component {...pageProps} />
       </MantineProvider>
     </SessionProvider>
