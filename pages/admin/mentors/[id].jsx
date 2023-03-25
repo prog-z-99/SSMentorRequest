@@ -5,13 +5,15 @@ import {
   getUserById,
   isUserAdmin,
 } from "../../../util/databaseAccess";
-import { MentorDetails } from "../../../components/AdminComponent";
 import { getToken } from "next-auth/jwt";
+import { MentorRequestTable } from "../../../components/MentorRequestComponents";
 
 export default function MentorById({ mentor, requests }) {
   return (
     <Layout>
-      <MentorDetails mentor={mentor} requests={requests} />
+      {mentor.discordName}
+      <MentorRequestTable requests={requests} />
+      {/* <MentorDetails mentor={mentor} requests={requests} /> */}
     </Layout>
   );
 }

@@ -7,9 +7,33 @@ import {
 } from "./Styles";
 import dayjs from "dayjs";
 import { copyClip } from "../util/helper";
-import { Button, Container, Select, Text } from "@mantine/core";
+import { Table, Button, Container, Select, Text } from "@mantine/core";
 import axios from "axios";
-import { statuses } from "../util/datalist";
+import { statuses, rtHeader } from "../util/datalist";
+
+export const MentorRequestTable = ({ requests, isAdmin, setRequests }) => {
+  return (
+    <Table highlightOnHover striped>
+      <thead>
+        <tr>
+          {rtHeader.map((header, i) => (
+            <TableHeader
+              header={header}
+              requests={requests}
+              setRequests={setRequests}
+              key={`tableHeader${i}`}
+            />
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {requests.map((row) => (
+          <RequestRow row={row} key={`TableRow${row._id}`} isAdmin={isAdmin} />
+        ))}
+      </tbody>
+    </Table>
+  );
+};
 
 export const RequestRow = ({ row, isAdmin }) => {
   const [rowOpen, setRowOpen] = useState(false);
@@ -152,7 +176,9 @@ export const TableHeader = ({ header, setRequests, requests }) => {
 
   return (
     <th>
-      <Button onClick={() => handleClick()}>{header.title}</Button>
+      <Button onClick={() => handleClick()} disabled={!setRequests}>
+        {header.title}
+      </Button>
     </th>
   );
 };

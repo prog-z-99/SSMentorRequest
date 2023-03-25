@@ -3,14 +3,13 @@ import axios from "axios";
 let championList;
 
 export function checkAdmin(user) {
-  // console.log("checkAdmin: ", user);
   if (!user) return false;
-  return user.isAdmin || user?.userType == "admin";
+  return user.isAdmin;
 }
 
 export function checkMentor(user) {
   if (!user) return false;
-  return checkAdmin(user) || user.isMentor || user?.userType == "mentor";
+  return checkAdmin(user) || user.isMentor;
 }
 
 export function checkReviewer(user) {

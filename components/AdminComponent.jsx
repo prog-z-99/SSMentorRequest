@@ -138,36 +138,36 @@ const UserTypeUpdate = ({ user, type, defChecked }) => {
 //   );
 // };
 
-export const MentorDetails = ({ mentor, requests }) => {
-  return (
-    <MentorsWrapper>
-      {mentor.discordName}
-      <Table striped>
-        <thead>
-          <tr>
-            <th>Request Status</th>
-            <th>Accepted Date</th>
-            <th>Completed Date</th>
-            <th>Mentee tag</th>
-            <th>Mentee ID</th>
-            <th>Remark</th>
-          </tr>
-        </thead>
-        <tbody>
-          {requests?.map((request, i) => (
-            <tr key={`TableRow${i}`}>
-              <td>{request.status}</td>
-              <td>{dayjs(request.accepted).format("L")}</td>
-              <td>
-                {request.completed ? dayjs(request.completed).format("L") : ""}
-              </td>
-              <td>{request.discordName}</td>
-              <td>{request.discordId}</td>
-              <td>{request.remarks}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </MentorsWrapper>
-  );
-};
+// export const MentorDetails = ({ mentor, requests }) => {
+//   return (
+//     <MentorsWrapper>
+//       {mentor.discordName}
+//       <Table striped>
+//         <thead>
+//           <tr>
+//             <th>Request Status</th>
+//             <th>Accepted Date</th>
+//             <th>Completed Date</th>
+//             <th>Mentee tag</th>
+//             <th>Mentee ID</th>
+//             <th>Remark</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {requests?.map((request, i) => (
+//             <tr key={`TableRow${i}`}>
+//               <td>{request.status}</td>
+//               <td>{dayjs(request.accepted).format("L")}</td>
+//               <td>
+//                 {request.completed ? dayjs(request.completed).format("L") : ""}
+//               </td>
+//               <td>{request.discordName}</td>
+//               <td>{request.discordId}</td>
+//               <td>{request.remarks}</td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </Table>
+//     </MentorsWrapper>
+//   );
+// };

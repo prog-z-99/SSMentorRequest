@@ -1,21 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
 import Layout from "../../components/layout";
-import { Table, Text, Tabs } from "@mantine/core";
-import { rtHeader } from "../../util/datalist";
+import { Text, Tabs } from "@mantine/core";
 import axios from "axios";
 import { checkAdmin, checkMentor } from "../../util/helper";
 import { getToken } from "next-auth/jwt";
 import { getUserById } from "../../util/databaseAccess";
-import {
-  RequestRow,
-  TableHeader,
-} from "../../components/MentorRequestComponents";
+import { MentorRequestTable } from "../../components/MentorRequestComponents";
 
 //TODO use useTransition for cleaner updates
 
 export default function Mentors({ isAdmin }) {
-  const { data: session } = useSession();
   const [requests, setRequests] = useState([]);
   const [requestsPile, setRequestsPile] = useState({});
 
@@ -47,30 +41,11 @@ export default function Mentors({ isAdmin }) {
       {requests.length == 0 ? (
         <Text> loading requests </Text>
       ) : (
-        <Table highlightOnHover striped>
-          <thead>
-            <tr>
-              {rtHeader.map((header, i) => (
-                <TableHeader
-                  header={header}
-                  requests={requests}
-                  setRequests={setRequests}
-                  key={`tableHeader${i}`}
-                />
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {requests.map((row) => (
-              <RequestRow
-                row={row}
-                key={`TableRow${row._id}`}
-                isAdmin={isAdmin}
-                session={session}
-              />
-            ))}
-          </tbody>
-        </Table>
+        <MentorRequestTable
+          isAdmin={isAdmin}
+          requests={requests}
+          setRequests={setRequests}
+        />
       )}
     </Layout>
   );

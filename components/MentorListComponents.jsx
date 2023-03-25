@@ -1,4 +1,4 @@
-import { MultiSelect, Select, Table } from "@mantine/core";
+import { Button, MultiSelect, Select, Table } from "@mantine/core";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { regions, roles, userSelectCommand } from "../util/datalist";
@@ -68,15 +68,18 @@ export const MentorProfileComponent = ({
         value={selectedChampions}
         onChange={setSelectedChampions}
         searchable
-        onDropdownClose={() => handleSelect(selectedChampions, "champions")}
       />
+      <Button onClick={() => handleSelect(selectedChampions, "champions")}>
+        Save
+      </Button>
+
       <MultiSelect
         label="Preferred roles"
         value={selectedRoles}
         data={roles}
         onChange={setSelectedRoles}
-        onDropdownClose={() => handleSelect(selectedRoles, "roles")}
       />
+      <Button onClick={() => handleSelect(selectedRoles, "roles")}>Save</Button>
       <Select
         label="Region"
         defaultValue={mentorRegion}

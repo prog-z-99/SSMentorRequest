@@ -64,7 +64,8 @@ export async function getAllMentors() {
   const mentors = await User.find({
     $or: [{ userType: "mentor" }, { isMentor: true }],
   })
-    .sort({ discordName: 1 })
+    .collation({ locale: "en" })
+    .sort("discordName")
     .lean();
 
   return cleaner(mentors);
@@ -77,7 +78,9 @@ export async function getMentorDetails(id) {
 }
 
 export async function getAllUsers() {
-  const users = await User.find().sort({ discordName: 1 });
+  const users = await User.find()
+    .collation({ locale: "en" })
+    .sort("discordName");
   const newUsers = await Promise.all(
     users.map(async (mentor) => {
       const lastTaken = (
