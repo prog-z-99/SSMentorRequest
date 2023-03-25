@@ -13,6 +13,7 @@ export default function Admins({ mentors }) {
 }
 
 export async function getServerSideProps({ req }) {
+  const fetchMentors = getAllUsers();
   const token = await getToken({ req });
 
   if (!token) {
@@ -33,7 +34,9 @@ export async function getServerSideProps({ req }) {
       },
     };
 
+  const mentors = await fetchMentors;
+
   return {
-    props: {},
+    props: { mentors },
   };
 }
