@@ -16,6 +16,6 @@ export async function getStaticProps() {
 
   return {
     props: { mentors },
-    revalidate: 6000,
+    revalidate: 1, //TODO should be 6000 on the next update
   };
 }

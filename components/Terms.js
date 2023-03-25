@@ -18,8 +18,8 @@ export default function Terms({ setTerms }) {
       <p>
         --- If you plan on requesting an OP.GG review --- <br />
         Check out <a href="https://redd.it/6j4e5g"> this link</a> first to
-        self-evaluate the common mistakes. Once you're done with this, if you
-        still have questions or concerns, request a review. If you plan on
+        self-evaluate the common mistakes. Once you&apos;re done with this, if
+        you still have questions or concerns, request a review. If you plan on
         requesting an <a href="https://op.gg">OP.GG</a> review, you do not need
         to read further.
       </p>
@@ -36,7 +36,7 @@ export default function Terms({ setTerms }) {
         --- If you plan on requesting a VOD review --- <br />
         Please read all of the below text. VOD/Replay Reviews are for those
         serious about improvement and will require a prearranged appointment to
-        go through all the material. VODs are only accepted by the mentor's
+        go through all the material. VODs are only accepted by the mentor&apos;s
         discretion, so VOD reviews may have longer wait times. Requirements to
         request a VOD: - Must be Solo/Duo Queue only (Normal/Flex clips (not
         full games) are accepted via the 1v1 session) - Must have at least 10
@@ -55,8 +55,8 @@ export default function Terms({ setTerms }) {
 export function Pending() {
   return (
     <p>
-      Sorry, either your request is currently pending, or it hasn't been long
-      since your last session was finished.
+      Sorry, either your request is currently pending, or it hasn&apos;t been
+      long since your last session was finished.
     </p>
   );
 }
