@@ -1,13 +1,13 @@
 import { getToken } from "next-auth/jwt";
 import Layout from "../../../components/layout";
 import {
-  getMenteeRequestsByDiscordId,
+  getStudentRequestsByDiscordId,
   isUserAdmin,
 } from "../../../util/databaseAccess";
 import React from "react";
 import { MentorRequestTable } from "../../../components/MentorRequestComponents";
 
-export default function MenteeById({ requests }) {
+export default function StudentRequestsById({ requests }) {
   return (
     <Layout>
       <MentorRequestTable requests={requests} />
@@ -16,7 +16,7 @@ export default function MenteeById({ requests }) {
 }
 
 export async function getServerSideProps({ req, params }) {
-  const fetchRequests = getMenteeRequestsByDiscordId(params.id);
+  const fetchRequests = getStudentRequestsByDiscordId(params.id);
   const token = await getToken({ req });
 
   if (!token) {

@@ -2,7 +2,7 @@ import { getToken } from "next-auth/jwt";
 import {
   changeRequest,
   deleteRequest,
-  getMenteeRequestsByDiscordId,
+  // getMenteeRequestsByDiscordId,
   getUserById,
 } from "../../../util/databaseAccess";
 import { checkAdmin, checkMentor } from "../../../util/helper";
@@ -26,11 +26,11 @@ export default async (req, res) => {
         res.status(404);
         break;
       }
-      case "GET": {
-        const requests = await getMenteeRequestsByDiscordId(req.query.id);
-        res.status(200).send(requests);
-        break;
-      }
+      // case "GET": {
+      //   const requests = await getMenteeRequestsByDiscordId(req.query.id);
+      //   res.status(200).send(requests);
+      //   break;
+      // }
       case "DELETE": {
         const user = await fetchUser;
         if (!checkAdmin(user)) throw "Not authorized";

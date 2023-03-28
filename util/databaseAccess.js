@@ -106,7 +106,7 @@ export async function getAllUsers() {
   return cleaner(newUsers);
 }
 
-export async function getMenteeRequestsByDiscordId(id) {
+export async function getStudentRequestsByDiscordId(id) {
   return await Request.find({ discordId: id })
     .select("-createdAt -updatedAt -__v")
     .populate("mentor")

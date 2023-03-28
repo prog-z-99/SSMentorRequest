@@ -62,6 +62,7 @@ export const RequestRow = ({ row, isAdmin }) => {
             color={
               row.accepted &&
               row.status != "Completed" &&
+              row.status != "Problem" &&
               dayjs(row.accepted).add(2, "months").isBefore(dayjs()) &&
               "red"
             }
@@ -153,8 +154,8 @@ const Details = ({ item, isAdmin }) => {
           <>
             {" "}
             <Button onClick={handleDelete}>DELETE THIS REQUEST</Button>{" "}
-            <Link href={`/admin/mentee/${item.discordId}`}>
-              <Button>All requests by this mentee</Button>
+            <Link href={`/admin/student/${item.discordId}`}>
+              <Button>All requests by this student</Button>
             </Link>
           </>
         )}
