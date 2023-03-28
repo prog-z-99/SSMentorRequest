@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import * as Yup from "yup";
-import { withFormik } from "formik";
+import { Form, withFormik } from "formik";
 import { fullRanks, mentorFormQuestions, regions } from "../util/datalist";
-import { FormSelect, FormTextField, StyledForm } from "./Styles";
+import { FormSelect } from "./Styles";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { Button, Textarea } from "@mantine/core";
+import { Button, Textarea, TextInput } from "@mantine/core";
 
 const FormEnhancer = withFormik({
   validationSchema: Yup.object().shape({
@@ -48,9 +48,9 @@ const MentorRequestForm = (props) => {
   };
 
   return (
-    <StyledForm>
-      <FormTextField
-        title="Summoner name"
+    <Form>
+      <TextInput
+        label="Summoner name"
         id="summonerName"
         placeholder="Only put your main account"
         value={values.summonerName}
@@ -85,7 +85,7 @@ const MentorRequestForm = (props) => {
       <Button onClick={handleSubmit} disabled={loading}>
         Send application
       </Button>
-    </StyledForm>
+    </Form>
   );
 };
 

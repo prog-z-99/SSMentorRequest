@@ -1,15 +1,28 @@
 import React, { useState } from "react";
 import {
   // getStatusColor,
-  Remarks,
   getStatusIcon,
   ClickToCopy,
 } from "./Styles";
 import dayjs from "dayjs";
 import { copyClip } from "../util/helper";
-import { Table, Button, Container, Select, Text } from "@mantine/core";
+import {
+  Table,
+  Button,
+  Container,
+  Select,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import axios from "axios";
 import { statuses, rtHeader } from "../util/datalist";
+import Link from "next/link";
+
+// interface MentorRequestTableProps {
+//   requests: [],
+//   isAdmin?: boolean,
+//   setRequests?
+// }
 
 export const MentorRequestTable = ({ requests, isAdmin, setRequests }) => {
   return (
@@ -44,7 +57,18 @@ export const RequestRow = ({ row, isAdmin }) => {
         <td>
           <Button onClick={() => setRowOpen((o) => !o)}>Details</Button>
         </td>
-        <td>{dayjs(row.createdAt).format("DD/MMM/YYYY")}</td>
+        <td>
+          <Text
+            color={
+              row.accepted &&
+              row.status != "Completed" &&
+              dayjs(row.accepted).add(2, "months").isBefore(dayjs()) &&
+              "red"
+            }
+          >
+            {dayjs(row.createdAt).format("DD/MMM/YYYY")}
+          </Text>
+        </td>
         <td
           onClick={() => {
             copyClip(row.discordName);
@@ -111,7 +135,7 @@ const Details = ({ item, isAdmin }) => {
           <Text>
             Accepted At: {dayjs(item.accepted).format("DD / MMM / YYYY")}
           </Text>
-          <Text>Accepted Mentor: {item.mentor.discordName}</Text>
+          <Text>Accepted Mentor: {item.mentor?.discordName}</Text>
         </>
       )}
       {item.completed && (
@@ -125,7 +149,15 @@ const Details = ({ item, isAdmin }) => {
       <br />
       <>
         <Button onClick={handleArchive}>ARCHIVE THIS REQUEST</Button>
-        {isAdmin && <Button onClick={handleDelete}>DELETE THIS REQUEST</Button>}
+        {isAdmin && (
+          <>
+            {" "}
+            <Button onClick={handleDelete}>DELETE THIS REQUEST</Button>{" "}
+            <Link href={`/admin/mentee/${item.discordId}`}>
+              <Button>All requests by this mentee</Button>
+            </Link>
+          </>
+        )}
       </>
     </Container>
   );
@@ -180,6 +212,31 @@ export const TableHeader = ({ header, setRequests, requests }) => {
         {header.title}
       </Button>
     </th>
+  );
+};
+
+const Remarks = ({ id, content }) => {
+  const [input, setInput] = useState(false);
+  const [value, setValue] = useState(content);
+  const handleType = ({ target: { value } }) => {
+    setValue(value);
+  };
+  const handleSubmit = async () => {
+    await axios.put(`/api/request/${id}`, {
+      value,
+      type: "remarks",
+    });
+    setInput(false);
+  };
+  return input ? (
+    <div>
+      <TextInput value={value} onChange={handleType} />
+      <Button onClick={handleSubmit}>submit</Button>
+    </div>
+  ) : (
+    <div>
+      <Button onClick={() => setInput(true)}>Remarks:</Button> {value}
+    </div>
   );
 };
 

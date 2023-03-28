@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { withFormik } from "formik";
 import { ranks, regions, roles } from "../util/datalist";
-import { FormSelect, FormTextField, StyledForm } from "./Styles";
+import { FormSelect } from "./Styles";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { Button, MultiSelect } from "@mantine/core";
+import { Button, Container, MultiSelect, TextInput } from "@mantine/core";
+import { getAllChampions } from "../util/helper";
 
 const FormEnhancer = withFormik({
   validationSchema: Yup.object().shape({
@@ -28,18 +29,20 @@ const timeZone = () => {
 };
 
 const MentorRequestForm = (props) => {
-  const {
-    isValid,
-    values,
-    errors,
-    handleChange,
-    handleBlur,
-    setFieldValue,
-    championList,
-  } = props;
+  const { isValid, values, errors, handleChange, handleBlur, setFieldValue } =
+    props;
 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [champions, setChampions] = useState([]);
+
+  useEffect(() => {
+    const getChampions = async () => {
+      setChampions(await getAllChampions());
+    };
+    getChampions();
+  }, []);
+
   async function sendMentorRequest(values) {
     await axios
       .post("/api/request", values)
@@ -69,7 +72,7 @@ const MentorRequestForm = (props) => {
   const zones = timeZone();
 
   return (
-    <StyledForm>
+    <Container>
       <FormSelect
         title="Rank"
         name="rank"
@@ -85,7 +88,7 @@ const MentorRequestForm = (props) => {
         error={errors.region}
         onChange={onChange}
       />
-      <FormTextField
+      <TextInput
         title="Summoner name"
         id="summonerName"
         placeholder="Only put in your main account"
@@ -103,7 +106,7 @@ const MentorRequestForm = (props) => {
       />
       <MultiSelect
         label={"Champions"}
-        data={championList}
+        data={champions}
         error={errors.champions}
         searchable
         onChange={(e) => onChange(e, "champions")}
@@ -115,8 +118,8 @@ const MentorRequestForm = (props) => {
         onChange={onChange}
         error={errors.timezone}
       />
-      <FormTextField
-        title="Any additional information you would like the mentors to know (if nothing, leave blank)"
+      <TextInput
+        label="Any additional information you would like the mentors to know (if nothing, leave blank)"
         id="info"
         value={values.info}
         onChange={handleChange}
@@ -126,7 +129,7 @@ const MentorRequestForm = (props) => {
       <Button onClick={handleSubmit} disabled={loading || !isValid}>
         Send Request
       </Button>
-    </StyledForm>
+    </Container>
   );
 };
 

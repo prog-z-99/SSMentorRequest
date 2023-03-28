@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import Layout from "../components/layout";
 import Terms, { Pending } from "../components/Terms";
-import { FormWrapper } from "../components/Styles";
 import Form from "../components/Form";
 import { getAllChampions } from "../util/helper";
 import { getToken } from "next-auth/jwt";
 import { isRequestPending } from "../util/databaseAccess";
+import { Container } from "@mantine/core";
 
 export default function Page({ championList, pending }) {
   const [terms, setTerms] = useState(false);
@@ -16,10 +16,10 @@ export default function Page({ championList, pending }) {
 
   return (
     <Layout>
-      <FormWrapper>
+      <Container>
         <h1>Mentor Request Form</h1>
         {content}
-      </FormWrapper>
+      </Container>
     </Layout>
   );
 }

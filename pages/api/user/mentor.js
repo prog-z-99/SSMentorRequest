@@ -16,19 +16,19 @@ export default async (req, res) => {
         break;
       }
       case "POST": {
-        switch (req.command) {
+        switch (req.body.command) {
           case "ACCEPT": {
-            await processApp(req.user.discordId);
+            await processApp(req.body.user.discordId);
             await tryRegisterMentor(req.user);
             res.status(200).send("mentor added!");
             break;
           }
           case "DENY": {
-            await processApp(req.user.discordId);
+            await processApp(req.body.user.discordId);
             res.status(200).send("mentor denied!");
+            break;
           }
         }
-
         break;
       }
       case "PUT": {
@@ -38,6 +38,7 @@ export default async (req, res) => {
       }
     }
   } catch (error) {
+    console.log(error);
     res.status(400).send(error);
   }
 };

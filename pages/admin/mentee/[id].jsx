@@ -5,13 +5,18 @@ import {
   isUserAdmin,
 } from "../../../util/databaseAccess";
 import React from "react";
+import { MentorRequestTable } from "../../../components/MentorRequestComponents";
 
 export default function MenteeById({ requests }) {
-  return <Layout>soon...</Layout>;
+  return (
+    <Layout>
+      <MentorRequestTable requests={requests} />
+    </Layout>
+  );
 }
 
 export async function getServerSideProps({ req, params }) {
-  const requests = await getMenteeRequestsByDiscordId(params.id);
+  const fetchRequests = getMenteeRequestsByDiscordId(params.id);
   const token = await getToken({ req });
 
   if (!token) {
@@ -33,6 +38,6 @@ export async function getServerSideProps({ req, params }) {
     };
 
   return {
-    props: { requests },
+    props: { requests: await fetchRequests },
   };
 }

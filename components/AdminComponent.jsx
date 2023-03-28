@@ -4,94 +4,91 @@ import dayjs from "dayjs";
 import { Button, Select, Switch, Table, Text } from "@mantine/core";
 import { fullRanks, userSelectCommand } from "../util/datalist";
 import axios from "axios";
-import { MentorsWrapper } from "./Styles";
 
 export const AdminComponent = ({ mentors }) => {
   return (
-    <MentorsWrapper>
-      <Table striped highlightOnHover>
-        <thead>
-          <tr>
-            <th>Mentor Name</th>
-            <th>Last completed</th>
-            <th>Last taken</th>
-            <th>Toggle mentor</th>
-            <th>Toggle admin</th>
-            <th>Toggle reviewer</th>
-            <th>Peak Rank</th>
-            <th>Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {mentors.map((mentor, i) => (
-            <tr key={`Row${i}`}>
-              <td>
-                <Link
-                  href={`/admin/mentors/${mentor.discordId}`}
-                  key={`mentorNo${i}`}
+    <Table striped highlightOnHover>
+      <thead>
+        <tr>
+          <th>Mentor Name</th>
+          <th>Last completed</th>
+          <th>Last taken</th>
+          <th>Toggle mentor</th>
+          <th>Toggle admin</th>
+          <th>Toggle reviewer</th>
+          <th>Peak Rank</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        {mentors.map((mentor, i) => (
+          <tr key={`Row${i}`}>
+            <td>
+              <Link
+                href={`/admin/mentors/${mentor.discordId}`}
+                key={`mentorNo${i}`}
+              >
+                {mentor.discordName}
+              </Link>
+            </td>
+            <td>
+              {mentor.lastCompleted && (
+                <Text
+                  color={
+                    dayjs(mentor.lastCompleted)
+                      .add(5, "months")
+                      .isBefore(dayjs()) && "red"
+                  }
                 >
-                  {mentor.discordName}
-                </Link>
-              </td>
-              <td>
-                {mentor.lastCompleted && (
-                  <Text
-                    color={
-                      dayjs(mentor.lastCompleted)
-                        .add(5, "months")
-                        .isBefore(dayjs()) && "red"
-                    }
-                  >
-                    {dayjs(mentor.lastCompleted).format("DD / MMM / YYYY")}
-                  </Text>
-                )}
-              </td>
-              <td>
-                {mentor.lastTaken && (
-                  <Text
-                    color={
-                      dayjs(mentor.lastTaken)
-                        .add(2, "months")
-                        .isBefore(dayjs()) && "red"
-                    }
-                  >
-                    {dayjs(mentor.lastTaken).format("DD / MMM / YYYY")}
-                  </Text>
-                )}
-              </td>
+                  {dayjs(mentor.lastCompleted).format("DD / MMM / YYYY")}
+                </Text>
+              )}
+            </td>
+            <td>
+              {mentor.lastTaken && (
+                <Text
+                  color={
+                    dayjs(mentor.lastTaken)
+                      .add(2, "months")
+                      .isBefore(dayjs()) && "red"
+                  }
+                >
+                  {dayjs(mentor.lastTaken).format("DD / MMM / YYYY")}
+                </Text>
+              )}
+            </td>
 
-              <td>
-                <UserTypeUpdate
-                  user={mentor}
-                  type={"mentor"}
-                  defChecked={mentor.isMentor}
-                />
-              </td>
-              <td>
-                <UserTypeUpdate
-                  user={mentor}
-                  type={"admin"}
-                  defChecked={mentor.isAdmin}
-                />
-              </td>
-              <td>
-                <UserTypeUpdate
-                  user={mentor}
-                  type={"reviewer"}
-                  defChecked={mentor.isReviewer}
-                />
-              </td>
-              <td>
-                <UserRankSelect user={mentor} />
-              </td>
-              <td>
-                <Button onClick={() => DeleteUser(mentor)}>Delete</Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </MentorsWrapper>
+            <td>
+              <UserTypeUpdate
+                user={mentor}
+                type={"mentor"}
+                defChecked={mentor.isMentor}
+              />
+            </td>
+            <td>
+              <UserTypeUpdate
+                user={mentor}
+                type={"admin"}
+                defChecked={mentor.isAdmin}
+              />
+            </td>
+            <td>
+              <UserTypeUpdate
+                user={mentor}
+                type={"reviewer"}
+                defChecked={mentor.isReviewer}
+              />
+            </td>
+            <td>
+              <UserRankSelect user={mentor} />
+            </td>
+            <td>
+              <Button onClick={() => DeleteUser(mentor)}>Delete</Button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </Table>
   );
 };
 

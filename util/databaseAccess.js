@@ -10,7 +10,7 @@ mongoose.set("strictQuery", false);
 connectToDatabase();
 
 export async function testRequest() {
-  await User.updateMany({ userType: "mentor" }, { isMentor: true });
+  // await User.updateMany({ userType: "mentor" }, { isMentor: true });
   return "Bonga";
 }
 
@@ -107,9 +107,11 @@ export async function getAllUsers() {
 }
 
 export async function getMenteeRequestsByDiscordId(id) {
-  return await Request.find({ discordId: id }).then((requests) =>
-    cleaner(requests)
-  );
+  return await Request.find({ discordId: id })
+    .select("-createdAt -updatedAt -__v")
+    .populate("mentor")
+    .lean()
+    .then((requests) => cleaner(requests));
 }
 
 export async function getMentorRequests(_id) {
@@ -337,21 +339,23 @@ export async function processApp(id) {
   console.log(resp);
 }
 
-function singleCleaner(mentor) {
-  for (let key in mentor) {
-    const varMentor = mentor[key];
+function singleCleaner(obj) {
+  for (let key in obj) {
+    const objValue = obj[key];
     if (
-      varMentor &&
-      typeof varMentor == "object" &&
-      !varMentor.length &&
-      varMentor.length != 0
+      objValue &&
+      typeof objValue == "object" &&
+      !objValue.length &&
+      objValue.length != 0
     ) {
-      mentor[key] = varMentor.toString();
-    } else if (key == "mentor") mentor[key] = varMentor?.discordName;
-    else if (varMentor === undefined) mentor[key] = null;
+      obj[key] = objValue.toString();
+    } else if (key == "mentor") obj[key] = objValue?.discordName || null;
+    else if (objValue === undefined) {
+      obj[key] = null;
+    }
   }
 
-  return mentor;
+  return obj;
 }
 
 function cleaner(items) {

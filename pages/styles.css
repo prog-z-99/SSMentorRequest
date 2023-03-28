@@ -2,50 +2,12 @@ body {
   font-family: -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans,
     sans-serif, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  margin: 1em;
+  margin: 10px;
   background: #fff;
   color: #333;
   justify-content: center;
 }
 
-li,
-p {
-  line-height: 1.5rem;
-}
-
-a {
-  font-weight: 500;
-}
-
 hr {
   border: 1px solid #ddd;
-}
-
-iframe {
-  background: #ccc;
-  border: 1px solid #ccc;
-  height: 10rem;
-  width: 100%;
-  border-radius: 0.5rem;
-  filter: invert(1);
-}
-
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-
-  /* Position the tooltip */
-  position: absolute;
-  z-index: 1;
-  top: -5px;
-  left: 105%;
-}
-
-.tooltip:hover .tooltiptext {
-  visibility: visible;
 }

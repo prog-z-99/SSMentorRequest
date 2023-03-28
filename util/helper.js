@@ -1,7 +1,5 @@
 import axios from "axios";
 
-let championList;
-
 export function checkAdmin(user) {
   if (!user) return false;
   return user.isAdmin;
@@ -26,8 +24,6 @@ export function copyClip(text) {
 }
 
 export async function getAllChampions() {
-  if (championList) return championList;
-
   const versions = await axios.get(
     "https://ddragon.leagueoflegends.com/api/versions.json"
   );
@@ -40,6 +36,6 @@ export async function getAllChampions() {
     tempList.push(request.data.data[champion].name);
   }
   tempList.sort();
-  championList = tempList;
+
   return tempList;
 }

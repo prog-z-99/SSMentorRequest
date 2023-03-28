@@ -1,3 +1,5 @@
+import React from "react";
+import { useMemo, useState } from "react";
 import {
   Button,
   Container,
@@ -8,12 +10,11 @@ import {
   Text,
 } from "@mantine/core";
 import axios from "axios";
-import React, { useMemo, useState } from "react";
-import { ClickToCopy, MentorsWrapper } from "./Styles";
+import { ClickToCopy } from "./Styles";
 
 export const AppList = ({ apps, reviewerId }) => {
   return (
-    <MentorsWrapper>
+    <div>
       Mentor Applications
       <Table striped>
         <thead>
@@ -36,7 +37,7 @@ export const AppList = ({ apps, reviewerId }) => {
           ))}
         </tbody>
       </Table>
-    </MentorsWrapper>
+    </div>
   );
 };
 
@@ -92,7 +93,7 @@ const AppDetails = ({ item, reviewerId }) => {
       .catch((error) => console.log(error));
   };
   const handleDeny = () => {
-    axios.post("api/user/mentor", { user: { discordId }, command: "DENY" });
+    axios.post("/api/user/mentor", { user: { discordId }, command: "DENY" });
   };
 
   return (

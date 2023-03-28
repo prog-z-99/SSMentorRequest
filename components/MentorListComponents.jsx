@@ -1,14 +1,15 @@
-import { Button, MultiSelect, Select, Table } from "@mantine/core";
+import { Button, MultiSelect, Select, Table, Title } from "@mantine/core";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { regions, roles, userSelectCommand } from "../util/datalist";
 import { getAllChampions } from "../util/helper";
-import { MentorsWrapper } from "./Styles";
 
 export const MentorList = ({ mentors }) => {
   return (
-    <MentorsWrapper>
-      Summoner School Mentor List
+    <>
+      <Title align="center" order={3}>
+        Summoner School Mentor List
+      </Title>
       <Table striped>
         <thead>
           <tr>
@@ -31,7 +32,7 @@ export const MentorList = ({ mentors }) => {
           ))}
         </tbody>
       </Table>
-    </MentorsWrapper>
+    </>
   );
 };
 
@@ -60,7 +61,7 @@ export const MentorProfileComponent = ({
   };
 
   return (
-    <MentorsWrapper>
+    <>
       {discordName}
       <MultiSelect
         label="Main champions"
@@ -86,6 +87,6 @@ export const MentorProfileComponent = ({
         data={regions}
         onChange={(e) => handleSelect(e, "region")}
       />
-    </MentorsWrapper>
+    </>
   );
 };

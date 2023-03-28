@@ -1,44 +1,5 @@
-import { HoverCard, Select, TextInput, Text, Container } from "@mantine/core";
-import axios from "axios";
-import { Form } from "formik";
-import React, { useState } from "react";
-import styled from "styled-components";
-
-export const PageWrapper = styled.div`
-  display: flex;
-  position: relative;
-  flex-direction: column;
-  min-height: 100vh;
-  margin: 10px;
-`;
-
-export const FormWrapper = styled(Container)`
-  display: flex;
-  margin: 0 auto;
-  align-items: center;
-  flex-direction: column;
-`;
-
-export const MentorsWrapper = styled.div`
-  flex-direction: column;
-  fill: 100%;
-`;
-
-export const StyledForm = styled(Form)`
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-row-gap: 1em;
-`;
-
-const FieldWrapper = styled.div``;
-
-const FieldInput = styled.input`
-  height: 2em;
-`;
-
-export const ReqTableRow = styled.div`
-  flex-direction: column;
-`;
+import { HoverCard, Select, Text } from "@mantine/core";
+import React from "react";
 
 export const FormSelect = ({
   title,
@@ -53,20 +14,10 @@ export const FormSelect = ({
       label={title}
       error={error}
       value={value}
-      data={formatter(options)}
+      data={options}
       onChange={(e) => onChange(e, name)}
     />
   );
-};
-
-export const FormTextField = ({ title, ...props }) => {
-  return <TextInput label={title} {...props} />;
-};
-
-export const formatter = (list) => {
-  return list.map((item) => {
-    return { value: item, label: item };
-  });
 };
 
 export const formatterColored = (list) => {
@@ -99,57 +50,6 @@ export const getStatusIcon = (status) => {
     case "Problem":
       return "🟥";
   }
-};
-
-export const Expanded = styled.div`
-  p {
-    margin: 0;
-  }
-`;
-
-export const Clickable = styled.a`
-  cursor: link;
-`;
-
-export const Tooltip = styled.p`
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-
-  /* Position the tooltip */
-  position: absolute;
-  z-index: 1;
-  top: -5px;
-  left: 105%;
-`;
-
-export const Remarks = ({ id, content }) => {
-  const [input, setInput] = useState(false);
-  const [value, setValue] = useState(content);
-  const handleType = ({ target: { value } }) => {
-    setValue(value);
-  };
-  const handleSubmit = async () => {
-    await axios.put(`/api/request/${id}`, {
-      value,
-      type: "remarks",
-    });
-    setInput(false);
-  };
-  return input ? (
-    <FieldWrapper>
-      <FieldInput value={value} onChange={handleType} />
-      <button onClick={handleSubmit}>submit</button>
-    </FieldWrapper>
-  ) : (
-    <FieldWrapper>
-      <a onClick={() => setInput(true)}>Remarks: {value}</a>
-    </FieldWrapper>
-  );
 };
 
 export const ClickToCopy = ({ children }) => {

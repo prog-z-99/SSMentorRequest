@@ -1,18 +1,18 @@
 import Header from "../components/header";
 import Footer from "../components/footer";
 import React from "react";
-import { PageWrapper } from "./Styles";
 import Head from "next/head";
+import { AppShell } from "@mantine/core";
 
 export default function Layout({ children }) {
   return (
-    <PageWrapper>
+    <AppShell>
+      <Header />
       <Head>
         <title>Summoner School Mentor Requests</title>
       </Head>
-      <Header />
-      <main>{children}</main>
+      {children}
       <Footer />
-    </PageWrapper>
+    </AppShell>
   );
 }

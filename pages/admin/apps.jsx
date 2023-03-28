@@ -1,5 +1,5 @@
-import { getToken } from "next-auth/jwt";
 import React from "react";
+import { getToken } from "next-auth/jwt";
 import Layout from "../../components/layout";
 import { AppList } from "../../components/MentorAppComponents";
 import { getAllApps, isUserReviewer } from "../../util/databaseAccess";
@@ -12,9 +12,9 @@ export default function MentorApplications({ apps, reviewerId }) {
   );
 }
 
-export async function getServerSideProps(ctx) {
+export async function getServerSideProps({ req }) {
   const fetchApps = getAllApps();
-  const token = await getToken({ req: ctx.req });
+  const token = await getToken({ req });
 
   if (!token) {
     return {
