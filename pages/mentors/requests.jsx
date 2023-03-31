@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "../../components/layout";
 import { Text, Tabs } from "@mantine/core";
 import axios from "axios";
-import { checkAdmin, checkMentor } from "../../util/helper";
+import { checkAdmin, checkStaff } from "../../util/helper";
 import { getToken } from "next-auth/jwt";
 import { getUserById } from "../../util/databaseAccess";
 import { MentorRequestTable } from "../../components/MentorRequestComponents";
@@ -63,7 +63,7 @@ export async function getServerSideProps({ req }) {
   }
   const user = await getUserById(token.sub);
   const isAdmin = checkAdmin(user);
-  const isMentor = checkMentor(user);
+  const isMentor = checkStaff(user);
 
   if (!user || !isMentor)
     return {
