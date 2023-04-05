@@ -5,7 +5,7 @@ import {
   Container,
   Grid,
   Group,
-  Radio,
+  Chip,
   Table,
   Text,
 } from "@mantine/core";
@@ -76,11 +76,19 @@ const AppDetails = ({ item, reviewerId }) => {
     if (meh.includes(reviewerId)) return "meh";
   }, [yay, nay, meh, reviewerId]);
   const [vote, setVote] = useState(value);
+  const [voteLoading, setVoteLoading] = useState(false);
   const handleVote = (e) => {
+    setVoteLoading(true);
     axios
       .put("/api/user/application", { id: item.discordId, vote: e })
       .then(() => {
         setVote(e);
+        setVoteLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        alert("An error has occurred, please notify Z");
+        setVoteLoading(false);
       });
   };
   const handleAccept = () => {
@@ -99,12 +107,15 @@ const AppDetails = ({ item, reviewerId }) => {
   return (
     <Container fluid>
       <Grid>
-        <Grid.Col span={6}>Reason for applying: {item.appReason}</Grid.Col>
+        <Grid.Col span={6}>
+          <Text>Reason for applying: {item.appReason}</Text>
+          <Text>Experience: {item.experience}</Text>
+        </Grid.Col>
         <Grid.Col span={6}>Champ win con: {item.winConEx}</Grid.Col>
         <Grid.Col span={6}>Losing matchup: {item.loseMatchupEx}</Grid.Col>
         <Grid.Col span={6}>Bad take in chat: {item.rebuttalEx}</Grid.Col>
 
-        <Grid.Col span={3}>Experience: {item.experience}</Grid.Col>
+        <Grid.Col span={3}></Grid.Col>
         <Grid.Col span={3}>
           Summoner:{" "}
           <a
@@ -116,21 +127,25 @@ const AppDetails = ({ item, reviewerId }) => {
           </a>
         </Grid.Col>
         <Grid.Col span={3}>
-          <Radio.Group
-            label={"Vote"}
-            withAsterisk
-            value={vote}
-            onChange={handleVote}
-          >
+          <Chip.Group label={"Vote"} value={vote} onChange={handleVote}>
             <Group>
-              <Radio value={"yay"} label={"Yay"} />
-              <Radio value={"nay"} label={"Nay"} />
-              <Radio value={"meh"} label={"Meh"} />
+              <Chip value={"yay"} label={"Yay"} disabled={voteLoading}>
+                Yay
+              </Chip>
+              <Chip value={"nay"} label={"Nay"} disabled={voteLoading}>
+                Nay
+              </Chip>
+              <Chip value={"meh"} label={"Meh"} disabled={voteLoading}>
+                Meh
+              </Chip>
             </Group>
-          </Radio.Group>
+          </Chip.Group>
         </Grid.Col>
         <Grid.Col span={3}>
-          <Button onClick={handleAccept} disabled={processed}>
+          <Button
+            onClick={handleAccept}
+            //disabled={processed}
+          >
             Add mentor
           </Button>
           <Button onClick={handleDeny} disabled={processed}>

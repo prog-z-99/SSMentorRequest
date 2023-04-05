@@ -33,17 +33,16 @@ export async function getServerSideProps({ req }) {
     };
   }
   const user = await getUserById(token.sub);
-  const fetchRequests = getMentorRequests(user._id);
 
-  if (!checkMentor(user))
+  if (!user || !checkMentor(user))
     return {
       redirect: {
         destination: "/",
       },
     };
 
-  const requests = await fetchRequests;
+  const fetchRequests = getMentorRequests(user._id);
   return {
-    props: { user, requests },
+    props: { user, requests: await fetchRequests },
   };
 }

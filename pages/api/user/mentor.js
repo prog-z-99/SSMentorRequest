@@ -19,7 +19,7 @@ export default async (req, res) => {
         switch (req.body.command) {
           case "ACCEPT": {
             await processApp(req.body.user.discordId);
-            await tryRegisterMentor(req.user);
+            await tryRegisterMentor(req.body.user);
             res.status(200).send("mentor added!");
             break;
           }
