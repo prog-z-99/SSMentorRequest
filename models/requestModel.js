@@ -47,6 +47,16 @@ const requestSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    interactedMentors: [
+      {
+        mentor: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        action: { type: String },
+        date: { type: Date },
+      },
+    ],
     status: {
       type: String,
       required: true,

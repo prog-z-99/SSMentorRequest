@@ -45,6 +45,7 @@ export async function getAllRequests() {
       { status: { $nin: ["Completed", "Problem"] } },
     ],
   })
+    .select("-interactedMentors -__v -updatedAt")
     .populate({ path: "mentor", model: "User", select: "discordName" })
     // .limit(5)
     .sort({ createdAt: 1 })
@@ -237,10 +238,13 @@ export async function changeRequest({ body, user }) {
     throw { error: "I uh... what?" };
   }
 
+  let action = body.type;
+
   switch (body.type) {
     case "status":
       request.mentor = user._id;
       request.status = body.value;
+      action = body.value;
 
       switch (body.value) {
         case "In-Progress":
@@ -268,6 +272,12 @@ export async function changeRequest({ body, user }) {
       request.archived = true;
       break;
   }
+
+  request.interactedMentors.push({
+    mentor: user._id,
+    action,
+    date: new Date(),
+  });
   await request.save();
 }
 
@@ -362,23 +372,4 @@ function cleaner(items) {
   return items.map((item) => {
     return singleCleaner(item);
   });
-
-  // return items.map((item) => ({
-  //   id: item._id.toString(),
-  //   status: item.status,
-  //   rank: item.rank,
-  //   region: item.region,
-  //   summonerName: item.summonerName || item.opgg || "what?",
-  //   role: item.role,
-  //   champions: item.champions || null,
-  //   timezone: item.timezone,
-  //   info: item.info || null,
-  //   createdAt: item.createdAt.toISOString(),
-  //   discordName: item.discordName,
-  //   discordId: item.discordId,
-  //   accepted: item.accepted?.toISOString() || null,
-  //   completed: item.completed?.toISOString() || null,
-  //   mentor: item.mentor?.discordName || null,
-  //   remarks: item.remarks || null,
-  // }));
 }
