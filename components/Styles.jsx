@@ -1,5 +1,7 @@
-import { HoverCard, Select, Text } from "@mantine/core";
-import React from "react";
+import { MultiSelect, Select, Tooltip } from "@mantine/core";
+import React, { useEffect, useState } from "react";
+import { copyClip } from "../util/helper";
+import { getAllChampions } from "../util/helper";
 
 export const FormSelect = ({
   title,
@@ -16,6 +18,28 @@ export const FormSelect = ({
       value={value}
       data={options}
       onChange={(e) => onChange(e, name)}
+    />
+  );
+};
+
+export const ChampionSelect = ({ onChange, error }) => {
+  const [champions, setChampions] = useState([]);
+
+  useEffect(() => {
+    async function fetchChampions() {
+      setChampions(await getAllChampions());
+    }
+
+    fetchChampions();
+  }, []);
+
+  return (
+    <MultiSelect
+      label={"Champions"}
+      data={champions}
+      searchable
+      onChange={(e) => onChange(e, "champions")}
+      error={error}
     />
   );
 };
@@ -54,13 +78,14 @@ export const getStatusIcon = (status) => {
 
 export const ClickToCopy = ({ children }) => {
   return (
-    <HoverCard>
-      <HoverCard.Target>
-        <Text>{children}</Text>
-      </HoverCard.Target>
-      <HoverCard.Dropdown>
-        <Text>Click to copy</Text>
-      </HoverCard.Dropdown>
-    </HoverCard>
+    <Tooltip.Floating label="Click to copy">
+      <a
+        onClick={() => {
+          copyClip(children);
+        }}
+      >
+        {children}
+      </a>
+    </Tooltip.Floating>
   );
 };

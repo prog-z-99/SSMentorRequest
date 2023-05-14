@@ -39,3 +39,28 @@ export async function getAllChampions() {
 
   return tempList;
 }
+
+export function cleaner(items) {
+  return items.map((item) => {
+    return singleCleaner(item);
+  });
+}
+
+export function singleCleaner(obj) {
+  for (let key in obj) {
+    const objValue = obj[key];
+    if (
+      objValue &&
+      typeof objValue == "object" &&
+      !objValue.length &&
+      objValue.length != 0
+    ) {
+      obj[key] = objValue.toString();
+    } else if (key == "mentor") obj[key] = objValue?.discordName || null;
+    else if (objValue === undefined) {
+      obj[key] = null;
+    }
+  }
+
+  return obj;
+}

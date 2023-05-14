@@ -8,27 +8,36 @@ import {
   Chip,
   Table,
   Text,
+  Title,
+  Tabs,
 } from "@mantine/core";
 import axios from "axios";
 import { ClickToCopy } from "./Styles";
 
 export const AppList = ({ apps, reviewerId }) => {
+  const [applications, setApplications] = useState(filterApps(apps, false));
+
+  const onTabChange = (value) => {
+    const checker = value == "processed";
+    setApplications(filterApps(apps, checker));
+  };
   return (
     <div>
-      Mentor Applications
+      <Title>Mentor Applications</Title>
+      <Tabs onTabChange={onTabChange} defaultValue={"pending"}>
+        <Tabs.List>
+          <Tabs.Tab value="pending">Pending</Tabs.Tab>
+          <Tabs.Tab value="processed">Processed</Tabs.Tab>
+        </Tabs.List>
+      </Tabs>
       <Table striped>
         <thead>
           <tr>
             <th>Discord name</th>
-            <th>Discord ID</th>
-            <th>Rank</th>
-            <th>Yay</th>
-            <th>Nay</th>
-            <th>Meh</th>
           </tr>
         </thead>
         <tbody>
-          {apps?.map((app, i) => (
+          {applications?.map((app, i) => (
             <AppRow
               app={app}
               key={`TableRow${i * 2}`}
@@ -41,21 +50,18 @@ export const AppList = ({ apps, reviewerId }) => {
   );
 };
 
+const filterApps = (apps, processed) => {
+  return apps.filter((app) => app.processed == processed);
+};
+
 const AppRow = ({ app, reviewerId }) => {
-  const [open, setOpen] = useState(!app.processed);
+  const [open, setOpen] = useState(true);
   return (
     <>
       <tr onClick={() => setOpen(!open)}>
         <td>
           <Text td={app.processed && "line-through"}>{app.discordName}</Text>
         </td>
-        <td>
-          <ClickToCopy>{app.discordId}</ClickToCopy>
-        </td>
-        <td>{app.rank}</td>
-        <td>{app.yay?.length}</td>
-        <td>{app.nay?.length}</td>
-        <td>{app.meh?.length}</td>
       </tr>
       {open && (
         <tr>
@@ -108,50 +114,54 @@ const AppDetails = ({ item, reviewerId }) => {
     <Container fluid>
       <Grid>
         <Grid.Col span={6}>
-          <Text>Reason for applying: {item.appReason}</Text>
-          <Text>Experience: {item.experience}</Text>
-        </Grid.Col>
-        <Grid.Col span={6}>Champ win con: {item.winConEx}</Grid.Col>
-        <Grid.Col span={6}>Losing matchup: {item.loseMatchupEx}</Grid.Col>
-        <Grid.Col span={6}>Bad take in chat: {item.rebuttalEx}</Grid.Col>
-
-        <Grid.Col span={3}></Grid.Col>
-        <Grid.Col span={3}>
-          Summoner:{" "}
-          <a
-            href={`https://${item.region}.op.gg/summoner/userName=${item.summonerName}`}
-            rel={"noreferrer"}
-            target={"_blank"}
-          >
-            {item.summonerName}
-          </a>
+          <Text>
+            Summoner:{" "}
+            <a
+              href={`https://${item.region}.op.gg/summoner/userName=${item.summonerName}`}
+              rel={"noreferrer"}
+              target={"_blank"}
+            >
+              {item.summonerName}
+            </a>
+          </Text>
+          <Text>Rank: {item.rank}</Text>
+          <Text>
+            Discord ID: <ClickToCopy>{item.discordId}</ClickToCopy>
+          </Text>
         </Grid.Col>
         <Grid.Col span={3}>
           <Chip.Group label={"Vote"} value={vote} onChange={handleVote}>
             <Group>
               <Chip value={"yay"} label={"Yay"} disabled={voteLoading}>
-                Yay
+                Yay: {item.yay.length - (value == "yay") + (vote == "yay")}
               </Chip>
               <Chip value={"nay"} label={"Nay"} disabled={voteLoading}>
-                Nay
+                Nay : {item.nay.length - (value == "nay") + (vote == "nay")}
               </Chip>
               <Chip value={"meh"} label={"Meh"} disabled={voteLoading}>
-                Meh
+                Meh: {item.meh.length - (value == "meh") + (vote == "meh")}
               </Chip>
             </Group>
           </Chip.Group>
         </Grid.Col>
         <Grid.Col span={3}>
-          <Button
-            onClick={handleAccept}
-            //disabled={processed}
-          >
+          <Button onClick={handleAccept} disabled={processed}>
             Add mentor
           </Button>
           <Button onClick={handleDeny} disabled={processed}>
             Deny
           </Button>
         </Grid.Col>
+        <Grid.Col span={12}>
+          <Text>Reason for applying: {item.appReason}</Text>
+        </Grid.Col>
+        <Grid.Col>
+          <Text>Experience: {item.experience}</Text>
+        </Grid.Col>
+        <Grid.Col span={12}>Champ win con: {item.winConEx}</Grid.Col>
+        <Grid.Col span={12}>Losing matchup: {item.loseMatchupEx}</Grid.Col>
+        <Grid.Col span={12}>Bad take in chat: {item.rebuttalEx}</Grid.Col>
+        <Grid.Col>{item.comments}</Grid.Col>
       </Grid>
     </Container>
   );

@@ -2,7 +2,8 @@ import React from "react";
 import { getToken } from "next-auth/jwt";
 import Layout from "../../components/layout";
 import { AppList } from "../../components/MentorAppComponents";
-import { getAllApps, isUserReviewer } from "../../util/databaseAccess";
+import { isUserReviewer } from "../../util/databaseAccess";
+import { getAllApps } from "../../util/dbaccess/applications";
 
 export default function MentorApplications({ apps, reviewerId }) {
   return (

@@ -1,8 +1,13 @@
 import { connectToDatabase } from "./mongodb";
 import Request from "../models/requestModel";
-import MentorApp from "../models/mentorAppModel";
 import User from "../models/userModel";
-import { checkAdmin, checkReviewer, checkStaff } from "./helper";
+import {
+  checkAdmin,
+  checkReviewer,
+  checkStaff,
+  cleaner,
+  singleCleaner,
+} from "./helper";
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 
@@ -127,13 +132,9 @@ export async function getMentorRequests(_id) {
 }
 
 export async function isRequestPending(id) {
-  const temp = await Request.find({
+  const request = await Request.findOne({
     discordId: id,
-  })
-    .sort({ createdAt: -1 })
-    .limit(1);
-
-  const request = temp[0];
+  }).sort({ createdAt: -1 });
 
   if (
     request &&
@@ -302,74 +303,4 @@ export async function createRequest({ values, user }) {
     discordId: user.sub,
   });
   return await request.save();
-}
-
-export async function checkPendingApp(id) {
-  return (await MentorApp.findOne({ discordId: id })) && true;
-}
-
-export async function createApp(user, details) {
-  const app = new MentorApp({
-    ...details,
-    discordId: user.sub,
-    discordName: `${user.name}#${user.discriminator}`,
-  });
-
-  return await app.save();
-}
-
-export async function getAllApps() {
-  return await MentorApp.find()
-    .select("-createdAt -updatedAt -__v")
-    .lean()
-    .then((data) => cleaner(data));
-}
-
-export async function voteOnApp({ id, vote, reviewer }) {
-  const app = await MentorApp.findOne({ discordId: id });
-
-  app.yay = app.yay.filter((id) => id != reviewer);
-  app.nay = app.nay.filter((id) => id != reviewer);
-  app.meh = app.meh.filter((id) => id != reviewer);
-  if (app.yay > 3) tryRegisterMentor();
-  app[vote].push(reviewer);
-  await app.save();
-}
-
-export async function deleteApp(id) {
-  const response = await MentorApp.findOneAndDelete({ discordId: id });
-  console.log(response);
-}
-
-export async function processApp(id) {
-  const resp = await MentorApp.findOneAndUpdate(
-    { discordId: id },
-    { processed: true }
-  );
-  console.log(resp);
-}
-
-function singleCleaner(obj) {
-  for (let key in obj) {
-    const objValue = obj[key];
-    if (
-      objValue &&
-      typeof objValue == "object" &&
-      !objValue.length &&
-      objValue.length != 0
-    ) {
-      obj[key] = objValue.toString();
-    } else if (key == "mentor") obj[key] = objValue?.discordName || null;
-    else if (objValue === undefined) {
-      obj[key] = null;
-    }
-  }
-
-  return obj;
-}
-
-function cleaner(items) {
-  return items.map((item) => {
-    return singleCleaner(item);
-  });
 }

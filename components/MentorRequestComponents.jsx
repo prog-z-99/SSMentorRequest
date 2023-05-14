@@ -5,7 +5,6 @@ import {
   ClickToCopy,
 } from "./Styles";
 import dayjs from "dayjs";
-import { copyClip } from "../util/helper";
 import {
   Table,
   Button,
@@ -70,11 +69,7 @@ export const RequestRow = ({ row, isAdmin }) => {
             {dayjs(row.createdAt).format("DD/MMM/YYYY")}
           </Text>
         </td>
-        <td
-          onClick={() => {
-            copyClip(row.discordName);
-          }}
-        >
+        <td>
           <ClickToCopy>{row.discordName}</ClickToCopy>
         </td>
         <td>
@@ -144,8 +139,7 @@ const Details = ({ item, isAdmin }) => {
           Completed At: {dayjs(item.completed).format("DD / MMM / YYYY")}
         </Text>
       )}
-      <ClickToCopy>Discord ID: {item.discordId}</ClickToCopy>
-
+      Discord ID: <ClickToCopy>{item.discordId}</ClickToCopy>
       <Remarks id={_id} content={item.remarks} />
       <br />
       <>

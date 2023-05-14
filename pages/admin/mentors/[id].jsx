@@ -11,9 +11,8 @@ import { MentorRequestTable } from "../../../components/MentorRequestComponents"
 export default function MentorById({ mentor, requests }) {
   return (
     <Layout>
-      {mentor.discordName}
+      {mentor.discordName} - {mentor.discordId}
       <MentorRequestTable requests={requests} />
-      {/* <MentorDetails mentor={mentor} requests={requests} /> */}
     </Layout>
   );
 }

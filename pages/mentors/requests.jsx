@@ -14,14 +14,14 @@ export default function Mentors({ isAdmin }) {
   const [requestsPile, setRequestsPile] = useState({});
 
   useEffect(() => {
-    axios.get("/api/request").then(({ data }) => setRequests(data));
+    axios.get("/api/admin/requests").then(({ data }) => setRequests(data));
   }, []);
 
   const onTabChange = (value) => {
     if (requestsPile[value]) {
       setRequests(requestsPile[value]);
     } else
-      axios.put("/api/request", { type: value }).then(({ data }) => {
+      axios.put("/api/admin/requests", { type: value }).then(({ data }) => {
         requestsPile[value] = data;
         setRequestsPile(requestsPile);
         setRequests(data);

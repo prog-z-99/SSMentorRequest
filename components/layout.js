@@ -6,13 +6,11 @@ import { AppShell } from "@mantine/core";
 
 export default function Layout({ children }) {
   return (
-    <AppShell>
-      <Header />
+    <AppShell header={<Header />} footer={<Footer />}>
       <Head>
         <title>Summoner School Mentor Requests</title>
       </Head>
       {children}
-      <Footer />
     </AppShell>
   );
 }

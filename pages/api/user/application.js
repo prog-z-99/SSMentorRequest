@@ -3,16 +3,21 @@ import {
   checkPendingApp,
   createApp,
   deleteApp,
-  isUserAdmin,
-  isUserReviewer,
   voteOnApp,
-} from "../../../util/databaseAccess";
+} from "../../../util/dbaccess/applications";
+import { isUserAdmin, isUserReviewer } from "../../../util/databaseAccess";
 
 export default async (req, res) => {
   const token = await getToken({ req });
   let message;
   try {
     switch (req.method) {
+      case "GET": {
+        const pending = await checkPendingApp(token.sub);
+        message = pending;
+        console.log(pending);
+        break;
+      }
       case "POST": {
         const pending = await checkPendingApp(token.sub);
 
@@ -27,10 +32,17 @@ export default async (req, res) => {
         const requester = await isUserReviewer(token.sub);
         if (requester) {
           voteOnApp({ ...req.body, reviewer: token.sub });
+          message = "Vote success!";
         } else throw "Not authorized";
         break;
       }
       case "PATCH": {
+        const requester = await isUserReviewer(token.sub);
+        if (!requester) throw "Not authorized";
+
+        break;
+      }
+      case "DELETE": {
         const requester = await isUserAdmin(token.sub);
         if (requester) {
           deleteApp(req.body);

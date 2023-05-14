@@ -54,6 +54,17 @@ const MentorAppSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    comments: [
+      {
+        mentor: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        details: {
+          type: String,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

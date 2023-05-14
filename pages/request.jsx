@@ -1,18 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../components/layout";
 import Terms, { Pending } from "../components/Terms";
 import Form from "../components/Form";
-import { getAllChampions } from "../util/helper";
 import { getToken } from "next-auth/jwt";
-import { isRequestPending } from "../util/databaseAccess";
 import { Container } from "@mantine/core";
+import axios from "axios";
 
-export default function Page({ championList, pending }) {
+export default function Page() {
   const [terms, setTerms] = useState(false);
+  const [pending, setPending] = useState(false);
   let content = <Terms setTerms={setTerms} />;
 
+  useEffect(() => {
+    axios.get("/api/request").then(({ data }) => setPending(data));
+  }, []);
+
   if (pending) content = <Pending />;
-  if (terms) content = <Form championList={championList} />;
+  if (terms) content = <Form />;
 
   return (
     <Layout>
@@ -25,7 +29,6 @@ export default function Page({ championList, pending }) {
 }
 
 export async function getServerSideProps({ req }) {
-  const fetchChampionList = getAllChampions();
   const token = await getToken({ req });
   if (!token) {
     return {
@@ -35,7 +38,6 @@ export async function getServerSideProps({ req }) {
       },
     };
   }
-  const pending = await isRequestPending(token.sub);
-  const championList = await fetchChampionList;
-  return { props: { championList, pending } };
+
+  return { props: {} };
 }

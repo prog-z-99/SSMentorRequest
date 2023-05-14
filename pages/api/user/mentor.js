@@ -1,10 +1,10 @@
 import {
   editUser,
   getUserById,
-  processApp,
   tryRegisterMentor,
 } from "../../../util/databaseAccess";
 import { getToken } from "next-auth/jwt";
+import { processApp } from "../../../util/dbaccess/applications";
 
 export default async (req, res) => {
   const token = await getToken({ req });

@@ -2,8 +2,8 @@ import React from "react";
 import Layout from "../components/layout";
 import MentorForm from "../components/MentorForm";
 import { getToken } from "next-auth/jwt";
-import { checkPendingApp } from "../util/databaseAccess";
 import { Container } from "@mantine/core";
+import { checkPendingApp } from "../util/dbaccess/applications";
 
 export default function Apply({ isRegistered }) {
   let content = (
@@ -14,7 +14,7 @@ export default function Apply({ isRegistered }) {
 
   if (isRegistered)
     content =
-      "request has already been sent. We'll get to it when we get to it";
+      "We have received your application! Please wait for us to process it.";
 
   // if (isMentor)
   //   content = (

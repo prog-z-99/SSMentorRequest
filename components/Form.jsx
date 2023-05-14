@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 import { withFormik } from "formik";
 import { ranks, regions, roles } from "../util/datalist";
-import { FormSelect } from "./Styles";
+import { ChampionSelect, FormSelect } from "./Styles";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { Button, Container, MultiSelect, TextInput } from "@mantine/core";
-import { getAllChampions } from "../util/helper";
+import { Button, Container, TextInput } from "@mantine/core";
 
 const FormEnhancer = withFormik({
   validationSchema: Yup.object().shape({
@@ -15,9 +14,10 @@ const FormEnhancer = withFormik({
     role: Yup.string().required("Please select your role"),
     region: Yup.string().required("Please select your region"),
     timezone: Yup.string().required("Please select your timezone"),
-    champions: Yup.array().min(1, "Please select at least one champion"),
+    champions: Yup.array()
+      .required()
+      .min(1, "Please select at least one champion"),
   }),
-  validateOnMount: true,
 });
 
 const timeZone = () => {
@@ -34,14 +34,6 @@ const MentorRequestForm = (props) => {
 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [champions, setChampions] = useState([]);
-
-  useEffect(() => {
-    const getChampions = async () => {
-      setChampions(await getAllChampions());
-    };
-    getChampions();
-  }, []);
 
   async function sendMentorRequest(values) {
     await axios
@@ -89,7 +81,7 @@ const MentorRequestForm = (props) => {
         onChange={onChange}
       />
       <TextInput
-        title="Summoner name"
+        label="Summoner name"
         id="summonerName"
         placeholder="Only put in your main account"
         value={values.summonerName}
@@ -104,13 +96,7 @@ const MentorRequestForm = (props) => {
         onChange={onChange}
         error={errors.role}
       />
-      <MultiSelect
-        label={"Champions"}
-        data={champions}
-        error={errors.champions}
-        searchable
-        onChange={(e) => onChange(e, "champions")}
-      />
+      <ChampionSelect onChange={onChange} error={errors.champions} />
       <FormSelect
         title="Timezone"
         name="timezone"
