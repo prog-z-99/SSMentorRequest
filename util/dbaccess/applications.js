@@ -1,5 +1,16 @@
 import MentorApp from "../../models/mentorAppModel";
+import Users from "../../models/userModel";
 import { cleaner } from "../helper";
+
+export async function checkAppStatus(id) {
+  const fetchIsMentor = Users.findOne({ discordId: id });
+  const fetchAppStatus = MentorApp.findOne({ discordId: id });
+
+  if ((await fetchIsMentor).isMentor) return { isMentor: true };
+  if (await fetchAppStatus) return { isPending: true };
+
+  return {};
+}
 
 export async function checkPendingApp(id) {
   return (await MentorApp.findOne({ discordId: id })) && true;
@@ -18,7 +29,7 @@ export async function createApp(user, details) {
 export async function getAllApps(processed) {
   const query = processed !== undefined ? { processed } : {};
   return await MentorApp.find(query)
-    .select("-createdAt -updatedAt -__v")
+    .select(" -updatedAt -__v")
     .lean()
     .then((data) => cleaner(data));
 }

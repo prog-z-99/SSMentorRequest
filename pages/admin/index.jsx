@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from "react";
 import Layout from "../../components/layout";
-import { getAllUsers, isUserAdmin } from "../../util/databaseAccess";
+import { isUserAdmin } from "../../util/databaseAccess";
 import { AdminComponent } from "../../components/AdminComponent";
 import { getToken } from "next-auth/jwt";
 import axios from "axios";
@@ -22,7 +22,6 @@ export default function Admins() {
 }
 
 export async function getServerSideProps({ req }) {
-  const fetchMentors = getAllUsers();
   const token = await getToken({ req });
 
   if (!token) {
@@ -43,9 +42,7 @@ export async function getServerSideProps({ req }) {
       },
     };
 
-  const mentors = await fetchMentors;
-
   return {
-    props: { mentors },
+    props: {},
   };
 }

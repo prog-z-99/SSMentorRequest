@@ -9,10 +9,14 @@ import axios from "axios";
 export default function Page() {
   const [terms, setTerms] = useState(false);
   const [pending, setPending] = useState(false);
-  let content = <Terms setTerms={setTerms} />;
+  const [loading, setLoading] = useState(true);
+  let content = <Terms setTerms={setTerms} loading={loading} />;
 
   useEffect(() => {
-    axios.get("/api/request").then(({ data }) => setPending(data));
+    axios.get("/api/request").then(({ data }) => {
+      setPending(data);
+      setLoading(false);
+    });
   }, []);
 
   if (pending) content = <Pending />;

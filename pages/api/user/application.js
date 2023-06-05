@@ -1,5 +1,6 @@
 import { getToken } from "next-auth/jwt";
 import {
+  checkAppStatus,
   checkPendingApp,
   createApp,
   deleteApp,
@@ -13,9 +14,8 @@ export default async (req, res) => {
   try {
     switch (req.method) {
       case "GET": {
-        const pending = await checkPendingApp(token.sub);
+        const pending = await checkAppStatus(token.sub);
         message = pending;
-        console.log(pending);
         break;
       }
       case "POST": {

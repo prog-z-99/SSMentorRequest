@@ -3,18 +3,16 @@ import { getToken } from "next-auth/jwt";
 import Layout from "../../components/layout";
 import { AppList } from "../../components/MentorAppComponents";
 import { isUserReviewer } from "../../util/databaseAccess";
-import { getAllApps } from "../../util/dbaccess/applications";
 
-export default function MentorApplications({ apps, reviewerId }) {
+export default function MentorApplications({ reviewerId }) {
   return (
     <Layout>
-      <AppList apps={apps} reviewerId={reviewerId} />
+      <AppList reviewerId={reviewerId} />
     </Layout>
   );
 }
 
 export async function getServerSideProps({ req }) {
-  const fetchApps = getAllApps();
   const token = await getToken({ req });
 
   if (!token) {
@@ -35,9 +33,7 @@ export async function getServerSideProps({ req }) {
       },
     };
 
-  const apps = await fetchApps;
-
   return {
-    props: { apps, reviewerId: token.sub },
+    props: { reviewerId: token.sub },
   };
 }

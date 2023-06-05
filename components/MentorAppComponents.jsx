@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useMemo, useState } from "react";
 import {
   Button,
@@ -13,14 +13,27 @@ import {
 } from "@mantine/core";
 import axios from "axios";
 import { ClickToCopy } from "./Styles";
+import dayjs from "dayjs";
 
-export const AppList = ({ apps, reviewerId }) => {
-  const [applications, setApplications] = useState(filterApps(apps, false));
+export const AppList = ({ reviewerId }) => {
+  const [applications, setApplications] = useState([]);
+  const [apps, setApps] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("/api/admin/apps")
+      .then(({ data }) => {
+        setApplications(filterApps(data, false));
+        setApps(data);
+      })
+      .catch((error) => console.log(error));
+  }, []);
 
   const onTabChange = (value) => {
     const checker = value == "processed";
     setApplications(filterApps(apps, checker));
   };
+
   return (
     <div>
       <Title>Mentor Applications</Title>
@@ -128,6 +141,7 @@ const AppDetails = ({ item, reviewerId }) => {
           <Text>
             Discord ID: <ClickToCopy>{item.discordId}</ClickToCopy>
           </Text>
+          <Text>Applied at: {dayjs(item.createdAt).format("DD/MMM/YYYY")}</Text>
         </Grid.Col>
         <Grid.Col span={3}>
           <Chip.Group label={"Vote"} value={vote} onChange={handleVote}>
