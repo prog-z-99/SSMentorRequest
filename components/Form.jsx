@@ -29,8 +29,15 @@ const timeZone = () => {
 };
 
 const MentorRequestForm = (props) => {
-  const { isValid, values, errors, handleChange, handleBlur, setFieldValue } =
-    props;
+  const {
+    isValid,
+    values,
+    errors,
+    handleChange,
+    handleBlur,
+    setFieldValue,
+    formLoad,
+  } = props;
 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -112,7 +119,7 @@ const MentorRequestForm = (props) => {
         onBlur={handleBlur}
       />
 
-      <Button onClick={handleSubmit} disabled={loading || !isValid}>
+      <Button onClick={handleSubmit} disabled={loading || !isValid || formLoad}>
         Send Request
       </Button>
     </Container>

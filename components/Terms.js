@@ -1,7 +1,7 @@
 import { Button } from "@mantine/core";
 import React from "react";
 
-export default function Terms({ setTerms, loading }) {
+export default function Terms({ setTerms }) {
   return (
     <>
       <p>
@@ -44,7 +44,7 @@ export default function Terms({ setTerms, loading }) {
         least 25 total ranked games played this season - Must be a fairly close
         game - no one-sided stomps - Must be serious about improvement
       </p>
-      <Button onClick={() => setTerms(true)} disabled={loading}>
+      <Button onClick={() => setTerms(true)}>
         By clicking this box, you acknowledge that you have read all of the
         above.
       </Button>

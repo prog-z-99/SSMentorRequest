@@ -7,7 +7,7 @@ import {
 import { checkAdmin } from "../../util/helper";
 import { getToken } from "next-auth/jwt";
 
-export default async (req, res) => {
+export default async function Admin(req, res) {
   const token = await getToken({ req });
 
   if (!token) {
@@ -39,4 +39,4 @@ export default async (req, res) => {
       res.status(404);
     }
   }
-};
+}

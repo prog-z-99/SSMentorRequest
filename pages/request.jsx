@@ -13,7 +13,7 @@ export default function Page() {
   const [terms, setTerms] = useState(false);
   const [pending, setPending] = useState(false);
   const [loading, setLoading] = useState(true);
-  let content = <Terms setTerms={setTerms} loading={loading} />;
+  let content = <Terms setTerms={setTerms} />;
 
   useEffect(() => {
     switch (status) {
@@ -30,7 +30,7 @@ export default function Page() {
   }, [status, router]);
 
   if (pending) content = <Pending />;
-  if (terms) content = <Form />;
+  if (terms) content = <Form formLoad={loading} />;
 
   return (
     <Layout>
