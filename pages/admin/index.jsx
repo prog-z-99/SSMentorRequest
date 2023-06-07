@@ -1,48 +1,33 @@
 import { React, useEffect, useState } from "react";
 import Layout from "../../components/layout";
-import { isUserAdmin } from "../../util/databaseAccess";
 import { AdminComponent } from "../../components/AdminComponent";
-import { getToken } from "next-auth/jwt";
 import axios from "axios";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export default function Admins() {
+  const { status } = useSession();
+  const router = useRouter();
+
   const [mentors, setMentors] = useState([]);
+
   useEffect(() => {
-    axios
-      .get("/api/admin")
-      .then(({ data }) => setMentors(data))
-      .catch((error) => console.log(error));
-  }, [setMentors]);
+    switch (status) {
+      case "unauthenticated":
+        router.push("/api/auth/signin");
+        break;
+      case "authenticated":
+        axios
+          .get("/api/admin")
+          .then(({ data }) => setMentors(data))
+          .catch(() => router.push("/"));
+        break;
+    }
+  }, [status, router]);
 
   return (
     <Layout>
       <AdminComponent mentors={mentors} />
     </Layout>
   );
-}
-
-export async function getServerSideProps({ req }) {
-  const token = await getToken({ req });
-
-  if (!token) {
-    return {
-      redirect: {
-        destination: "/api/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-
-  const user = await isUserAdmin(token.sub);
-
-  if (!user)
-    return {
-      redirect: {
-        destination: "/",
-      },
-    };
-
-  return {
-    props: {},
-  };
 }

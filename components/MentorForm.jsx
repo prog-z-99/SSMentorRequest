@@ -17,7 +17,6 @@ const FormEnhancer = withFormik({
     rebuttalEx: Yup.string().required("*Required"),
     winConEx: Yup.string().required("*Required"),
   }),
-  validateOnMount: true,
 });
 
 const MentorRequestForm = (props) => {
@@ -82,7 +81,7 @@ const MentorRequestForm = (props) => {
         />
       ))}
 
-      <Button onClick={handleSubmit} disabled={loading}>
+      <Button onClick={handleSubmit} disabled={loading && isValid}>
         Send application
       </Button>
     </Form>

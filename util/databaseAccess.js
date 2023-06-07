@@ -3,6 +3,7 @@ import Request from "../models/requestModel";
 import User from "../models/userModel";
 import {
   checkAdmin,
+  checkMentor,
   checkReviewer,
   checkStaff,
   cleaner,
@@ -164,6 +165,10 @@ export async function getUserById(id) {
 export async function isUserAdmin(id) {
   const user = await getUserById(id);
   return checkAdmin(user);
+}
+
+export async function isUserMentor(id) {
+  return checkMentor(await getUserById(id));
 }
 
 export async function isUserStaff(id) {

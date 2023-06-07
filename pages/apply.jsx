@@ -1,26 +1,34 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../components/layout";
 import MentorForm from "../components/MentorForm";
-import { getToken } from "next-auth/jwt";
 import { Container } from "@mantine/core";
 import axios from "axios";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export default function Apply() {
+  const { status } = useSession();
+  const router = useRouter();
+
   const [isPending, setIsPending] = useState(false);
   const [isMentor, setIsMentor] = useState(false);
-  let content = (
-    <Container>
-      <MentorForm />
-    </Container>
-  );
+
+  let content = <MentorForm />;
 
   useEffect(() => {
-    axios.get("/api/user/application").then(({ data }) => {
-      setIsPending(data.isPending);
-      setIsMentor(data.isMentor);
-    });
-  }, []);
+    switch (status) {
+      case "unauthenticated":
+        router.push("/api/auth/signin");
+        break;
+      case "authenticated":
+        axios.get("/api/user/application").then(({ data }) => {
+          setIsPending(data.isPending);
+          setIsMentor(data.isMentor);
+        });
+        break;
+    }
+  }, [status, router]);
 
   if (isPending)
     content =
@@ -37,22 +45,9 @@ export default function Apply() {
       </>
     );
 
-  return <Layout>{content}</Layout>;
-}
-
-export async function getServerSideProps({ req }) {
-  const token = await getToken({ req });
-
-  if (!token) {
-    return {
-      redirect: {
-        destination: "/api/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {},
-  };
+  return (
+    <Layout>
+      <Container>{content}</Container>
+    </Layout>
+  );
 }

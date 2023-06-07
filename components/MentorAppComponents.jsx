@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useMemo, useState } from "react";
 import {
   Button,
@@ -15,19 +15,8 @@ import axios from "axios";
 import { ClickToCopy } from "./Styles";
 import dayjs from "dayjs";
 
-export const AppList = ({ reviewerId }) => {
-  const [applications, setApplications] = useState([]);
-  const [apps, setApps] = useState([]);
-
-  useEffect(() => {
-    axios
-      .get("/api/admin/apps")
-      .then(({ data }) => {
-        setApplications(filterApps(data, false));
-        setApps(data);
-      })
-      .catch((error) => console.log(error));
-  }, []);
+export const AppList = ({ apps, reviewerId }) => {
+  const [applications, setApplications] = useState(apps);
 
   const onTabChange = (value) => {
     const checker = value == "processed";

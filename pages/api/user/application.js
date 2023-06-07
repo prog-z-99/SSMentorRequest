@@ -8,13 +8,14 @@ import {
 } from "../../../util/dbaccess/applications";
 import { isUserAdmin, isUserReviewer } from "../../../util/databaseAccess";
 
-export default async (req, res) => {
+const userApplication = async (req, res) => {
   const token = await getToken({ req });
   let message;
   try {
     switch (req.method) {
       case "GET": {
         const pending = await checkAppStatus(token.sub);
+
         message = pending;
         break;
       }
@@ -55,3 +56,5 @@ export default async (req, res) => {
     res.status(401).send({ error });
   }
 };
+
+export default userApplication;

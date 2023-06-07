@@ -6,7 +6,7 @@ import {
 import { getToken } from "next-auth/jwt";
 import { processApp } from "../../../util/dbaccess/applications";
 
-export default async (req, res) => {
+const userMentor = async (req, res) => {
   const token = await getToken({ req });
   try {
     switch (req.method) {
@@ -42,3 +42,5 @@ export default async (req, res) => {
     res.status(400).send(error);
   }
 };
+
+export default userMentor;
