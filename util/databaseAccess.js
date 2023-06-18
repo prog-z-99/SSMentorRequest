@@ -52,7 +52,11 @@ export async function getAllRequests() {
     ],
   })
     .select("-interactedMentors -__v -updatedAt")
-    .populate({ path: "mentor", model: "User", select: "discordName" })
+    .populate({
+      path: "mentor",
+      model: "User",
+      select: "discordName discordId",
+    })
     // .limit(5)
     .sort({ createdAt: 1 })
     .lean();
@@ -61,7 +65,11 @@ export async function getAllRequests() {
 
 export async function getTypeRequests(type) {
   const requests = await Request.find({ status: type })
-    .populate({ path: "mentor", model: "User", select: "discordName" })
+    .populate({
+      path: "mentor",
+      model: "User",
+      select: "discordName discordId",
+    })
     .sort({ createdAt: 1 })
     .lean();
   return requests;

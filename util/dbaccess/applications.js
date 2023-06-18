@@ -29,6 +29,7 @@ export async function getAllApps(processed) {
   const query = processed !== undefined ? { processed } : {};
   return await MentorApp.find(query)
     .select(" -updatedAt -__v")
+    .populate("yay nay meh")
     .lean()
     .then((data) => cleaner(data));
 }

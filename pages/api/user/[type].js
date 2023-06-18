@@ -7,7 +7,7 @@ import {
 
 import { getToken } from "next-auth/jwt";
 
-export default async (req, res) => {
+export default async function GetUser(req, res) {
   const token = await getToken({ req });
 
   if (!token) {
@@ -21,7 +21,7 @@ export default async (req, res) => {
     //     break;
     //   }
     case "GET": {
-      switch (req.body) {
+      switch (req.query.type) {
         case "reviewer":
           res.status(200).send(await isUserReviewer(token.sub));
           break;
@@ -46,4 +46,4 @@ export default async (req, res) => {
       res.status(404);
     }
   }
-};
+}

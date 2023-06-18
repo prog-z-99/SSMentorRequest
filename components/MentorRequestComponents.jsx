@@ -131,7 +131,10 @@ const Details = ({ item, isAdmin }) => {
           <Text>
             Accepted At: {dayjs(item.accepted).format("DD / MMM / YYYY")}
           </Text>
-          <Text>Accepted Mentor: {item.mentor?.discordName}</Text>
+          <Text>
+            Accepted Mentor: {item.mentor?.discordName} -{" "}
+            <ClickToCopy>{item.mentor?.discordId}</ClickToCopy>
+          </Text>
         </>
       )}
       {item.completed && (

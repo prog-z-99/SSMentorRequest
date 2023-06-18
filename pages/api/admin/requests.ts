@@ -5,7 +5,7 @@ import {
   isUserStaff,
 } from "../../../util/databaseAccess";
 
-export default async (req, res) => {
+export default async function AdminRequests(req, res) {
   const token = await getToken({ req });
   if (!token) {
     res.status(403).send({ error: "what" });
@@ -35,4 +35,4 @@ export default async (req, res) => {
   } catch (error) {
     res.status(401).send(error);
   }
-};
+}

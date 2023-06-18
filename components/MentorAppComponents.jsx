@@ -14,13 +14,22 @@ import {
 import axios from "axios";
 import { ClickToCopy } from "./Styles";
 import dayjs from "dayjs";
+import { useEffect } from "react";
 
-export const AppList = ({ apps, reviewerId }) => {
-  const [applications, setApplications] = useState(apps);
+export const AppList = ({ reviewerId }) => {
+  const [applications, setApplications] = useState();
+  const [allApps, setAllApps] = useState([]);
+  console.log(reviewerId);
+  useEffect(() => {
+    axios.get("/api/admin/apps").then(({ data }) => {
+      setApplications(filterApps(data, false));
+      setAllApps(data);
+    });
+  }, []);
 
   const onTabChange = (value) => {
     const checker = value == "processed";
-    setApplications(filterApps(apps, checker));
+    setApplications(filterApps(allApps, checker));
   };
 
   return (

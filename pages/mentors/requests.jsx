@@ -2,20 +2,33 @@ import React, { useState, useEffect } from "react";
 import Layout from "../../components/layout";
 import { Text, Tabs } from "@mantine/core";
 import axios from "axios";
-import { checkAdmin, checkStaff } from "../../util/helper";
-import { getToken } from "next-auth/jwt";
-import { getUserById } from "../../util/databaseAccess";
 import { MentorRequestTable } from "../../components/MentorRequestComponents";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 //TODO use useTransition for cleaner updates
 
-export default function Mentors({ isAdmin }) {
+export default function Mentors() {
+  const { status } = useSession();
   const [requests, setRequests] = useState([]);
   const [requestsPile, setRequestsPile] = useState({});
+  const router = useRouter();
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    axios.get("/api/admin/requests").then(({ data }) => setRequests(data));
-  }, []);
+    switch (status) {
+      case "unauthenticated":
+        router.push("/");
+        break;
+      case "authenticated":
+        axios
+          .get("/api/admin/requests")
+          .then(({ data }) => setRequests(data))
+          .catch(() => router.push("/"));
+        axios.get("/api/user/admin").then(({ data }) => setIsAdmin(data));
+        break;
+    }
+  }, [status, router]);
 
   const onTabChange = (value) => {
     if (requestsPile[value]) {
@@ -49,30 +62,4 @@ export default function Mentors({ isAdmin }) {
       )}
     </Layout>
   );
-}
-
-export async function getServerSideProps({ req }) {
-  const token = await getToken({ req });
-  if (!token) {
-    return {
-      redirect: {
-        destination: "/api/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-  const user = await getUserById(token.sub);
-  const isAdmin = checkAdmin(user);
-  const isMentor = checkStaff(user);
-
-  if (!user || !isMentor)
-    return {
-      redirect: {
-        destination: "/",
-      },
-    };
-
-  return {
-    props: { isAdmin },
-  };
 }
