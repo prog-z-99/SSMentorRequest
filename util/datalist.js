@@ -4,6 +4,7 @@ export const ranks = [
   "Silver",
   "Gold",
   "Platinum",
+  "Emerald",
   "Diamond",
   "Masters",
   "Grandmasters",
