@@ -3,52 +3,29 @@ import React from "react";
 
 export default function Terms({ setTerms }) {
   return (
-    <>
+    <div className="terms">
       <p>
-        Welcome to the Summonerschool Discord Mentor Request System! Through
-        this form you can request an <a href="https://op.gg">OP.GG</a> review, a
-        1 on 1 session, or a VOD review. You cannot submit multiple tickets at
-        once, although you can submit a new ticket 2 weeks after your prior one
-        was completed, one month for VODs. We ask that you please read
-        everything below should they apply to the type of ticket you request.
-        Afterwards, use the google form linked directly below to request a
-        session. Please remember that this is a free, volunteer-based service
-        and wait times may be longer depending on your rank/timezone.
+        Welcome to the Summoner School Discord’s mentor request system! Our mentors are here to help those who are serious about improvement, so please read the following carefully on how to quality for a VOD review.
       </p>
       <p>
-        --- If you plan on requesting an OP.GG review --- <br />
-        Check out <a href="https://redd.it/6j4e5g"> this link</a> first to
-        self-evaluate the common mistakes. Once you&apos;re done with this, if
-        you still have questions or concerns, request a review. If you plan on
-        requesting an <a href="https://op.gg">OP.GG</a> review, you do not need
-        to read further.
+        <b><u>Requirements to request a VOD Review:</u></b>
+        <ul>
+          <li>You must have at least 75 total ranked games played during this current split</li>
+          <li>You must have a minimum of 25 ranked games on the champion in the VOD you submit</li>
+          <li>The VOD you send must be a Solo/Duo Queue game that is a reasonably close game (no one-sided stomps)</li>
+        </ul>
       </p>
       <p>
-        --- If you plan on requesting a 1 on 1 session --- <br />
-        Please prepare material to go over with your mentor beforehand. This can
-        range to anything from general questions about topics, to clips of games
-        (normal, flex or ranked queue clips - must be under 10 minutes) for a
-        short review - anything that can be done in a 1 on 1 session that is not
-        an long/intensive VOD review. If you plan on requesting this, you do not
-        need to read further.
+        <b><u>NOTE</u></b>:  Mentors may choose to deny a review request if you do not meet the above requirements. You may only request a VOD review once every 30 days from your last fulfilled request.
       </p>
       <p>
-        --- If you plan on requesting a VOD review --- <br />
-        Please read all of the below text. VOD/Replay Reviews are for those
-        serious about improvement and will require a prearranged appointment to
-        go through all the material. VODs are only accepted by the mentor&apos;s
-        discretion, so VOD reviews may have longer wait times. Requirements to
-        request a VOD: - Must be Solo/Duo Queue only (Normal/Flex clips (not
-        full games) are accepted via the 1v1 session) - Must have at least 10
-        ranked games on the champion being played this season - Must have at
-        least 25 total ranked games played this season - Must be a fairly close
-        game - no one-sided stomps - Must be serious about improvement
+        This is a free, volunteer-based service. Wait times may be longer depending on your rank, position, or timezone. If you are new or do not meet the requirements above, you can ask questions in any of our Discord’s role-specific chats or use #vod-review for a community review (check the pins for details).
       </p>
       <Button onClick={() => setTerms(true)}>
-        By clicking this box, you acknowledge that you have read all of the
+        By clicking this box, I acknowledge that I have read all of the
         above.
       </Button>
-    </>
+    </div>
   );
 }
 
