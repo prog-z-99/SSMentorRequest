@@ -5,7 +5,7 @@ export default function Terms({ setTerms }) {
   return (
     <div className="terms">
       <p>
-        Welcome to the Summoner School Discord’s mentor request system! Our mentors are here to help those who are serious about improvement, so please read the following carefully on how to quality for a VOD review.
+        Welcome to the Summoner School Discord’s mentor request system! Our mentors are here to help those who are serious about improvement, so please read the following carefully on how to qualify for a VOD review.
       </p>
       <p>
         <b><u>Requirements to request a VOD Review:</u></b>
