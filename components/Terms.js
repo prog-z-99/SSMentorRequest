@@ -16,7 +16,7 @@ export default function Terms({ setTerms }) {
         </ul>
       </p>
       <p>
-        <b><u>NOTE</u></b>:  Mentors may choose to deny a review request if you do not meet the above requirements. You may only request a VOD review once every 30 days from your last fulfilled request.
+        <b><u>NOTE</u></b>:  Mentors may choose to deny a review request if you do not meet the above requirements. Exceptions can be made for very active players at the start of the split. You may only request a VOD review once every 30 days from your last fulfilled request.
       </p>
       <p>
         This is a free, volunteer-based service. Wait times may be longer depending on your rank, position, or timezone. If you are new or do not meet the requirements above, you can ask questions in any of our Discord’s role-specific chats or use #vod-review for a community review (check the pins for details).
