@@ -12,6 +12,10 @@ hr {
   border: 1px solid #ddd;
 }
 
+.form-container .form-input {
+  margin-bottom: 0.8rem;
+}
+
 .terms > p {
   margin: 2rem 0;
 }

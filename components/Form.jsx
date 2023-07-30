@@ -5,7 +5,7 @@ import { ranks, regions, roles } from "../util/datalist";
 import { ChampionSelect, FormSelect } from "./Styles";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { Button, Container, TextInput } from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
 
 const FormEnhancer = withFormik({
   validationSchema: Yup.object().shape({
@@ -71,23 +71,9 @@ const MentorRequestForm = (props) => {
   const zones = timeZone();
 
   return (
-    <Container>
-      <FormSelect
-        title="Rank"
-        name="rank"
-        options={ranks}
-        onChange={onChange}
-        error={errors.rank}
-        value={values.rank}
-      />
-      <FormSelect
-        title="Region"
-        name="region"
-        options={regions}
-        error={errors.region}
-        onChange={onChange}
-      />
+    <div className="form-container">
       <TextInput
+        className="form-input"
         label="Summoner name"
         id="summonerName"
         placeholder="Only put in your main account"
@@ -97,14 +83,37 @@ const MentorRequestForm = (props) => {
         error={errors.summonerName}
       />
       <FormSelect
+        className="form-input"
+        title="Rank"
+        name="rank"
+        options={ranks}
+        onChange={onChange}
+        error={errors.rank}
+        value={values.rank}
+      />
+      <FormSelect
+        className="form-input"
+        title="Region"
+        name="region"
+        options={regions}
+        error={errors.region}
+        onChange={onChange}
+      />
+      <FormSelect
+        className="form-input"
         title="Role"
         name="role"
         options={roles}
         onChange={onChange}
         error={errors.role}
       />
-      <ChampionSelect onChange={onChange} error={errors.champions} />
+      <ChampionSelect
+        className="form-input"
+        onChange={onChange}
+        error={errors.champions}
+      />
       <FormSelect
+        className="form-input"
         title="Timezone"
         name="timezone"
         options={zones}
@@ -112,6 +121,7 @@ const MentorRequestForm = (props) => {
         error={errors.timezone}
       />
       <TextInput
+        className="form-input"
         label="Any additional information you would like the mentors to know (if nothing, leave blank)"
         id="info"
         value={values.info}
@@ -122,7 +132,7 @@ const MentorRequestForm = (props) => {
       <Button onClick={handleSubmit} disabled={loading || !isValid || formLoad}>
         Send Request
       </Button>
-    </Container>
+    </div>
   );
 };
 

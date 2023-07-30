@@ -4,6 +4,7 @@ import { copyClip } from "../util/helper";
 import { getAllChampions } from "../util/helper";
 
 export const FormSelect = ({
+  className,
   title,
   name,
   options,
@@ -13,6 +14,7 @@ export const FormSelect = ({
 }) => {
   return (
     <Select
+      className={className}
       label={title}
       error={error}
       value={value}
@@ -22,7 +24,7 @@ export const FormSelect = ({
   );
 };
 
-export const ChampionSelect = ({ onChange, error }) => {
+export const ChampionSelect = ({ className, onChange, error }) => {
   const [champions, setChampions] = useState([]);
 
   useEffect(() => {
@@ -35,6 +37,7 @@ export const ChampionSelect = ({ onChange, error }) => {
 
   return (
     <MultiSelect
+      className={className}
       label={"Champions"}
       data={champions}
       searchable
