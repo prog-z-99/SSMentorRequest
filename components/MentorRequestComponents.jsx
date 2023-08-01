@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import styled from '@emotion/styled';
 import {
   // getStatusColor,
   getStatusIcon,
@@ -16,6 +17,7 @@ import {
 import axios from "axios";
 import { statuses, rtHeader } from "../util/datalist";
 import Link from "next/link";
+import Icon from "./Icon";
 
 // interface MentorRequestTableProps {
 //   requests: [],
@@ -181,6 +183,9 @@ const TableSelect = ({ request }) => {
     />
   );
 };
+const StyledTableHeader = styled.div`
+  display: flex;
+`
 
 export const TableHeader = ({ header, setRequests, requests }) => {
   const { title, sorter } = header;
@@ -204,13 +209,16 @@ export const TableHeader = ({ header, setRequests, requests }) => {
     setAsc(!asc);
   };
 
+
   return (
     <th>
-      <Button onClick={() => handleClick()} disabled={!setRequests}>
-        {header.title}
-      </Button>
+      <StyledTableHeader onClick={() => handleClick()} disabled={!setRequests}>
+        <span>{header.title}</span>
+        <Icon type='selector' width={12} />
+      </StyledTableHeader>
     </th>
   );
+
 };
 
 const Remarks = ({ id, content }) => {
