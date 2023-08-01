@@ -184,6 +184,7 @@ const TableSelect = ({ request }) => {
   );
 };
 const StyledTableHeader = styled.div`
+  cursor: pointer;
   display: flex;
 `
 
