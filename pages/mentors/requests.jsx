@@ -43,8 +43,9 @@ export default function Mentors() {
 
   return (
     <Layout>
-      <Tabs onTabChange={onTabChange}>
+      <Tabs defaultValue="All" onTabChange={onTabChange}>
         <Tabs.List>
+          <Tabs.Tab value="All">All</Tabs.Tab>
           <Tabs.Tab value="Not Accepted">Not Accepted</Tabs.Tab>
           <Tabs.Tab value="In-Progress">In-Progress</Tabs.Tab>
           <Tabs.Tab value="Completed">Completed</Tabs.Tab>
