@@ -13,6 +13,8 @@ import {
   Select,
   Text,
   Textarea,
+  SimpleGrid,
+  Space,
 } from "@mantine/core";
 import axios from "axios";
 import { statuses, rtHeader } from "../util/datalist";
@@ -27,7 +29,7 @@ import Icon from "./Icon";
 
 export const MentorRequestTable = ({ requests, isAdmin, setRequests }) => {
   return (
-    <Table highlightOnHover striped>
+    <Table highlightOnHover striped horizontalSpacing='sm' verticalSpacing='sm'>
       <thead>
         <tr>
           {rtHeader.map((header, i) => (
@@ -157,14 +159,20 @@ const Details = ({ item, isAdmin }) => {
         </Text>
       )}
       <StyledLabel>Discord ID:</StyledLabel> <ClickToCopy>{item.discordId}</ClickToCopy>
-      <Text><StyledLabel>Student notes:</StyledLabel> {item.info || 'N/A'} </Text>
+      <Space h='sm' />
+      <Text><StyledLabel>Student notes:</StyledLabel>
+        <SimpleGrid cols={2}>
+          {item.info || 'N/A'}
+        </SimpleGrid>
+      </Text>
+      <Space h='sm' />
       <Remarks
         id={_id}
         content={item.remarks}
         isEditing={isEditing}
         handleIsEditing={handleIsEditing}
       />
-      <br />
+      <Space h='lg' />
 
       {!isEditing ? <>
         <Text><StyledLabel>Other Actions:</StyledLabel></Text>
@@ -257,31 +265,38 @@ const Remarks = ({ id, content, isEditing, handleIsEditing }) => {
   };
 
   return (
-    <div>
+    <>
       {isEditing ?
         <>
-          <Textarea
-            label={
-              <Text>
-                <StyledLabel>Mentor comments:</StyledLabel>
-              </Text>
-            }
-            autosize
-            minRows={3}
-            value={value}
-            onChange={handleType}
-            mb='0.5rem'
-          />
+          <SimpleGrid cols={2}>
+            <Textarea
+              label={
+                <Text>
+                  <StyledLabel>Mentor comments:</StyledLabel>
+                </Text>
+              }
+              autosize
+              minRows={3}
+              value={value}
+              onChange={handleType}
+              mb='0.5rem'
+            />
+          </SimpleGrid>
           <Button variant='outline' compact onClick={handleSubmit}>Submit</Button>
           <Button variant='outline' compact color='gray' ml='0.3rem' onClick={handleIsEditing}>Cancel</Button>
         </>
         :
         <>
-          <Text><StyledLabel>Mentor comments:</StyledLabel> {value || 'N/A'}</Text>
-          <Button variant='outline' compact color='gray' mt='0.5rem' onClick={handleIsEditing}>Edit Comments</Button>
+          <Text><StyledLabel>Mentor comments:</StyledLabel>
+            <SimpleGrid cols={2}>
+              {value || 'N/A'}
+            </SimpleGrid>
+          </Text>
+
+          <Button variant='outline' compact color='gray' mt='1rem' onClick={handleIsEditing}>Edit Comments</Button>
         </>
       }
-    </div>
+    </>
   )
 };
 
