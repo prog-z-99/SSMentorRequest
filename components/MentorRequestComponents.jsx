@@ -15,6 +15,7 @@ import {
   Textarea,
   SimpleGrid,
   Space,
+  Box,
 } from "@mantine/core";
 import axios from "axios";
 import { statuses, rtHeader } from "../util/datalist";
@@ -29,7 +30,7 @@ import Icon from "./Icon";
 
 export const MentorRequestTable = ({ requests, isAdmin, setRequests }) => {
   return (
-    <Table highlightOnHover striped horizontalSpacing='sm' verticalSpacing='sm'>
+    <Table highlightOnHover striped>
       <thead>
         <tr>
           {rtHeader.map((header, i) => (
@@ -105,7 +106,9 @@ export const RequestRow = ({ row, isAdmin }) => {
       {rowOpen && (
         <tr>
           <td colSpan={12}>
-            <Details item={row} isAdmin={isAdmin} />
+            <Box p='md'>
+              <Details item={row} isAdmin={isAdmin} />
+            </Box>
           </td>
         </tr>
       )}
