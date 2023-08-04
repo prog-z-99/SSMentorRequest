@@ -12,7 +12,10 @@ import {
   Container,
   Select,
   Text,
-  TextInput,
+  Textarea,
+  SimpleGrid,
+  Space,
+  Box,
 } from "@mantine/core";
 import axios from "axios";
 import { statuses, rtHeader } from "../util/datalist";
@@ -55,8 +58,10 @@ export const RequestRow = ({ row, isAdmin }) => {
   return (
     <>
       <tr>
-        <td>
-          <Button onClick={() => setRowOpen((o) => !o)}>Details</Button>
+        <td onClick={() => setRowOpen((o) => !o)}>
+          <StyledClickableContainer>
+            <Icon type={rowOpen ? 'chevron-up' : 'chevron-down'} width={16} />
+          </StyledClickableContainer>
         </td>
         <td>
           <Text
@@ -72,7 +77,9 @@ export const RequestRow = ({ row, isAdmin }) => {
           </Text>
         </td>
         <td>
-          <ClickToCopy>{row.discordName}</ClickToCopy>
+          <StyledClickableContainer>
+            <ClickToCopy>{row.discordName}</ClickToCopy>
+          </StyledClickableContainer>
         </td>
         <td>
           <a
@@ -99,7 +106,9 @@ export const RequestRow = ({ row, isAdmin }) => {
       {rowOpen && (
         <tr>
           <td colSpan={12}>
-            <Details item={row} isAdmin={isAdmin} />
+            <Box p='md'>
+              <Details item={row} isAdmin={isAdmin} />
+            </Box>
           </td>
         </tr>
       )}
@@ -107,8 +116,17 @@ export const RequestRow = ({ row, isAdmin }) => {
   );
 };
 
+const StyledLabel = styled.span`
+  font-weight: 600;
+`
+
 const Details = ({ item, isAdmin }) => {
+  const [isEditing, setIsEditing] = useState(false);
   const { _id } = item;
+
+  const handleIsEditing = () => {
+    setIsEditing(!isEditing);
+  }
 
   const handleArchive = () => {
     if (confirm("Are you sure you want to archive this request?")) {
@@ -127,38 +145,52 @@ const Details = ({ item, isAdmin }) => {
   };
   return (
     <Container fluid>
-      <Text>Notes: {item.info} </Text>
       {item.accepted && (
         <>
           <Text>
-            Accepted At: {dayjs(item.accepted).format("DD / MMM / YYYY")}
+            <StyledLabel>Mentor:</StyledLabel> {item.mentor?.discordName} -{" "}
+            <ClickToCopy>{item.mentor?.discordId}</ClickToCopy>
           </Text>
           <Text>
-            Accepted Mentor: {item.mentor?.discordName} -{" "}
-            <ClickToCopy>{item.mentor?.discordId}</ClickToCopy>
+            <StyledLabel>Accepted:</StyledLabel> {dayjs(item.accepted).format("DD / MMM / YYYY")}
           </Text>
         </>
       )}
       {item.completed && (
         <Text>
-          Completed At: {dayjs(item.completed).format("DD / MMM / YYYY")}
+          <StyledLabel>Completed:</StyledLabel> {dayjs(item.completed).format("DD / MMM / YYYY")}
         </Text>
       )}
-      Discord ID: <ClickToCopy>{item.discordId}</ClickToCopy>
-      <Remarks id={_id} content={item.remarks} />
-      <br />
-      <>
-        <Button onClick={handleArchive}>ARCHIVE THIS REQUEST</Button>
+      <StyledLabel>Discord ID:</StyledLabel> <ClickToCopy>{item.discordId}</ClickToCopy>
+      <Space h='sm' />
+      <Text><StyledLabel>Student notes:</StyledLabel>
+        <SimpleGrid cols={2}>
+          {item.info || 'N/A'}
+        </SimpleGrid>
+      </Text>
+      <Space h='sm' />
+      <Remarks
+        id={_id}
+        content={item.remarks}
+        isEditing={isEditing}
+        handleIsEditing={handleIsEditing}
+      />
+      <Space h='lg' />
+
+      {!isEditing ? <>
+        <Text><StyledLabel>Other Actions:</StyledLabel></Text>
+        <Button compact variant='outline' onClick={handleArchive}>Archive Request</Button>
         {isAdmin && (
           <>
             {" "}
-            <Button onClick={handleDelete}>DELETE THIS REQUEST</Button>{" "}
+            <Button compact variant='outline' color='red' onClick={handleDelete}>Delete Request</Button>{" "}
             <Link href={`/admin/student/${item.discordId}`}>
-              <Button>All requests by this student</Button>
+              <Button compact variant='outline' color='teal'>All requests by this student</Button>
             </Link>
           </>
         )}
       </>
+        : null}
     </Container>
   );
 };
@@ -183,7 +215,7 @@ const TableSelect = ({ request }) => {
     />
   );
 };
-const StyledTableHeader = styled.div`
+const StyledClickableContainer = styled.div`
   cursor: pointer;
   display: flex;
 `
@@ -213,17 +245,16 @@ export const TableHeader = ({ header, setRequests, requests }) => {
 
   return (
     <th>
-      <StyledTableHeader onClick={() => handleClick()} disabled={!setRequests}>
+      <StyledClickableContainer onClick={() => handleClick()} disabled={!setRequests}>
         <span>{header.title}</span>
         <Icon type='selector' width={12} />
-      </StyledTableHeader>
+      </StyledClickableContainer>
     </th>
   );
 
 };
 
-const Remarks = ({ id, content }) => {
-  const [input, setInput] = useState(false);
+const Remarks = ({ id, content, isEditing, handleIsEditing }) => {
   const [value, setValue] = useState(content);
   const handleType = ({ target: { value } }) => {
     setValue(value);
@@ -233,18 +264,43 @@ const Remarks = ({ id, content }) => {
       value,
       type: "remarks",
     });
-    setInput(false);
+    handleIsEditing(false);
   };
-  return input ? (
-    <div>
-      <TextInput value={value} onChange={handleType} />
-      <Button onClick={handleSubmit}>submit</Button>
-    </div>
-  ) : (
-    <div>
-      <Button onClick={() => setInput(true)}>Remarks:</Button> {value}
-    </div>
-  );
+
+  return (
+    <>
+      {isEditing ?
+        <>
+          <SimpleGrid cols={2}>
+            <Textarea
+              label={
+                <Text>
+                  <StyledLabel>Mentor comments:</StyledLabel>
+                </Text>
+              }
+              autosize
+              minRows={3}
+              value={value}
+              onChange={handleType}
+              mb='0.5rem'
+            />
+          </SimpleGrid>
+          <Button variant='outline' compact onClick={handleSubmit}>Submit</Button>
+          <Button variant='outline' compact color='gray' ml='0.3rem' onClick={handleIsEditing}>Cancel</Button>
+        </>
+        :
+        <>
+          <Text><StyledLabel>Mentor comments:</StyledLabel>
+            <SimpleGrid cols={2}>
+              {value || 'N/A'}
+            </SimpleGrid>
+          </Text>
+
+          <Button variant='outline' compact color='gray' mt='1rem' onClick={handleIsEditing}>Edit Comments</Button>
+        </>
+      }
+    </>
+  )
 };
 
 const sortRequests = ({ requests, reverse, sorter }) => {
