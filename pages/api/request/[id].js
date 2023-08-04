@@ -1,13 +1,13 @@
 import { getToken } from "next-auth/jwt";
 import {
   changeRequest,
-  deleteRequest,
   // getMenteeRequestsByDiscordId,
   getUserById,
 } from "../../../util/databaseAccess";
 import { checkAdmin, checkMentor } from "../../../util/helper";
+import { deleteRequest } from "../../../util/dbaccess/requestMethods";
 
-export default async (req, res) => {
+export default async function requestByID(req, res) {
   const fetchToken = getToken({ req });
   if (req.query.id.length == 18) {
     res.status(400).send({ error: "invalid id" });
@@ -49,4 +49,4 @@ export default async (req, res) => {
   } catch (error) {
     res.status(401).send(error);
   }
-};
+}

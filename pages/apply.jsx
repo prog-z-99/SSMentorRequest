@@ -11,8 +11,7 @@ export default function Apply() {
   const { status } = useSession();
   const router = useRouter();
 
-  const [isPending, setIsPending] = useState(false);
-  const [isMentor, setIsMentor] = useState(false);
+  const [appStatus, setAppStatus] = useState("loading");
 
   let content = <MentorForm />;
 
@@ -23,18 +22,17 @@ export default function Apply() {
         break;
       case "authenticated":
         axios.get("/api/user/application").then(({ data }) => {
-          setIsPending(data.isPending);
-          setIsMentor(data.isMentor);
+          setAppStatus(data);
         });
         break;
     }
   }, [status, router]);
 
-  if (isPending)
+  if (appStatus.isPending)
     content =
       "We have received your application! Please wait for us to process it.";
 
-  if (isMentor)
+  if (appStatus.isMentor)
     content = (
       <>
         Mentor already registered! You can head over to{" "}

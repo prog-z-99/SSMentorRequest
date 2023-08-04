@@ -3,11 +3,13 @@ import Users from "../../models/userModel";
 import { cleaner } from "../helper";
 
 export async function checkAppStatus(id) {
-  const fetchAppStatus = MentorApp.findOne({ discordId: id });
+  const appStatus = MentorApp.findOne({ discordId: id });
   const mentor = await Users.findOne({ discordId: id });
-
   if (mentor?.isMentor) return { isMentor: true };
-  if (await fetchAppStatus) return { isPending: true };
+  if (await appStatus) {
+    if (appStatus.processed) return { isDenied: true };
+    return { isPending: true };
+  }
   return {};
 }
 

@@ -1,5 +1,8 @@
 import { getToken } from "next-auth/jwt";
-import { createRequest, isRequestPending } from "../../util/databaseAccess";
+import {
+  createRequest,
+  isRequestPending,
+} from "../../util/dbaccess/requestMethods";
 
 export default async function Request(req, res) {
   const token = await getToken({ req });
