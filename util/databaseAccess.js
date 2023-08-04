@@ -68,8 +68,8 @@ export async function getAllRequests() {
   return requests;
 }
 
-export async function getTypeRequests(type) {
-  const requests = await requestFunctions(Request.find({ status: type }));
+export async function getTypeRequests(status) {
+  const requests = await requestFunctions(Request.find({ status }));
   return requests;
 }
 

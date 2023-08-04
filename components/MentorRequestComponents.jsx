@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styled from '@emotion/styled';
+import styled from "@emotion/styled";
 import {
   // getStatusColor,
   getStatusIcon,
@@ -28,7 +28,12 @@ import Icon from "./Icon";
 //   setRequests?
 // }
 
-export const MentorRequestTable = ({ requests, isAdmin, setRequests }) => {
+export const MentorRequestTable = ({
+  requests,
+  isAdmin,
+  setRequests,
+  isLoading,
+}) => {
   return (
     <Table highlightOnHover striped>
       <thead>
@@ -44,9 +49,17 @@ export const MentorRequestTable = ({ requests, isAdmin, setRequests }) => {
         </tr>
       </thead>
       <tbody>
-        {requests.map((row) => (
-          <RequestRow row={row} key={`TableRow${row._id}`} isAdmin={isAdmin} />
-        ))}
+        {isLoading ? (
+          <Text> loading requests </Text>
+        ) : (
+          requests.map((row) => (
+            <RequestRow
+              row={row}
+              key={`TableRow${row._id}`}
+              isAdmin={isAdmin}
+            />
+          ))
+        )}
       </tbody>
     </Table>
   );
@@ -60,7 +73,7 @@ export const RequestRow = ({ row, isAdmin }) => {
       <tr>
         <td onClick={() => setRowOpen((o) => !o)}>
           <StyledClickableContainer>
-            <Icon type={rowOpen ? 'chevron-up' : 'chevron-down'} width={16} />
+            <Icon type={rowOpen ? "chevron-up" : "chevron-down"} width={16} />
           </StyledClickableContainer>
         </td>
         <td>
@@ -106,7 +119,7 @@ export const RequestRow = ({ row, isAdmin }) => {
       {rowOpen && (
         <tr>
           <td colSpan={12}>
-            <Box p='md'>
+            <Box p="md">
               <Details item={row} isAdmin={isAdmin} />
             </Box>
           </td>
@@ -118,7 +131,7 @@ export const RequestRow = ({ row, isAdmin }) => {
 
 const StyledLabel = styled.span`
   font-weight: 600;
-`
+`;
 
 const Details = ({ item, isAdmin }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -126,7 +139,7 @@ const Details = ({ item, isAdmin }) => {
 
   const handleIsEditing = () => {
     setIsEditing(!isEditing);
-  }
+  };
 
   const handleArchive = () => {
     if (confirm("Are you sure you want to archive this request?")) {
@@ -152,45 +165,60 @@ const Details = ({ item, isAdmin }) => {
             <ClickToCopy>{item.mentor?.discordId}</ClickToCopy>
           </Text>
           <Text>
-            <StyledLabel>Accepted:</StyledLabel> {dayjs(item.accepted).format("DD / MMM / YYYY")}
+            <StyledLabel>Accepted:</StyledLabel>{" "}
+            {dayjs(item.accepted).format("DD / MMM / YYYY")}
           </Text>
         </>
       )}
       {item.completed && (
         <Text>
-          <StyledLabel>Completed:</StyledLabel> {dayjs(item.completed).format("DD / MMM / YYYY")}
+          <StyledLabel>Completed:</StyledLabel>{" "}
+          {dayjs(item.completed).format("DD / MMM / YYYY")}
         </Text>
       )}
-      <StyledLabel>Discord ID:</StyledLabel> <ClickToCopy>{item.discordId}</ClickToCopy>
-      <Space h='sm' />
-      <Text><StyledLabel>Student notes:</StyledLabel>
-        <SimpleGrid cols={2}>
-          {item.info || 'N/A'}
-        </SimpleGrid>
+      <StyledLabel>Discord ID:</StyledLabel>{" "}
+      <ClickToCopy>{item.discordId}</ClickToCopy>
+      <Space h="sm" />
+      <Text>
+        <StyledLabel>Student notes:</StyledLabel>
+        <SimpleGrid cols={2}>{item.info || "N/A"}</SimpleGrid>
       </Text>
-      <Space h='sm' />
+      <Space h="sm" />
       <Remarks
         id={_id}
         content={item.remarks}
         isEditing={isEditing}
         handleIsEditing={handleIsEditing}
       />
-      <Space h='lg' />
-
-      {!isEditing ? <>
-        <Text><StyledLabel>Other Actions:</StyledLabel></Text>
-        <Button compact variant='outline' onClick={handleArchive}>Archive Request</Button>
-        {isAdmin && (
-          <>
-            {" "}
-            <Button compact variant='outline' color='red' onClick={handleDelete}>Delete Request</Button>{" "}
-            <Link href={`/admin/student/${item.discordId}`}>
-              <Button compact variant='outline' color='teal'>All requests by this student</Button>
-            </Link>
-          </>
-        )}
-      </>
-        : null}
+      <Space h="lg" />
+      {!isEditing ? (
+        <>
+          <Text>
+            <StyledLabel>Other Actions:</StyledLabel>
+          </Text>
+          <Button compact variant="outline" onClick={handleArchive}>
+            Archive Request
+          </Button>
+          {isAdmin && (
+            <>
+              {" "}
+              <Button
+                compact
+                variant="outline"
+                color="red"
+                onClick={handleDelete}
+              >
+                Delete Request
+              </Button>{" "}
+              <Link href={`/admin/student/${item.discordId}`}>
+                <Button compact variant="outline" color="teal">
+                  All requests by this student
+                </Button>
+              </Link>
+            </>
+          )}
+        </>
+      ) : null}
     </Container>
   );
 };
@@ -218,7 +246,7 @@ const TableSelect = ({ request }) => {
 const StyledClickableContainer = styled.div`
   cursor: pointer;
   display: flex;
-`
+`;
 
 export const TableHeader = ({ header, setRequests, requests }) => {
   const { title, sorter } = header;
@@ -242,16 +270,17 @@ export const TableHeader = ({ header, setRequests, requests }) => {
     setAsc(!asc);
   };
 
-
   return (
     <th>
-      <StyledClickableContainer onClick={() => handleClick()} disabled={!setRequests}>
+      <StyledClickableContainer
+        onClick={() => handleClick()}
+        disabled={!setRequests}
+      >
         <span>{header.title}</span>
-        <Icon type='selector' width={12} />
+        <Icon type="selector" width={12} />
       </StyledClickableContainer>
     </th>
   );
-
 };
 
 const Remarks = ({ id, content, isEditing, handleIsEditing }) => {
@@ -269,7 +298,7 @@ const Remarks = ({ id, content, isEditing, handleIsEditing }) => {
 
   return (
     <>
-      {isEditing ?
+      {isEditing ? (
         <>
           <SimpleGrid cols={2}>
             <Textarea
@@ -282,25 +311,42 @@ const Remarks = ({ id, content, isEditing, handleIsEditing }) => {
               minRows={3}
               value={value}
               onChange={handleType}
-              mb='0.5rem'
+              mb="0.5rem"
             />
           </SimpleGrid>
-          <Button variant='outline' compact onClick={handleSubmit}>Submit</Button>
-          <Button variant='outline' compact color='gray' ml='0.3rem' onClick={handleIsEditing}>Cancel</Button>
+          <Button variant="outline" compact onClick={handleSubmit}>
+            Submit
+          </Button>
+          <Button
+            variant="outline"
+            compact
+            color="gray"
+            ml="0.3rem"
+            onClick={handleIsEditing}
+          >
+            Cancel
+          </Button>
         </>
-        :
+      ) : (
         <>
-          <Text><StyledLabel>Mentor comments:</StyledLabel>
-            <SimpleGrid cols={2}>
-              {value || 'N/A'}
-            </SimpleGrid>
+          <Text>
+            <StyledLabel>Mentor comments:</StyledLabel>
+            <SimpleGrid cols={2}>{value || "N/A"}</SimpleGrid>
           </Text>
 
-          <Button variant='outline' compact color='gray' mt='1rem' onClick={handleIsEditing}>Edit Comments</Button>
+          <Button
+            variant="outline"
+            compact
+            color="gray"
+            mt="1rem"
+            onClick={handleIsEditing}
+          >
+            Edit Comments
+          </Button>
         </>
-      }
+      )}
     </>
-  )
+  );
 };
 
 const sortRequests = ({ requests, reverse, sorter }) => {
