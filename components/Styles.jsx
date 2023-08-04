@@ -2,6 +2,7 @@ import { MultiSelect, Select, Tooltip } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { copyClip } from "../util/helper";
 import { getAllChampions } from "../util/helper";
+import styled from "@emotion/styled";
 
 export const FormSelect = ({
   className,
@@ -83,6 +84,7 @@ export const ClickToCopy = ({ children }) => {
   return (
     <Tooltip.Floating label="Click to copy">
       <a
+        style={{ cursor: "pointer" }}
         onClick={() => {
           copyClip(children);
         }}
@@ -92,3 +94,8 @@ export const ClickToCopy = ({ children }) => {
     </Tooltip.Floating>
   );
 };
+
+export const StyledClickableContainer = styled.a`
+  cursor: pointer;
+  display: flex;
+`;

@@ -4,6 +4,7 @@ import {
   // getStatusColor,
   getStatusIcon,
   ClickToCopy,
+  StyledClickableContainer,
 } from "./Styles";
 import dayjs from "dayjs";
 import {
@@ -48,19 +49,19 @@ export const MentorRequestTable = ({
           ))}
         </tr>
       </thead>
-      <tbody>
-        {isLoading ? (
-          <Text> loading requests </Text>
-        ) : (
-          requests.map((row) => (
+      {isLoading ? (
+        <Text> loading requests </Text>
+      ) : (
+        <tbody>
+          {requests.map((row) => (
             <RequestRow
               row={row}
               key={`TableRow${row._id}`}
               isAdmin={isAdmin}
             />
-          ))
-        )}
-      </tbody>
+          ))}
+        </tbody>
+      )}
     </Table>
   );
 };
@@ -90,9 +91,7 @@ export const RequestRow = ({ row, isAdmin }) => {
           </Text>
         </td>
         <td>
-          <StyledClickableContainer>
-            <ClickToCopy>{row.discordName}</ClickToCopy>
-          </StyledClickableContainer>
+          <ClickToCopy>{row.discordName}</ClickToCopy>
         </td>
         <td>
           <a
@@ -243,10 +242,6 @@ const TableSelect = ({ request }) => {
     />
   );
 };
-const StyledClickableContainer = styled.div`
-  cursor: pointer;
-  display: flex;
-`;
 
 export const TableHeader = ({ header, setRequests, requests }) => {
   const { title, sorter } = header;
@@ -296,55 +291,51 @@ const Remarks = ({ id, content, isEditing, handleIsEditing }) => {
     handleIsEditing(false);
   };
 
-  return (
+  return isEditing ? (
     <>
-      {isEditing ? (
-        <>
-          <SimpleGrid cols={2}>
-            <Textarea
-              label={
-                <Text>
-                  <StyledLabel>Mentor comments:</StyledLabel>
-                </Text>
-              }
-              autosize
-              minRows={3}
-              value={value}
-              onChange={handleType}
-              mb="0.5rem"
-            />
-          </SimpleGrid>
-          <Button variant="outline" compact onClick={handleSubmit}>
-            Submit
-          </Button>
-          <Button
-            variant="outline"
-            compact
-            color="gray"
-            ml="0.3rem"
-            onClick={handleIsEditing}
-          >
-            Cancel
-          </Button>
-        </>
-      ) : (
-        <>
-          <Text>
-            <StyledLabel>Mentor comments:</StyledLabel>
-            <SimpleGrid cols={2}>{value || "N/A"}</SimpleGrid>
-          </Text>
+      <SimpleGrid cols={2}>
+        <Textarea
+          label={
+            <Text>
+              <StyledLabel>Mentor comments:</StyledLabel>
+            </Text>
+          }
+          autosize
+          minRows={3}
+          value={value}
+          onChange={handleType}
+          mb="0.5rem"
+        />
+      </SimpleGrid>
+      <Button variant="outline" compact onClick={handleSubmit}>
+        Submit
+      </Button>
+      <Button
+        variant="outline"
+        compact
+        color="gray"
+        ml="0.3rem"
+        onClick={handleIsEditing}
+      >
+        Cancel
+      </Button>
+    </>
+  ) : (
+    <>
+      <Text>
+        <StyledLabel>Mentor comments:</StyledLabel>
+        <SimpleGrid cols={2}>{value || "N/A"}</SimpleGrid>
+      </Text>
 
-          <Button
-            variant="outline"
-            compact
-            color="gray"
-            mt="1rem"
-            onClick={handleIsEditing}
-          >
-            Edit Comments
-          </Button>
-        </>
-      )}
+      <Button
+        variant="outline"
+        compact
+        color="gray"
+        mt="1rem"
+        onClick={handleIsEditing}
+      >
+        Edit Comments
+      </Button>
     </>
   );
 };

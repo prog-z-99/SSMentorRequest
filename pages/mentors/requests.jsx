@@ -27,7 +27,6 @@ export default function Mentors() {
         axios
           .get("/api/admin/requests")
           .then(({ data }) => {
-            setIsLoading(false);
             setRequests(data);
             const newPile = { All: data };
             setRequestsPile(newPile);
