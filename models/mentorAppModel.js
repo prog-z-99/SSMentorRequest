@@ -56,12 +56,14 @@ const MentorAppSchema = mongoose.Schema(
     },
     comments: [
       {
-        mentor: {
+        commenter: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
+          required: true,
         },
-        details: {
+        content: {
           type: String,
+          required: true,
         },
       },
     ],

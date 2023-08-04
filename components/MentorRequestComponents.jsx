@@ -53,10 +53,10 @@ export const MentorRequestTable = ({
         <Text> loading requests </Text>
       ) : (
         <tbody>
-          {requests.map((row) => (
+          {requests.map((row, i) => (
             <RequestRow
               row={row}
-              key={`TableRow${row._id}`}
+              key={`TableRow${row._id}${i}`}
               isAdmin={isAdmin}
             />
           ))}
