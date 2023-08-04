@@ -3,10 +3,7 @@ import {
   checkAppStatus,
   checkPendingApp,
   createApp,
-  deleteApp,
-  voteOnApp,
-} from "../../../util/dbaccess/applications";
-import { isUserAdmin, isUserReviewer } from "../../../util/databaseAccess";
+} from "../../../util/dbaccess/applicationsMethods";
 
 const userApplication = async (req, res) => {
   const token = await getToken({ req });
@@ -27,27 +24,6 @@ const userApplication = async (req, res) => {
 
         await createApp(token, req.body);
         message = true;
-        break;
-      }
-      case "PUT": {
-        const requester = await isUserReviewer(token.sub);
-        if (requester) {
-          voteOnApp({ ...req.body, reviewer: token.sub });
-          message = "Vote success!";
-        } else throw "Not authorized";
-        break;
-      }
-      case "PATCH": {
-        const requester = await isUserReviewer(token.sub);
-        if (!requester) throw "Not authorized";
-
-        break;
-      }
-      case "DELETE": {
-        const requester = await isUserAdmin(token.sub);
-        if (requester) {
-          deleteApp(req.body);
-        } else throw "Not authorized";
         break;
       }
     }

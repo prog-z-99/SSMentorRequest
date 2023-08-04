@@ -140,8 +140,7 @@ export async function getMentorRequests(_id) {
 export async function getUserById(id) {
   return await User.findOne({ discordId: id })
     .select("-__v -createdAt -updatedAt")
-    .lean()
-    .then((user) => singleCleaner(user));
+    .lean();
 }
 
 export async function isUserAdmin(id) {

@@ -1,6 +1,7 @@
 import MentorApp from "../../models/mentorAppModel";
 import Users from "../../models/userModel";
-import { cleaner } from "../helper";
+import { getUserById } from "../databaseAccess";
+import { getUsersById } from "./userMethods";
 
 export async function checkAppStatus(id) {
   const appStatus = MentorApp.findOne({ discordId: id });
@@ -29,11 +30,21 @@ export async function createApp(user, details) {
 
 export async function getAllApps(processed) {
   const query = processed !== undefined ? { processed } : {};
-  return await MentorApp.find(query)
+  const apps = await MentorApp.find(query)
     .select(" -updatedAt -__v")
-    .populate("yay nay meh")
-    .lean()
-    .then((data) => cleaner(data));
+    .populate("comments.commenter")
+    .lean();
+  //This should be simpler, but at least it works atm
+  const newApps = await Promise.all(
+    apps.map(async (app) => {
+      return {
+        ...app,
+        voted: await getUsersById(app.yay.concat(app.nay.concat(app.meh))),
+      };
+    })
+  );
+
+  return newApps;
 }
 
 export async function voteOnApp({ id, vote, reviewer }) {
@@ -52,16 +63,12 @@ export async function deleteApp(id) {
 }
 
 export async function processApp(id) {
-  const resp = await MentorApp.findOneAndUpdate(
-    { discordId: id },
-    { processed: true }
-  );
-  console.log(resp);
+  await MentorApp.findOneAndUpdate({ discordId: id }, { processed: true });
 }
 
-export async function commentApp({ reviewer, id, comment }) {
-  const app = await MentorApp.findOne({ discordId: id });
-  app.comments = app.comments.filter((target) => target.mentor != reviewer);
-  app.comments.push({ mentor: reviewer, comment });
+export async function commentApp({ commenterId, user, content }) {
+  const app = await MentorApp.findOne({ discordId: user });
+  const commenter = await getUserById(commenterId);
+  app.comments.push({ commenter: commenter._id, content });
   await app.save();
 }
