@@ -138,8 +138,6 @@ const AppDetails = ({ item, reviewerId }) => {
     axios.post("/api/user/mentor", { user: { discordId }, command: "DENY" });
   };
 
-  if (item.comments) console.log(item.comments);
-
   return (
     <Container fluid>
       <Grid>

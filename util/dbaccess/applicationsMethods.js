@@ -37,7 +37,6 @@ export async function getAllApps(processed) {
   //This should be simpler, but at least it works atm
   const newApps = await Promise.all(
     apps.map(async (app) => {
-      // console.log(app);
       return {
         ...app,
         voted: await getUsersById(app.yay.concat(app.nay.concat(app.meh))),
@@ -64,11 +63,7 @@ export async function deleteApp(id) {
 }
 
 export async function processApp(id) {
-  const resp = await MentorApp.findOneAndUpdate(
-    { discordId: id },
-    { processed: true }
-  );
-  console.log(resp);
+  await MentorApp.findOneAndUpdate({ discordId: id }, { processed: true });
 }
 
 export async function commentApp({ commenterId, user, content }) {
