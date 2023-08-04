@@ -2,7 +2,7 @@ import { Button, MultiSelect, Select, Table, Title } from "@mantine/core";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { regions, roles, userSelectCommand } from "../util/datalist";
-import { getAllChampions } from "../util/helper";
+import { getAllMentorChampions } from "../util/helper";
 
 export const MentorList = ({ mentors }) => {
   return (
@@ -44,7 +44,7 @@ export const MentorProfileComponent = ({
   const [selectedRoles, setSelectedRoles] = useState(preferredRoles);
   useEffect(() => {
     const getChampions = async () => {
-      setChampions(await getAllChampions());
+      setChampions(await getAllMentorChampions());
     };
     getChampions();
   }, []);

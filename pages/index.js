@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import React from "react";
+import dbConnect from "../util/mongodb";
 
 export default function Home() {
   return (
@@ -153,4 +154,9 @@ export default function Home() {
       `}</style>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  await dbConnect();
+  return { props: {} };
 }

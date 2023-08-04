@@ -19,7 +19,7 @@ import { useEffect } from "react";
 export const AppList = ({ reviewerId }) => {
   const [applications, setApplications] = useState();
   const [allApps, setAllApps] = useState([]);
-  console.log(reviewerId);
+
   useEffect(() => {
     axios.get("/api/admin/apps").then(({ data }) => {
       setApplications(filterApps(data, false));
@@ -48,6 +48,7 @@ export const AppList = ({ reviewerId }) => {
           </tr>
         </thead>
         <tbody>
+          {applications?.length == 0 && <>All apps processed!</>}
           {applications?.map((app, i) => (
             <AppRow
               app={app}
@@ -157,7 +158,10 @@ const AppDetails = ({ item, reviewerId }) => {
           </Chip.Group>
         </Grid.Col>
         <Grid.Col span={3}>
-          <Button onClick={handleAccept} disabled={processed}>
+          <Button
+            onClick={handleAccept}
+            //disabled={processed}
+          >
             Add mentor
           </Button>
           <Button onClick={handleDeny} disabled={processed}>

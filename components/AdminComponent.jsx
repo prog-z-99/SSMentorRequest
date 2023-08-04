@@ -83,7 +83,9 @@ export const AdminComponent = ({ mentors }) => {
               <UserRankSelect user={mentor} />
             </td>
             <td>
-              <Button onClick={() => DeleteUser(mentor)}>Delete</Button>
+              <Button disabled={true} onClick={() => DeleteUser(mentor)}>
+                Delete
+              </Button>
             </td>
           </tr>
         ))}

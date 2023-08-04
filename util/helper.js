@@ -1,4 +1,5 @@
 import axios from "axios";
+import { champRoles } from "./datalist";
 
 export function checkAdmin(user) {
   if (!user) return false;
@@ -40,6 +41,10 @@ export async function getAllChampions() {
   return tempList;
 }
 
+export async function getAllMentorChampions() {
+  return (await getAllChampions()).concat(champRoles);
+}
+
 export function cleaner(items) {
   return items.map((item) => {
     return singleCleaner(item);
@@ -64,3 +69,11 @@ export function singleCleaner(obj) {
 
   return obj;
 }
+
+export const getCleanedDiscordUser = (user) => {
+  if (!user) return "missing";
+
+  if (user.discriminator == "0") return `${user.username || user.name}`;
+
+  return `${user.name || user.username}#${user.discriminator}`;
+};

@@ -1,48 +1,34 @@
-import { React } from "react";
+import { React, useEffect, useState } from "react";
 import Layout from "../../../components/layout";
-import {
-  getMentorRequests,
-  getUserById,
-  isUserAdmin,
-} from "../../../util/databaseAccess";
-import { getToken } from "next-auth/jwt";
 import { MentorRequestTable } from "../../../components/MentorRequestComponents";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import axios from "axios";
 
-export default function MentorById({ mentor, requests }) {
+export default function MentorById() {
+  const { status, data: session } = useSession();
+  const router = useRouter();
+  const [mentor, setMentor] = useState();
+  const [requests, setRequests] = useState([]);
+
+  useEffect(() => {
+    switch (status) {
+      case "unauthenticated":
+        router.push("/api/auth/signin");
+        break;
+      case "authenticated":
+        axios.get(`/api/admin/mentor/${router.query.id}`).then(({ data }) => {
+          console.log(data);
+          setMentor(data.mentor);
+          setRequests(data.requests);
+        });
+    }
+  }, [status, router]);
+
   return (
     <Layout>
-      {mentor.discordName} - {mentor.discordId}
+      {mentor?.discordName} - {mentor?.discordId}
       <MentorRequestTable requests={requests} />
     </Layout>
   );
-}
-
-export async function getServerSideProps({ params, req }) {
-  const fetchMentor = getUserById(params.id);
-  const token = await getToken({ req });
-
-  if (!token) {
-    return {
-      redirect: {
-        destination: "/api/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-
-  const user = await isUserAdmin(token.sub);
-  const mentor = await fetchMentor;
-
-  if (!user || !mentor)
-    return {
-      redirect: {
-        destination: "/",
-      },
-    };
-
-  const requests = await getMentorRequests(mentor._id);
-
-  return {
-    props: { mentor, requests },
-  };
 }

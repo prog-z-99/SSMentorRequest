@@ -50,18 +50,7 @@ export const userSelectCommand = (type) => `SET_${type.toUpperCase()}`;
 
 export const roles = ["Top", "Jungle", "Mid", "ADC", "Support"];
 
-export const rtTitles = [
-  "",
-  "Created",
-  "Discord Username",
-  "OP.GG",
-  "Rank",
-  "Region",
-  "Role",
-  "Champions",
-  "Timezone",
-  "Status",
-];
+export const champRoles = roles.map((role) => `All ${role} champions`);
 
 export const rtHeader = [
   { title: "" },
@@ -94,23 +83,6 @@ export const rtHeader = [
     sorter: (a, b) => statuses.indexOf(a.status) - statuses.indexOf(b.status),
   },
 ];
-
-export const rtFields = [
-  "createdAt",
-  "discordName",
-  "summonerName",
-  "rank",
-  "region",
-  "role",
-  "champions",
-  "timezone",
-  "status",
-];
-
-export const requestTableFormat = rtTitles.map((t, i) => ({
-  title: t,
-  field: rtFields[i],
-}));
 
 const mentorFormValues = [
   "What made you want to apply as a mentor?",

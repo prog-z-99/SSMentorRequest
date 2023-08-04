@@ -14,16 +14,20 @@ export default function Mentors() {
   const [requestsPile, setRequestsPile] = useState({});
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     switch (status) {
       case "unauthenticated":
-        router.push("/");
+        router.push("/api/auth/signin");
         break;
       case "authenticated":
         axios
           .get("/api/admin/requests")
-          .then(({ data }) => setRequests(data))
+          .then(({ data }) => {
+            setIsLoaded(true);
+            setRequests(data);
+          })
           .catch(() => router.push("/"));
         axios.get("/api/user/admin").then(({ data }) => setIsAdmin(data));
         break;
@@ -43,22 +47,24 @@ export default function Mentors() {
 
   return (
     <Layout>
-      <Tabs onTabChange={onTabChange}>
-        <Tabs.List>
-          <Tabs.Tab value="Not Accepted">Not Accepted</Tabs.Tab>
-          <Tabs.Tab value="In-Progress">In-Progress</Tabs.Tab>
-          <Tabs.Tab value="Completed">Completed</Tabs.Tab>
-          <Tabs.Tab value="Problem">Problem</Tabs.Tab>
-        </Tabs.List>
-      </Tabs>
-      {requests.length == 0 ? (
-        <Text> loading requests </Text>
+      {isLoaded ? (
+        <>
+          <Tabs onTabChange={onTabChange}>
+            <Tabs.List>
+              <Tabs.Tab value="Not Accepted">Not Accepted</Tabs.Tab>
+              <Tabs.Tab value="In-Progress">In-Progress</Tabs.Tab>
+              <Tabs.Tab value="Completed">Completed</Tabs.Tab>
+              <Tabs.Tab value="Problem">Problem</Tabs.Tab>
+            </Tabs.List>
+          </Tabs>
+          <MentorRequestTable
+            isAdmin={isAdmin}
+            requests={requests}
+            setRequests={setRequests}
+          />
+        </>
       ) : (
-        <MentorRequestTable
-          isAdmin={isAdmin}
-          requests={requests}
-          setRequests={setRequests}
-        />
+        <Text> loading requests </Text>
       )}
     </Layout>
   );
