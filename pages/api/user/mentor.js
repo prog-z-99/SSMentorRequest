@@ -4,7 +4,7 @@ import {
   tryRegisterMentor,
 } from "../../../util/databaseAccess";
 import { getToken } from "next-auth/jwt";
-import { processApp } from "../../../util/dbaccess/applications";
+import { processApp } from "../../../util/dbaccess/applicationsMethods";
 
 const userMentor = async (req, res) => {
   const token = await getToken({ req });

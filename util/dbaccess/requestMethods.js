@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Request from "../../models/requestModel";
 import dbConnect from "../mongodb";
+import { getCleanedDiscordUser } from "../helper";
 
 mongoose.set("strictQuery", false);
 dbConnect();
@@ -11,13 +12,16 @@ export async function deleteRequest(id) {
 }
 
 export async function createRequest({ values, user }) {
-  const pending = isRequestPending(user);
+  const pending = await isRequestPending(user.sub);
+
   if (pending) throw Error;
+
   const request = new Request({
     ...values,
-    discordName: `${user.name}#${user.discriminator}`,
+    discordName: getCleanedDiscordUser(user),
     discordId: user.sub,
   });
+
   return await request.save();
 }
 
