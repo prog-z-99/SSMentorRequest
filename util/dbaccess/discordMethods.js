@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const getLatestProfile = async (id) => {
+export const getLatestDiscordProfile = async (id) => {
   return await axios
     .get(`https://discord.com/api/v9/users/${id}`, {
       headers: { Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}` },
