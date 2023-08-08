@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 
 export default function MentorById() {
-  const { status, data: session } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const [mentor, setMentor] = useState();
   const [requests, setRequests] = useState([]);

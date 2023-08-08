@@ -17,6 +17,6 @@ export async function getStaticProps() {
 
   return {
     props: { mentors: cleaner(mentors) },
-    revalidate: 60000,
+    revalidate: 60,
   };
 }
