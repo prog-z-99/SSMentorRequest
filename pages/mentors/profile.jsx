@@ -1,48 +1,26 @@
 import { Table } from "@mantine/core";
-import { getToken } from "next-auth/jwt";
 import { React } from "react";
 import Layout from "../../components/layout";
 import { MentorProfileComponent } from "../../components/MentorListComponents";
 import { RequestRow } from "../../components/MentorRequestComponents";
-import { getMentorRequests, getUserById } from "../../util/databaseAccess";
-import { checkMentor } from "../../util/helper";
+import { useAuthTest } from "../../hooks/useAuthTest";
 
-export default function Mentors({ user, requests }) {
+export default function Mentors() {
+  const { mentor, requests, loading, error } = useAuthTest(`/api/mentor`);
+
+  if (loading) return <Layout>loading</Layout>;
+
+  if (error) alert(error);
   return (
     <Layout>
-      <MentorProfileComponent mentor={user} />
+      <MentorProfileComponent mentor={mentor} />
       <Table highlightOnHover striped>
         <tbody>
-          {requests.map((row) => (
+          {requests?.map((row) => (
             <RequestRow row={row} key={`TableRow${row._id}`} />
           ))}
         </tbody>
       </Table>
     </Layout>
   );
-}
-
-export async function getServerSideProps({ req }) {
-  const token = await getToken({ req });
-  if (!token) {
-    return {
-      redirect: {
-        destination: "/api/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-  const user = await getUserById(token.sub);
-
-  if (!user || !checkMentor(user))
-    return {
-      redirect: {
-        destination: "/",
-      },
-    };
-
-  const fetchRequests = getMentorRequests(user._id);
-  return {
-    props: { user, requests: await fetchRequests },
-  };
 }

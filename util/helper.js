@@ -41,9 +41,9 @@ export async function getAllChampions() {
   return tempList;
 }
 
-export async function getAllMentorChampions() {
-  return (await getAllChampions()).concat(champRoles);
-}
+export const getAllMentorChampions = async () => {
+  return champRoles.concat(await getAllChampions());
+};
 
 export function cleaner(items) {
   return items.map((item) => {
