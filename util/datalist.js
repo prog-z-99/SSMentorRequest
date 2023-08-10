@@ -14,7 +14,7 @@ export const ranks = [
 export const fullRanks = () => {
   const newRanks = [];
   ranks.map((rank, i) => {
-    if (i < 6) {
+    if (i < ranks.length - 3) {
       for (let i = 4; i > 0; i--) {
         newRanks.push(`${rank} ${i}`);
       }
