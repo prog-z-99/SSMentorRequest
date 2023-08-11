@@ -25,6 +25,8 @@ export const fullRanks = () => {
 
 export const statuses = ["Not Accepted", "In-Progress", "Completed", "Problem"];
 
+export const appStatuses = ["pending", "trial", "processed"];
+
 export const regions = [
   "BR",
   "EUW",
@@ -100,6 +102,8 @@ const mentorFormFields = [
   "rebuttalEx",
   "experience",
 ];
+
+export const trialAcceptText = `Thank you for your interest in being a mentor at Summoner School. We have reviewed your application and would like to move you forward in the process by giving you a trial period! To get started please say hi in #mentor-chat and read the pins in #important-chat.`;
 
 export const mentorFormQuestions = mentorFormValues.map((v, i) => ({
   field: mentorFormFields[i],

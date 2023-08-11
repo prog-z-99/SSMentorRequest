@@ -1,7 +1,8 @@
-import { MultiSelect, Select, Tooltip } from "@mantine/core";
+import { Loader, MultiSelect, Select, Tooltip } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { copyClip } from "../util/helper";
 import { getAllChampions } from "../util/helper";
+import Layout from "./layout";
 import styled from "@emotion/styled";
 
 export const FormSelect = ({
@@ -99,3 +100,11 @@ export const StyledClickableContainer = styled.a`
   cursor: pointer;
   display: flex;
 `;
+
+export const LoaderWithLayout = () => {
+  return (
+    <Layout>
+      <Loader /> Loading
+    </Layout>
+  );
+};

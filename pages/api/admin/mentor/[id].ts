@@ -1,8 +1,8 @@
+import { getMentorRequests } from "../../../../util/dbaccess/requestMethods";
 import {
-  getMentorRequests,
   getUserById,
   isUserAdmin,
-} from "../../../../util/databaseAccess";
+} from "../../../../util/dbaccess/userMethods";
 
 import { getToken } from "next-auth/jwt";
 

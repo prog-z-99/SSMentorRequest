@@ -3,7 +3,7 @@ import {
   isUserMentor,
   isUserReviewer,
   isUserStaff,
-} from "../../../util/databaseAccess";
+} from "../../../util/dbaccess/userMethods";
 
 import { getToken } from "next-auth/jwt";
 
@@ -37,11 +37,7 @@ export default async function GetUser(req, res) {
       }
       break;
     }
-    //   case "POST": {
-    //     const response = await deleteUser(req.body);
-    //     res.status(200).send(response);
-    //     break;
-    //   }
+
     default: {
       res.status(404);
     }

@@ -1,19 +1,21 @@
 import axios from "axios";
 import { champRoles } from "./datalist";
+import dayjs from "dayjs";
 
 export function checkAdmin(user) {
-  if (!user) return false;
-  return user.isAdmin;
+  return user?.isAdmin;
 }
 
 export function checkMentor(user) {
-  if (!user) return false;
-  return user.isMentor;
+  return user?.isMentor;
+}
+
+export function checkTrial(user) {
+  return user?.isTrial;
 }
 
 export function checkStaff(user) {
-  if (!user) return false;
-  return checkAdmin(user) || checkMentor(user);
+  return checkAdmin(user) || checkMentor(user) || checkTrial(user);
 }
 
 export function checkReviewer(user) {
@@ -76,4 +78,9 @@ export const getCleanedDiscordUser = (user) => {
   if (user.discriminator == "0") return `${user.username || user.name}`;
 
   return `${user.name || user.username}#${user.discriminator}`;
+};
+
+export const getMonthsAgo = (months) => {
+  const ago = dayjs().subtract(months, "months");
+  return ago;
 };

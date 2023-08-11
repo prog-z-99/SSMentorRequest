@@ -1,9 +1,5 @@
-import {
-  getMentorRequests,
-  getUserById,
-  isUserMentor,
-} from "../../util/databaseAccess";
-
+import { getMentorRequests } from "../../util/dbaccess/requestMethods";
+import { isUserMentor, getUserById } from "../../util/dbaccess/userMethods";
 import { getToken } from "next-auth/jwt";
 
 export default async function MentorAPI(req, res) {

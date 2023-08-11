@@ -1,6 +1,6 @@
 import { getToken } from "next-auth/jwt";
-import { isUserStaff } from "../../../util/databaseAccess";
 import { getAllApps } from "../../../util/dbaccess/applicationsMethods";
+import { getUserById } from "../../../util/dbaccess/userMethods";
 
 export default async function Apps(req, res) {
   const token = await getToken({ req });
@@ -8,13 +8,13 @@ export default async function Apps(req, res) {
     res.status(403).send({ error: "what" });
     return;
   }
-  const isStaff = await isUserStaff(token.sub);
+  const user = await getUserById(token.sub);
   try {
-    if (!isStaff) throw "Not authorized";
+    if (!user.isReviewer) throw "Not authorized";
     switch (req.method) {
       case "GET": {
-        const apps = await getAllApps();
-        res.status(200).send(apps);
+        const allApps = await getAllApps();
+        res.status(200).send({ allApps, reviewerId: token.sub });
         break;
       }
 

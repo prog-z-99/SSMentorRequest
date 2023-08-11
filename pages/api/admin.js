@@ -2,41 +2,42 @@ import {
   editUser,
   deleteUser,
   getUserById,
-  getAllUsers,
-} from "../../util/databaseAccess";
+} from "../../util/dbaccess/userMethods";
+import { getAllUsers } from "../../util/dbaccess/userMethods";
 import { checkAdmin } from "../../util/helper";
 import { getToken } from "next-auth/jwt";
 
 export default async function Admin(req, res) {
-  const token = await getToken({ req });
+  try {
+    const token = await getToken({ req });
 
-  if (!token) {
-    res.status(403).send({ error: "what" });
-    return;
-  }
-  const requester = await getUserById(token.sub);
-  if (!checkAdmin(requester)) {
-    res.status(403).send({ error: "Not an admin" });
-    return;
-  }
-  switch (req.method) {
-    case "GET": {
-      const response = await getAllUsers();
-      res.status(200).send(response);
-      break;
+    if (!token) throw Error("what", { status: 400 });
+
+    const requester = await getUserById(token.sub);
+
+    if (!checkAdmin(requester)) Error("Not an admin", { status: 403 });
+
+    switch (req.method) {
+      case "GET": {
+        const users = await getAllUsers();
+        res.status(200).send({ users });
+        break;
+      }
+      case "PUT": {
+        const response = await editUser(req.body);
+        res.status(200).send(response);
+        break;
+      }
+      case "POST": {
+        const response = await deleteUser(req.body);
+        res.status(200).send(response);
+        break;
+      }
+      default: {
+        res.status(404);
+      }
     }
-    case "PUT": {
-      const response = await editUser(req.body);
-      res.status(200).send(response);
-      break;
-    }
-    case "POST": {
-      const response = await deleteUser(req.body);
-      res.status(200).send(response);
-      break;
-    }
-    default: {
-      res.status(404);
-    }
+  } catch ({ message, options: { status } }) {
+    res.status(status).send(message);
   }
 }

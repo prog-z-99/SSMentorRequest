@@ -1,9 +1,9 @@
 import { getToken } from "next-auth/jwt";
+import { isUserStaff } from "../../../util/dbaccess/userMethods";
 import {
   getAllRequests,
   getTypeRequests,
-  isUserStaff,
-} from "../../../util/databaseAccess";
+} from "../../../util/dbaccess/requestMethods";
 
 export default async function AdminRequests(req, res) {
   const token = await getToken({ req });

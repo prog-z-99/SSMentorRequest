@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { regions } from "../util/datalist";
+import { appStatuses, regions } from "../util/datalist";
 
 const MentorAppSchema = mongoose.Schema(
   {
@@ -50,9 +50,14 @@ const MentorAppSchema = mongoose.Schema(
       type: [String],
       default: [],
     },
-    processed: {
-      type: Boolean,
-      default: false,
+    appStatus: {
+      type: String,
+      enum: appStatuses,
+      default: "pending",
+    },
+    userLink: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
     comments: [
       {

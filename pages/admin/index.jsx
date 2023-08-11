@@ -1,33 +1,22 @@
-import { React, useEffect, useState } from "react";
+import { React } from "react";
 import Layout from "../../components/layout";
 import { AdminComponent } from "../../components/AdminComponent";
-import axios from "axios";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
+import { useAuthTest } from "../../hooks/useAuthTest";
+import { Loader } from "@mantine/core";
 
 export default function Admins() {
-  const { status } = useSession();
-  const router = useRouter();
+  const { users, loading } = useAuthTest("/api/admin", true);
 
-  const [mentors, setMentors] = useState([]);
-
-  useEffect(() => {
-    switch (status) {
-      case "unauthenticated":
-        router.push("/api/auth/signin");
-        break;
-      case "authenticated":
-        axios
-          .get("/api/admin")
-          .then(({ data }) => setMentors(data))
-          .catch(() => router.push("/"));
-        break;
-    }
-  }, [status, router]);
+  if (loading)
+    return (
+      <Layout>
+        <Loader /> loading
+      </Layout>
+    );
 
   return (
     <Layout>
-      <AdminComponent mentors={mentors} />
+      <AdminComponent users={users} />
     </Layout>
   );
 }
