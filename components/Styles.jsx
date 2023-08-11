@@ -105,6 +105,7 @@ export const StyledClickableContainer = styled.div`
   cursor: pointer;
   display: flex;
 `;
+
 export const LoaderWithLayout = () => {
   return (
     <Layout>

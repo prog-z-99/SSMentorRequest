@@ -15,12 +15,12 @@ const userMentor = async (req, res) => {
         switch (req.body.command) {
           case "ACCEPT": {
             await processApp(req.body.user);
-            res.status(200).send("mentor added!");
+            res.status(200).send("Mentor added!");
             break;
           }
           case "DENY": {
             await processApp(req.body.user);
-            res.status(200).send("mentor denied!");
+            res.status(200).send("Mentor denied!");
             break;
           }
         }

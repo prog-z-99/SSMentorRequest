@@ -44,12 +44,11 @@ export const AppList = ({ allApps, reviewerId }) => {
       <Table striped>
         <thead>
           <tr>
-            <th />
             <th>Discord name</th>
           </tr>
         </thead>
         <tbody>
-          {applications?.length == 0 && <>All apps processed!</>}
+          {applications?.length == 0 && <Box p='xs'>There are no applications to review at this time.</Box>}
           {applications?.map((app, i) => (
             <AppRow
               app={app}
@@ -77,15 +76,10 @@ const AppRow = ({ app, reviewerId }) => {
       <tr>
         <td onClick={() => setOpen((o) => !o)}>
           <StyledClickableContainer>
-            <Icon type={open ? "chevron-up" : "chevron-down"} width={16} />
-          </StyledClickableContainer>
-        </td>
-        <td>
-          <StyledClickableContainer>
             <Icon type={open ? 'chevron-up' : 'chevron-down'} width={16} />
             <Text ml='sm' td={app.appStatus == "processed" && "line-through"}>
-            {app.discordName}
-          </Text>
+              {app.discordName}
+            </Text>
           </StyledClickableContainer>
         </td>
       </tr>
@@ -154,12 +148,14 @@ const AppDetails = ({ item, reviewerId }) => {
           </Text>
           <Text><StyledLabel>Applied at:</StyledLabel> {dayjs(item.createdAt).format("DD/MMM/YYYY")}</Text>
           {item.appStatus == "trial" && (
-            <Link href={`/admin/mentors/${discordId}`}>
-              <Text>Request count: {item.requestCount}</Text>
-            </Link>
+            <StyledLabel>
+              <Link href={`/admin/mentors/${item.discordId}`}>
+                Requests taken: {item.requestCount}
+              </Link>
+            </StyledLabel>
           )}
         </Grid.Col>
-        <Grid.Col span={3}>
+        <Grid.Col span={4}>
           <Chip.Group label={"Vote"} value={vote} onChange={handleVote}>
             <Flex justify='flex-end' align='center'>
               <Chip value={"yay"} label={"Yay"} disabled={voteLoading}>
@@ -175,8 +171,8 @@ const AppDetails = ({ item, reviewerId }) => {
             </Flex>
           </Chip.Group>
         </Grid.Col>
-        <Grid.Col span={3}>
-          <Flex align='center'>
+        <Grid.Col span={2}>
+          <Flex justify='flex-end'>
             <ConfirmationModal item={item} />
           </Flex>
         </Grid.Col>
@@ -191,17 +187,6 @@ const AppDetails = ({ item, reviewerId }) => {
         <Grid.Col span={12}>
           <StyledLabel>Champ win con</StyledLabel>
           <Text>{item.winConEx}</Text>
-          <Button
-            onClick={handleAccept}
-            // disabled={item.appStatus == "processed"}
-          >
-            {item.appStatus == "trial" ? "Finish Trial" : "Start Trial"}
-          </Button>
-          <Button onClick={handleDeny} disabled={processed}>
-            Deny
-          </Button>
-          <CommentModal item={item} />
-          <VotedModal item={item} />
         </Grid.Col>
         <Grid.Col span={12}>
           <StyledLabel>Losing matchup</StyledLabel>
@@ -229,39 +214,42 @@ const AppDetails = ({ item, reviewerId }) => {
           <Space h="md" />
         </Grid.Col>
       </Grid>
-    </Container>
+    </Container >
   );
 };
 
 const ConfirmationModal = ({ item }) => {
-  const { processed, discordId, discordName, region } = item;
+  const { discordId, discordName, region, appStatus } = item;
   const [open, setOpen] = useState(false);
   const [action, setAction] = useState('');
 
-  const handleButtonClick = (value) => {
+  const handleButtonClick = (appStatus) => {
     setOpen(true);
-    setAction(value);
+    const statusing = appStatus === "trial" ? "ending" : "starting"
+    setAction(statusing);
   }
 
-  const handleConfirmClicked = () => {
-    if (action === 'accept') {
+  const handleConfirmClicked = (actionRequested) => {
+    if (actionRequested === "confirmMentor") {
+      // NOTE: This route is used for both starting a trial and accepting a mentor. See processApp() for more details.
       axios
         .post("/api/user/mentor", {
           user: { discordId, discordName, mentorRegion: region },
           command: "ACCEPT",
         })
         .then(({ data }) => alert(data))
-        .catch((error) => console.log(error));
-    } else if (action === 'deny') {
+        .catch((error) => alert("An error has occured."));
+    } else if (actionRequested === 'deny') {
       axios.post("/api/user/mentor", { user: { discordId }, command: "DENY" });
     }
+    setOpen(false);
   }
 
   return (
     <>
       <Modal
         centered
-        title={`Confirm Action`}
+        title={`Confirm Mentor Status`}
         size='xl'
         opened={open}
         onClose={() => setOpen(false)}
@@ -270,17 +258,33 @@ const ConfirmationModal = ({ item }) => {
           blur: 3,
         }}
       >
-        Are you sure you want to {action} <Text span fw={700}>{discordName}</Text> as a mentor?
+        <Box>
+          You are now {action} the trial mentor period for <Text span fw={700}>{discordName}</Text>.
+          <Space mb='lg' mt='lg' />
+        </Box>
         <Flex justify='flex-end'>
           <Box>
-            <Button color='teal' onClick={() => handleConfirmClicked()}><Text tt='capitalize'>{action} mentor</Text></Button>
+            {action === 'starting' &&
+              <Button color='teal' onClick={() => handleConfirmClicked('confirmMentor')}>
+                <Text tt='capitalize'>Confirm</Text>
+              </Button>
+            }
+            {action === 'ending' &&
+              <>
+                <Button color='teal' ml='xs' onClick={() => handleConfirmClicked('confirmMentor')}>
+                  <Text tt='capitalize'>Accept as mentor</Text>
+                </Button>
+                <Button color='red' ml='xs' onClick={() => handleConfirmClicked('denyMentor')}>
+                  <Text tt='capitalize'>Deny as mentor</Text>
+                </Button>
+              </>
+            }
             <Button color='gray' ml='xs' onClick={() => setOpen(false)}>Cancel</Button>
           </Box>
         </Flex>
       </Modal>
       <Flex justify='flex-end'>
-        <Button ml='xs' onClick={() => handleButtonClick('accept')}>Accept mentor</Button>
-        <Button ml='xs' onClick={() => handleButtonClick('deny')} disabled={processed}>Deny mentor</Button>
+        <Button ml='xs' onClick={() => handleButtonClick(appStatus)}>{appStatus == "trial" ? "Finish Trial" : "Start Trial"}</Button>
       </Flex>
     </>
   )
