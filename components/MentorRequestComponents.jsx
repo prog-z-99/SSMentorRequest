@@ -5,6 +5,7 @@ import {
   getStatusIcon,
   ClickToCopy,
   StyledClickableContainer,
+  StyledLabel
 } from "./Styles";
 import dayjs from "dayjs";
 import {
@@ -114,23 +115,20 @@ export const RequestRow = ({ row, isAdmin }) => {
         <td>
           <TableSelect request={row} />
         </td>
-      </tr>
+      </tr >
       {rowOpen && (
         <tr>
           <td colSpan={12}>
-            <Box p="md">
+            <Box p="xs">
               <Details item={row} isAdmin={isAdmin} />
             </Box>
           </td>
         </tr>
-      )}
+      )
+      }
     </>
   );
 };
-
-const StyledLabel = styled.span`
-  font-weight: 600;
-`;
 
 const Details = ({ item, isAdmin }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -183,9 +181,17 @@ const Details = ({ item, isAdmin }) => {
         <SimpleGrid cols={2}>{item.info || "N/A"}</SimpleGrid>
       </Text>
       <Space h="sm" />
+      <Text>
+        <StyledLabel>Mentor comments:</StyledLabel>
+        <SimpleGrid cols={2}>{item.comments?.map((comment, i) => {
+          <Text key={`Comment${i}`}>
+            <Text fs="italic" span>{comment.commenter.discordName}</Text>: {comment.content}
+          </Text>
+        }) || "N/A"}
+        </SimpleGrid>
+      </Text>
       <Remarks
-        id={_id}
-        content={item.remarks}
+        item={item}
         isEditing={isEditing}
         handleIsEditing={handleIsEditing}
       />
@@ -195,14 +201,15 @@ const Details = ({ item, isAdmin }) => {
           <Text>
             <StyledLabel>Other Actions:</StyledLabel>
           </Text>
-          <Button compact variant="outline" onClick={handleArchive}>
+          <Space h="xs" />
+          <Button size='xs' variant="outline" onClick={handleArchive}>
             Archive Request
           </Button>
           {isAdmin && (
             <>
-              {" "}
               <Button
-                compact
+                size='xs'
+                ml='xs'
                 variant="outline"
                 color="red"
                 onClick={handleDelete}
@@ -210,7 +217,7 @@ const Details = ({ item, isAdmin }) => {
                 Delete Request
               </Button>{" "}
               <Link href={`/admin/student/${item.discordId}`}>
-                <Button compact variant="outline" color="teal">
+                <Button size='xs' ml='xs' variant="outline" color="teal">
                   All requests by this student
                 </Button>
               </Link>
@@ -278,41 +285,39 @@ export const TableHeader = ({ header, setRequests, requests }) => {
   );
 };
 
-const Remarks = ({ id, content, isEditing, handleIsEditing }) => {
-  const [value, setValue] = useState(content);
-  const handleType = ({ target: { value } }) => {
-    setValue(value);
-  };
+const Remarks = ({ item, isEditing, handleIsEditing }) => {
+  const [content, setContent] = useState("");
+  const [error, setError] = useState('');
+
   const handleSubmit = async () => {
-    await axios.put(`/api/request/${id}`, {
-      value,
-      type: "remarks",
-    });
-    handleIsEditing(false);
+    await axios
+      .put(`/api/request/${item._id}`, {
+        content,
+        type: "remarks",
+      })
+      .then(() => setIsEditing(false))
+      .catch((err) => {
+        setError("An error occurred")
+      });
   };
 
   return isEditing ? (
     <>
       <SimpleGrid cols={2}>
         <Textarea
-          label={
-            <Text>
-              <StyledLabel>Mentor comments:</StyledLabel>
-            </Text>
-          }
           autosize
           minRows={3}
-          value={value}
-          onChange={handleType}
+          error={error}
+          onChange={(e) => setContent(e.currentTarget.value)}
           mb="0.5rem"
         />
       </SimpleGrid>
-      <Button variant="outline" compact onClick={handleSubmit}>
+      <Button variant="outline" size='xs' onClick={handleSubmit}>
         Submit
       </Button>
       <Button
         variant="outline"
-        compact
+        size='xs'
         color="gray"
         ml="0.3rem"
         onClick={handleIsEditing}
@@ -322,14 +327,9 @@ const Remarks = ({ id, content, isEditing, handleIsEditing }) => {
     </>
   ) : (
     <>
-      <Text>
-        <StyledLabel>Mentor comments:</StyledLabel>
-        <SimpleGrid cols={2}>{value || "N/A"}</SimpleGrid>
-      </Text>
-
       <Button
         variant="outline"
-        compact
+        size='xs'
         color="gray"
         mt="1rem"
         onClick={handleIsEditing}
