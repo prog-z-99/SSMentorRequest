@@ -95,12 +95,7 @@ export const ClickToCopy = ({ children }) => {
   );
 };
 
-export const StyledLabel = styled.span`
-  font-size: 0.9rem;
-  font-weight: 600;
-`;
-
-export const StyledClickableContainer = styled.div`
+export const StyledClickableContainer = styled.a`
   cursor: pointer;
   display: flex;
 `;
