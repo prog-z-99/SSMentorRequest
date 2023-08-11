@@ -4,7 +4,7 @@ import {
   Button,
   Container,
   Grid,
-  Group,
+  SimpleGrid,
   Chip,
   Table,
   Text,
@@ -12,9 +12,13 @@ import {
   Tabs,
   Modal,
   Textarea,
+  Flex,
+  Box,
+  Tooltip,
+  Space,
 } from "@mantine/core";
 import axios from "axios";
-import { ClickToCopy, StyledClickableContainer } from "./Styles";
+import { ClickToCopy, StyledClickableContainer, StyledLabel } from "./Styles";
 import dayjs from "dayjs";
 import Icon from "./Icon";
 import Link from "next/link";
@@ -64,7 +68,6 @@ const filterApps = (apps, type) => {
 };
 
 const AppRow = ({ app, reviewerId }) => {
-  // @fish use this for the open/closing
   const [open, setOpen] = useState(
     app.appStatus == "processed" ? false : !hasVoted(app, reviewerId)
   );
@@ -78,9 +81,12 @@ const AppRow = ({ app, reviewerId }) => {
           </StyledClickableContainer>
         </td>
         <td>
-          <Text td={app.appStatus == "processed" && "line-through"}>
+          <StyledClickableContainer>
+            <Icon type={open ? 'chevron-up' : 'chevron-down'} width={16} />
+            <Text ml='sm' td={app.appStatus == "processed" && "line-through"}>
             {app.discordName}
           </Text>
+          </StyledClickableContainer>
         </td>
       </tr>
       {open && (
@@ -103,7 +109,7 @@ const hasVoted = (app, reviewerId) => {
 };
 
 const AppDetails = ({ item, reviewerId }) => {
-  const { yay, nay, meh, discordId, discordName, region, processed } = item;
+  const { yay, nay, meh } = item;
   const value = useMemo(() => {
     if (yay.includes(reviewerId)) return "yay";
     if (nay.includes(reviewerId)) return "nay";
@@ -111,6 +117,7 @@ const AppDetails = ({ item, reviewerId }) => {
   }, [yay, nay, meh, reviewerId]);
   const [vote, setVote] = useState(value);
   const [voteLoading, setVoteLoading] = useState(false);
+
   const handleVote = (e) => {
     setVoteLoading(true);
     axios
@@ -125,25 +132,14 @@ const AppDetails = ({ item, reviewerId }) => {
         setVoteLoading(false);
       });
   };
-  const handleAccept = () => {
-    axios
-      .post("/api/user/mentor", {
-        user: { discordId, discordName, mentorRegion: region },
-        command: "ACCEPT",
-      })
-      .then(({ data }) => alert(data))
-      .catch((error) => console.log(error));
-  };
-  const handleDeny = () => {
-    axios.post("/api/user/mentor", { user: { discordId }, command: "DENY" });
-  };
+
 
   return (
     <Container fluid>
       <Grid>
         <Grid.Col span={6}>
           <Text>
-            Summoner:{" "}
+            <StyledLabel>Summoner:</StyledLabel>{" "}
             <a
               href={`https://${item.region}.op.gg/summoner/userName=${item.summonerName}`}
               rel={"noreferrer"}
@@ -152,11 +148,11 @@ const AppDetails = ({ item, reviewerId }) => {
               {item.summonerName}
             </a>
           </Text>
-          <Text>Rank: {item.rank}</Text>
+          <Text><StyledLabel>Rank:</StyledLabel> {item.rank}</Text>
           <Text>
-            Discord ID: <ClickToCopy>{item.discordId}</ClickToCopy>
+            <StyledLabel>Discord ID:</StyledLabel> <ClickToCopy>{item.discordId}</ClickToCopy>
           </Text>
-          <Text>Applied at: {dayjs(item.createdAt).format("DD/MMM/YYYY")}</Text>
+          <Text><StyledLabel>Applied at:</StyledLabel> {dayjs(item.createdAt).format("DD/MMM/YYYY")}</Text>
           {item.appStatus == "trial" && (
             <Link href={`/admin/mentors/${discordId}`}>
               <Text>Request count: {item.requestCount}</Text>
@@ -165,20 +161,36 @@ const AppDetails = ({ item, reviewerId }) => {
         </Grid.Col>
         <Grid.Col span={3}>
           <Chip.Group label={"Vote"} value={vote} onChange={handleVote}>
-            <Group>
+            <Flex justify='flex-end' align='center'>
               <Chip value={"yay"} label={"Yay"} disabled={voteLoading}>
                 Yay: {yay.length - (value == "yay") + (vote == "yay")}
               </Chip>
-              <Chip value={"nay"} label={"Nay"} disabled={voteLoading}>
+              <Chip ml='xs' value={"nay"} label={"Nay"} disabled={voteLoading}>
                 Nay : {nay.length - (value == "nay") + (vote == "nay")}
               </Chip>
-              <Chip value={"meh"} label={"Meh"} disabled={voteLoading}>
+              <Chip ml='xs' value={"meh"} label={"Meh"} disabled={voteLoading}>
                 Meh: {meh.length - (value == "meh") + (vote == "meh")}
               </Chip>
-            </Group>
+              <ReviewedList item={item} />
+            </Flex>
           </Chip.Group>
         </Grid.Col>
         <Grid.Col span={3}>
+          <Flex align='center'>
+            <ConfirmationModal item={item} />
+          </Flex>
+        </Grid.Col>
+        <Grid.Col span={12}>
+          <StyledLabel>Reason for applying</StyledLabel>
+          <Text>{item.appReason}</Text>
+        </Grid.Col>
+        <Grid.Col span={12}>
+          <StyledLabel>Experience</StyledLabel>
+          <Text>{item.experience}</Text>
+        </Grid.Col>
+        <Grid.Col span={12}>
+          <StyledLabel>Champ win con</StyledLabel>
+          <Text>{item.winConEx}</Text>
           <Button
             onClick={handleAccept}
             // disabled={item.appStatus == "processed"}
@@ -192,78 +204,163 @@ const AppDetails = ({ item, reviewerId }) => {
           <VotedModal item={item} />
         </Grid.Col>
         <Grid.Col span={12}>
-          <Text>Reason for applying: {item.appReason}</Text>
+          <StyledLabel>Losing matchup</StyledLabel>
+          <Text>{item.loseMatchupEx}</Text>
         </Grid.Col>
-        <Grid.Col>
-          <Text>Experience: {item.experience}</Text>
-        </Grid.Col>
-        <Grid.Col span={12}>Champ win con: {item.winConEx}</Grid.Col>
-        <Grid.Col span={12}>Losing matchup: {item.loseMatchupEx}</Grid.Col>
-        <Grid.Col span={12}>Bad take in chat: {item.rebuttalEx}</Grid.Col>
         <Grid.Col span={12}>
+          <StyledLabel>Bad take in chat</StyledLabel>
+          <Text>{item.rebuttalEx}</Text>
+        </Grid.Col>
+        <Grid.Col span={12}>
+          <StyledLabel>Reviewer comments</StyledLabel>
+          <SimpleGrid cols={2}>
+            {
+              <div>
+                {item.comments?.map((comment, i) => (
+                  <Text key={`Comment${i}`}>
+                    <Text fs="italic" span>{comment.commenter.discordName}</Text>: {comment.content}
+                  </Text>
+                ))}
+              </div> || "N/A"}
+          </SimpleGrid>
           <Text>
-            Comments:
-            <ul>
-              {item.comments?.map((comment, i) => (
-                <li key={`Comment${i}`}>
-                  {comment.commenter.discordName} : {comment.content}
-                </li>
-              ))}
-            </ul>
           </Text>
+          <AddCommentSection item={item} />
+          <Space h="md" />
         </Grid.Col>
       </Grid>
     </Container>
   );
 };
 
-const CommentModal = ({ item }) => {
+const ConfirmationModal = ({ item }) => {
+  const { processed, discordId, discordName, region } = item;
   const [open, setOpen] = useState(false);
+  const [action, setAction] = useState('');
+
+  const handleButtonClick = (value) => {
+    setOpen(true);
+    setAction(value);
+  }
+
+  const handleConfirmClicked = () => {
+    if (action === 'accept') {
+      axios
+        .post("/api/user/mentor", {
+          user: { discordId, discordName, mentorRegion: region },
+          command: "ACCEPT",
+        })
+        .then(({ data }) => alert(data))
+        .catch((error) => console.log(error));
+    } else if (action === 'deny') {
+      axios.post("/api/user/mentor", { user: { discordId }, command: "DENY" });
+    }
+  }
+
+  return (
+    <>
+      <Modal
+        centered
+        title={`Confirm Action`}
+        size='xl'
+        opened={open}
+        onClose={() => setOpen(false)}
+        overlayProps={{
+          opacity: 0.55,
+          blur: 3,
+        }}
+      >
+        Are you sure you want to {action} <Text span fw={700}>{discordName}</Text> as a mentor?
+        <Flex justify='flex-end'>
+          <Box>
+            <Button color='teal' onClick={() => handleConfirmClicked()}><Text tt='capitalize'>{action} mentor</Text></Button>
+            <Button color='gray' ml='xs' onClick={() => setOpen(false)}>Cancel</Button>
+          </Box>
+        </Flex>
+      </Modal>
+      <Flex justify='flex-end'>
+        <Button ml='xs' onClick={() => handleButtonClick('accept')}>Accept mentor</Button>
+        <Button ml='xs' onClick={() => handleButtonClick('deny')} disabled={processed}>Deny mentor</Button>
+      </Flex>
+    </>
+  )
+}
+const AddCommentSection = ({ item }) => {
+  const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState("");
   const [error, setError] = useState("");
 
   const addComment = () => {
     axios
       .patch("/api/admin/application", { user: item.discordId, content })
-      .then(() => setOpen(false))
+      .then(() => setIsEditing(false))
       .catch(() => setError("Error occurred"));
   };
+
   return (
-    <>
-      <Modal
-        centered
-        title={`Comment for ${item.discordName}`}
-        opened={open}
-        onClose={() => setOpen(false)}
-      >
-        <Textarea
-          onChange={(e) => setContent(e.currentTarget.value)}
-          error={error}
-        />
-        <Button onClick={() => addComment()}>Submit</Button>
-      </Modal>
-      <Button onClick={() => setOpen(true)}>Add Comment</Button>
-    </>
+    isEditing ? (
+      <>
+        <SimpleGrid cols={2}>
+          <Textarea
+            autosize
+            minRows={3}
+            onChange={(e) => setContent(e.currentTarget.value)}
+            error={error}
+            mb="0.5rem"
+            mt="1rem"
+          />
+        </SimpleGrid>
+        <Button variant="outline" size='xs' onClick={addComment}>
+          Submit
+        </Button>
+        <Button
+          variant="outline"
+          size='xs'
+          color="gray"
+          ml="0.3rem"
+          onClick={() => setIsEditing(false)}
+        >
+          Cancel
+        </Button>
+      </>
+    ) : (
+      <>
+        <Button
+          variant="outline"
+          size='xs'
+          color="gray"
+          mt="1rem"
+          onClick={() => setIsEditing(true)}
+        >
+          Add Comment
+        </Button>
+      </>
+    )
   );
 };
 
-const VotedModal = ({ item }) => {
+const ReviewedList = ({ item }) => {
   const [open, setOpen] = useState(false);
+
   return (
     <>
-      <Modal
+      <Tooltip
+        withArrow
+        arrowSize={8}
+        color='dark'
         opened={open}
-        centered
-        title="All voted mentors"
-        onClose={() => setOpen(false)}
-      >
-        <ul>
-          {item.voted.map((reviewer, i) => (
-            <li key={`AppVotedCount${i}`}>{reviewer.discordName}</li>
-          ))}
-        </ul>
-      </Modal>
-      <Button onClick={() => setOpen(true)}>Voted mentors</Button>
+        label={
+          <Box>
+            <StyledLabel>Reviewed by:</StyledLabel>
+            {item.voted.map((reviewer, i) => (
+              <Text key={`AppVotedCount${i}`}>{reviewer.discordName}</Text>
+            ))}
+          </Box>
+        }>
+        <Flex ml='xs' size='xs' variant='default' onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+          <Icon type='eyeglass' strokeWidth={1} />
+        </Flex>
+      </Tooltip>
     </>
   );
 };
