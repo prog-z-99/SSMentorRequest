@@ -1,11 +1,12 @@
 import { getToken } from "next-auth/jwt";
+
+import { checkAdmin, checkStaff } from "../../../util/helper";
 import {
   changeRequest,
-  // getMenteeRequestsByDiscordId,
-  getUserById,
-} from "../../../util/databaseAccess";
-import { checkAdmin, checkMentor } from "../../../util/helper";
-import { deleteRequest } from "../../../util/dbaccess/requestMethods";
+  deleteRequest,
+  getStudentRequestsByDiscordId,
+} from "../../../util/dbaccess/requestMethods";
+import { getUserById } from "../../../util/dbaccess/userMethods";
 
 export default async function requestByID(req, res) {
   const fetchToken = getToken({ req });
@@ -26,11 +27,13 @@ export default async function requestByID(req, res) {
         res.status(404);
         break;
       }
-      // case "GET": {
-      //   const requests = await getMenteeRequestsByDiscordId(req.query.id);
-      //   res.status(200).send(requests);
-      //   break;
-      // }
+      case "GET": {
+        const user = await fetchUser;
+        if (!checkAdmin(user)) throw "Not authorized";
+        const requests = await getStudentRequestsByDiscordId(req.query.id);
+        res.status(200).send({ requests });
+        break;
+      }
       case "DELETE": {
         const user = await fetchUser;
         if (!checkAdmin(user)) throw "Not authorized";
@@ -41,7 +44,7 @@ export default async function requestByID(req, res) {
       }
       case "PUT": {
         const user = await fetchUser;
-        if (!checkMentor(user)) throw "Not authorized";
+        if (!checkStaff(user)) throw "Not authorized";
         await changeRequest({ body: { ...req.body, id: req.query.id }, user });
         res.status(200).send("Request status updated");
       }

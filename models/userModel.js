@@ -12,6 +12,9 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    discordDisplayName: {
+      type: String,
+    },
     userType: {
       type: String,
     },

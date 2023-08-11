@@ -243,7 +243,7 @@ const TableSelect = ({ request }) => {
   );
 };
 
-export const TableHeader = ({ header, setRequests, requests }) => {
+const TableHeader = ({ header, setRequests, requests }) => {
   const { title, sorter } = header;
 
   const [asc, setAsc] = useState(false);

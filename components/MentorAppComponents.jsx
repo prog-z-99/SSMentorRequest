@@ -14,24 +14,17 @@ import {
   Textarea,
 } from "@mantine/core";
 import axios from "axios";
-import { ClickToCopy } from "./Styles";
+import { ClickToCopy, StyledClickableContainer } from "./Styles";
 import dayjs from "dayjs";
-import { useEffect } from "react";
+import Icon from "./Icon";
+import Link from "next/link";
 
-export const AppList = ({ reviewerId }) => {
-  const [applications, setApplications] = useState();
-  const [allApps, setAllApps] = useState([]);
-
-  useEffect(() => {
-    axios.get("/api/admin/apps").then(({ data }) => {
-      setApplications(filterApps(data, false));
-      setAllApps(data);
-    });
-  }, []);
-
+export const AppList = ({ allApps, reviewerId }) => {
+  const [applications, setApplications] = useState(
+    filterApps(allApps, "pending")
+  );
   const onTabChange = (value) => {
-    const checker = value == "processed";
-    setApplications(filterApps(allApps, checker));
+    setApplications(filterApps(allApps, value));
   };
 
   return (
@@ -40,12 +33,14 @@ export const AppList = ({ reviewerId }) => {
       <Tabs onTabChange={onTabChange} defaultValue={"pending"}>
         <Tabs.List>
           <Tabs.Tab value="pending">Pending</Tabs.Tab>
+          <Tabs.Tab value="trial">Trials</Tabs.Tab>
           <Tabs.Tab value="processed">Processed</Tabs.Tab>
         </Tabs.List>
       </Tabs>
       <Table striped>
         <thead>
           <tr>
+            <th />
             <th>Discord name</th>
           </tr>
         </thead>
@@ -64,23 +59,28 @@ export const AppList = ({ reviewerId }) => {
   );
 };
 
-const filterApps = (apps, processed) => {
-  const filtered = apps.filter((app) => app.processed == processed);
-  if (processed) return filtered.toReversed();
-  return filtered;
+const filterApps = (apps, type) => {
+  return apps.filter((app) => app.appStatus == type);
 };
 
 const AppRow = ({ app, reviewerId }) => {
   // @fish use this for the open/closing
   const [open, setOpen] = useState(
-    app.processed ? false : !hasVoted(app, reviewerId)
+    app.appStatus == "processed" ? false : !hasVoted(app, reviewerId)
   );
 
   return (
     <>
-      <tr onClick={() => setOpen(!open)}>
+      <tr>
+        <td onClick={() => setOpen((o) => !o)}>
+          <StyledClickableContainer>
+            <Icon type={open ? "chevron-up" : "chevron-down"} width={16} />
+          </StyledClickableContainer>
+        </td>
         <td>
-          <Text td={app.processed && "line-through"}>{app.discordName}</Text>
+          <Text td={app.appStatus == "processed" && "line-through"}>
+            {app.discordName}
+          </Text>
         </td>
       </tr>
       {open && (
@@ -157,18 +157,23 @@ const AppDetails = ({ item, reviewerId }) => {
             Discord ID: <ClickToCopy>{item.discordId}</ClickToCopy>
           </Text>
           <Text>Applied at: {dayjs(item.createdAt).format("DD/MMM/YYYY")}</Text>
+          {item.appStatus == "trial" && (
+            <Link href={`/admin/mentors/${discordId}`}>
+              <Text>Request count: {item.requestCount}</Text>
+            </Link>
+          )}
         </Grid.Col>
         <Grid.Col span={3}>
           <Chip.Group label={"Vote"} value={vote} onChange={handleVote}>
             <Group>
               <Chip value={"yay"} label={"Yay"} disabled={voteLoading}>
-                Yay: {item.yay.length - (value == "yay") + (vote == "yay")}
+                Yay: {yay.length - (value == "yay") + (vote == "yay")}
               </Chip>
               <Chip value={"nay"} label={"Nay"} disabled={voteLoading}>
-                Nay : {item.nay.length - (value == "nay") + (vote == "nay")}
+                Nay : {nay.length - (value == "nay") + (vote == "nay")}
               </Chip>
               <Chip value={"meh"} label={"Meh"} disabled={voteLoading}>
-                Meh: {item.meh.length - (value == "meh") + (vote == "meh")}
+                Meh: {meh.length - (value == "meh") + (vote == "meh")}
               </Chip>
             </Group>
           </Chip.Group>
@@ -176,9 +181,9 @@ const AppDetails = ({ item, reviewerId }) => {
         <Grid.Col span={3}>
           <Button
             onClick={handleAccept}
-            //disabled={processed}
+            // disabled={item.appStatus == "processed"}
           >
-            Add mentor
+            {item.appStatus == "trial" ? "Finish Trial" : "Start Trial"}
           </Button>
           <Button onClick={handleDeny} disabled={processed}>
             Deny

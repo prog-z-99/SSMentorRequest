@@ -1,8 +1,8 @@
 import { React } from "react";
 import Layout from "../../components/layout";
-import { getAllMentors } from "../../util/databaseAccess";
 import { MentorList } from "../../components/MentorListComponents";
 import { cleaner } from "../../util/helper";
+import { getAllMentors } from "../../util/dbaccess/userMethods";
 
 export default function Mentors({ mentors }) {
   return (

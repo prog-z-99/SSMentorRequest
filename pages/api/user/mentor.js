@@ -1,10 +1,6 @@
-import {
-  editUser,
-  getUserById,
-  tryRegisterMentor,
-} from "../../../util/databaseAccess";
 import { getToken } from "next-auth/jwt";
 import { processApp } from "../../../util/dbaccess/applicationsMethods";
+import { getUserById, editUser } from "../../../util/dbaccess/userMethods";
 
 const userMentor = async (req, res) => {
   const token = await getToken({ req });
@@ -18,13 +14,12 @@ const userMentor = async (req, res) => {
       case "POST": {
         switch (req.body.command) {
           case "ACCEPT": {
-            await processApp(req.body.user.discordId);
-            await tryRegisterMentor(req.body.user);
+            await processApp(req.body.user);
             res.status(200).send("mentor added!");
             break;
           }
           case "DENY": {
-            await processApp(req.body.user.discordId);
+            await processApp(req.body.user);
             res.status(200).send("mentor denied!");
             break;
           }

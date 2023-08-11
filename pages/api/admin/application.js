@@ -4,7 +4,10 @@ import {
   deleteApp,
   voteOnApp,
 } from "../../../util/dbaccess/applicationsMethods";
-import { isUserAdmin, isUserReviewer } from "../../../util/databaseAccess";
+import {
+  isUserAdmin,
+  isUserReviewer,
+} from "../../../util/dbaccess/userMethods";
 
 const userApplication = async (req, res) => {
   const token = await getToken({ req });

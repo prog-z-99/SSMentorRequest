@@ -1,104 +1,131 @@
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import dayjs from "dayjs";
-import { Button, Select, Switch, Table, Text } from "@mantine/core";
+import { Container, Select, Switch, Table, Text } from "@mantine/core";
 import { fullRanks, userSelectCommand } from "../util/datalist";
 import axios from "axios";
+import { ClickToCopy, StyledClickableContainer } from "./Styles";
+import Icon from "./Icon";
 
-export const AdminComponent = ({ mentors }) => {
+export const AdminComponent = ({ users }) => {
   return (
     <Table striped highlightOnHover>
       <thead>
         <tr>
+          <th />
           <th>Mentor Name</th>
+          <th>Mentor ID</th>
           <th>Last completed</th>
           <th>Last taken</th>
-          <th>Toggle mentor</th>
-          <th>Toggle admin</th>
-          <th>Toggle reviewer</th>
-          <th>Peak Rank</th>
-          <th>Delete</th>
+          <th>Completed lately</th>
+          <th>Taken lately</th>
         </tr>
       </thead>
       <tbody>
-        {mentors.map((mentor, i) => (
-          <tr key={`Row${i}`}>
-            <td>
-              <Link
-                href={`/admin/mentors/${mentor.discordId}`}
-                key={`mentorNo${i}`}
-              >
-                {mentor.discordName}
-              </Link>
-            </td>
-            <td>
-              {mentor.lastCompleted && (
-                <Text
-                  color={
-                    dayjs(mentor.lastCompleted)
-                      .add(5, "months")
-                      .isBefore(dayjs()) && "red"
-                  }
-                >
-                  {dayjs(mentor.lastCompleted).format("DD / MMM / YYYY")}
-                </Text>
-              )}
-            </td>
-            <td>
-              {mentor.lastTaken && (
-                <Text
-                  color={
-                    dayjs(mentor.lastTaken)
-                      .add(2, "months")
-                      .isBefore(dayjs()) && "red"
-                  }
-                >
-                  {dayjs(mentor.lastTaken).format("DD / MMM / YYYY")}
-                </Text>
-              )}
-            </td>
-
-            <td>
-              <UserTypeUpdate
-                user={mentor}
-                type={"mentor"}
-                defChecked={mentor.isMentor}
-              />
-            </td>
-            <td>
-              <UserTypeUpdate
-                user={mentor}
-                type={"admin"}
-                defChecked={mentor.isAdmin}
-              />
-            </td>
-            <td>
-              <UserTypeUpdate
-                user={mentor}
-                type={"reviewer"}
-                defChecked={mentor.isReviewer}
-              />
-            </td>
-            <td>
-              <UserRankSelect user={mentor} />
-            </td>
-            <td>
-              <Button disabled={true} onClick={() => DeleteUser(mentor)}>
-                Delete
-              </Button>
-            </td>
-          </tr>
+        {users.map((mentor, i) => (
+          <TableRow mentor={mentor} key={`Row${i}`} />
         ))}
       </tbody>
     </Table>
   );
 };
 
-const DeleteUser = async (user) => {
-  if (confirm("Are you ABSOLUTELY sure you want to delete this user?")) {
-    axios.post("api/admin", { user: user._id }).then(({ data }) => alert(data));
-  } else console.log("not");
+const TableRow = ({ mentor }) => {
+  const [rowOpen, setRowOpen] = useState(false);
+
+  return (
+    <>
+      <tr>
+        <td onClick={() => setRowOpen((o) => !o)}>
+          <StyledClickableContainer>
+            <Icon type={rowOpen ? "chevron-up" : "chevron-down"} width={16} />
+          </StyledClickableContainer>
+        </td>
+        <td>
+          <Link href={`/admin/mentors/${mentor.discordId}`}>
+            {mentor.discordName}
+          </Link>
+        </td>
+        <td>
+          <ClickToCopy>{mentor.discordId}</ClickToCopy>
+        </td>
+        <td>
+          {mentor.lastCompleted && (
+            <Text
+              color={
+                dayjs(mentor.lastCompleted)
+                  .add(5, "months")
+                  .isBefore(dayjs()) && "red"
+              }
+            >
+              {dayjs(mentor.lastCompleted).format("DD / MMM / YYYY")}
+            </Text>
+          )}
+        </td>
+        <td>
+          {mentor.lastTaken && (
+            <Text
+              color={
+                dayjs(mentor.lastTaken).add(2, "months").isBefore(dayjs()) &&
+                "red"
+              }
+            >
+              {dayjs(mentor.lastTaken).format("DD / MMM / YYYY")}
+            </Text>
+          )}
+        </td>
+        <td>{mentor.lastCompleted && mentor.completedPeriod}</td>
+        <td>{mentor.lastTaken && mentor.takenPeriod}</td>
+      </tr>
+      {rowOpen && (
+        <tr>
+          <td colSpan={12}>
+            <Container fluid>
+              <Text>
+                Toggle Trial
+                <UserTypeUpdate
+                  user={mentor}
+                  type={"trial"}
+                  defChecked={mentor.isTrial}
+                />
+                Toggle Mentor
+                <UserTypeUpdate
+                  user={mentor}
+                  type={"mentor"}
+                  defChecked={mentor.isMentor}
+                />
+                Toggle Admin
+                <UserTypeUpdate
+                  user={mentor}
+                  type={"admin"}
+                  defChecked={mentor.isAdmin}
+                />
+                Toggle Reviewer
+                <UserTypeUpdate
+                  user={mentor}
+                  type={"reviewer"}
+                  defChecked={mentor.isReviewer}
+                />
+                <UserRankSelect user={mentor} />
+                {/* <Button disabled={true} onClick={() => DeleteUser(mentor)}>
+                  Delete
+                </Button> */}
+              </Text>
+            </Container>
+          </td>
+        </tr>
+      )}
+    </>
+  );
 };
+
+// Just not use it for now, it's only really useful for Z
+
+// const DeleteUser = async (user) => {
+//   if (confirm("Are you ABSOLUTELY sure you want to delete this user?")) {
+//     axios.post("api/admin", { user: user._id }).then(({ data }) => alert(data));
+//   } else console.log("not");
+// };
 
 const UserRankSelect = ({ user }) => {
   const handleOnChange = async (value) => {

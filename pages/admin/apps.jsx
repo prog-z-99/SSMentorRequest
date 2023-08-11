@@ -1,24 +1,17 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Layout from "../../components/layout";
 import { AppList } from "../../components/MentorAppComponents";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
+import { useAuthTest } from "../../hooks/useAuthTest";
+import { LoaderWithLayout } from "../../components/Styles";
 
 export default function MentorApplications() {
-  const { status, data: session } = useSession();
-  const router = useRouter();
+  const { allApps, reviewerId, loading } = useAuthTest("/api/admin/apps");
 
-  useEffect(() => {
-    switch (status) {
-      case "unauthenticated":
-        router.push("/api/auth/signin");
-        break;
-    }
-  }, [status, router]);
+  if (loading) return <LoaderWithLayout />;
 
   return (
     <Layout>
-      {status == "authenticated" && <AppList reviewerId={session.user.id} />}
+      <AppList allApps={allApps} reviewerId={reviewerId} />
     </Layout>
   );
 }
