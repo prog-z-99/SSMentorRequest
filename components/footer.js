@@ -1,15 +1,14 @@
 import React from "react";
-import styles from "./footer.module.css";
+import { Text, Box, Divider } from '@mantine/core';
+
 
 export default function Footer() {
   return (
-    <footer className={styles.footer}>
-      <hr />
-      <ul className={styles.navItems}>
-        <li className={styles.navItem}>
-          <em>made by Z.#9093</em>
-        </li>
-      </ul>
+    <footer>
+      <Divider size='sm' />
+      <Box p='md'>
+        <Text color='dimmed' size='xs' fs='italic'>Made by @z_the_dev and @uselessfishlol</Text>
+      </Box>
     </footer>
   );
 }
