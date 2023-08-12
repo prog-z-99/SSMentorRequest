@@ -48,7 +48,9 @@ export const AppList = ({ allApps, reviewerId }) => {
           </tr>
         </thead>
         <tbody>
-          {applications?.length == 0 && <Box p='xs'>There are no applications to review at this time.</Box>}
+          {applications?.length == 0 && (
+            <Box p="xs">There are no applications to review at this time.</Box>
+          )}
           {applications?.map((app, i) => (
             <AppRow
               app={app}
@@ -76,8 +78,8 @@ const AppRow = ({ app, reviewerId }) => {
       <tr>
         <td onClick={() => setOpen((o) => !o)}>
           <StyledClickableContainer>
-            <Icon type={open ? 'chevron-up' : 'chevron-down'} width={16} />
-            <Text ml='sm' td={app.appStatus == "processed" && "line-through"}>
+            <Icon type={open ? "chevron-up" : "chevron-down"} width={16} />
+            <Text ml="sm" td={app.appStatus == "processed" && "line-through"}>
               {app.discordName}
             </Text>
           </StyledClickableContainer>
@@ -127,7 +129,6 @@ const AppDetails = ({ item, reviewerId }) => {
       });
   };
 
-
   return (
     <Container fluid>
       <Grid>
@@ -142,11 +143,17 @@ const AppDetails = ({ item, reviewerId }) => {
               {item.summonerName}
             </a>
           </Text>
-          <Text><StyledLabel>Rank:</StyledLabel> {item.rank}</Text>
           <Text>
-            <StyledLabel>Discord ID:</StyledLabel> <ClickToCopy>{item.discordId}</ClickToCopy>
+            <StyledLabel>Rank:</StyledLabel> {item.rank}
           </Text>
-          <Text><StyledLabel>Applied at:</StyledLabel> {dayjs(item.createdAt).format("DD/MMM/YYYY")}</Text>
+          <Text>
+            <StyledLabel>Discord ID:</StyledLabel>{" "}
+            <ClickToCopy>{item.discordId}</ClickToCopy>
+          </Text>
+          <Text>
+            <StyledLabel>Applied at:</StyledLabel>{" "}
+            {dayjs(item.createdAt).format("DD/MMM/YYYY")}
+          </Text>
           {item.appStatus == "trial" && (
             <StyledLabel>
               <Link href={`/admin/mentors/${item.discordId}`}>
@@ -157,14 +164,14 @@ const AppDetails = ({ item, reviewerId }) => {
         </Grid.Col>
         <Grid.Col span={4}>
           <Chip.Group label={"Vote"} value={vote} onChange={handleVote}>
-            <Flex justify='flex-end' align='center'>
+            <Flex justify="flex-end" align="center">
               <Chip value={"yay"} label={"Yay"} disabled={voteLoading}>
                 Yay: {yay.length - (value == "yay") + (vote == "yay")}
               </Chip>
-              <Chip ml='xs' value={"nay"} label={"Nay"} disabled={voteLoading}>
+              <Chip ml="xs" value={"nay"} label={"Nay"} disabled={voteLoading}>
                 Nay : {nay.length - (value == "nay") + (vote == "nay")}
               </Chip>
-              <Chip ml='xs' value={"meh"} label={"Meh"} disabled={voteLoading}>
+              <Chip ml="xs" value={"meh"} label={"Meh"} disabled={voteLoading}>
                 Meh: {meh.length - (value == "meh") + (vote == "meh")}
               </Chip>
               <ReviewedList item={item} />
@@ -172,7 +179,7 @@ const AppDetails = ({ item, reviewerId }) => {
           </Chip.Group>
         </Grid.Col>
         <Grid.Col span={2}>
-          <Flex justify='flex-end'>
+          <Flex justify="flex-end">
             <ConfirmationModal item={item} />
           </Flex>
         </Grid.Col>
@@ -199,35 +206,38 @@ const AppDetails = ({ item, reviewerId }) => {
         <Grid.Col span={12}>
           <StyledLabel>Reviewer comments</StyledLabel>
           <SimpleGrid cols={2}>
-            {
+            {(
               <div>
                 {item.comments?.map((comment, i) => (
                   <Text key={`Comment${i}`}>
-                    <Text fs="italic" span>{comment.commenter.discordName}</Text>: {comment.content}
+                    <Text fs="italic" span>
+                      {comment.commenter.discordName}
+                    </Text>
+                    : {comment.content}
                   </Text>
                 ))}
-              </div> || "N/A"}
+              </div>
+            ) || "N/A"}
           </SimpleGrid>
-          <Text>
-          </Text>
+          <Text></Text>
           <AddCommentSection item={item} />
           <Space h="md" />
         </Grid.Col>
       </Grid>
-    </Container >
+    </Container>
   );
 };
 
 const ConfirmationModal = ({ item }) => {
   const { discordId, discordName, region, appStatus } = item;
   const [open, setOpen] = useState(false);
-  const [action, setAction] = useState('');
+  const [action, setAction] = useState("");
 
   const handleButtonClick = (appStatus) => {
     setOpen(true);
-    const statusing = appStatus === "trial" ? "ending" : "starting"
+    const statusing = appStatus === "trial" ? "ending" : "starting";
     setAction(statusing);
-  }
+  };
 
   const handleConfirmClicked = (actionRequested) => {
     if (actionRequested === "confirmMentor") {
@@ -239,18 +249,18 @@ const ConfirmationModal = ({ item }) => {
         })
         .then(({ data }) => alert(data))
         .catch((error) => alert("An error has occured."));
-    } else if (actionRequested === 'deny') {
+    } else if (actionRequested === "deny") {
       axios.post("/api/user/mentor", { user: { discordId }, command: "DENY" });
     }
     setOpen(false);
-  }
+  };
 
   return (
     <>
       <Modal
         centered
         title={`Confirm Mentor Status`}
-        size='xl'
+        size="xl"
         opened={open}
         onClose={() => setOpen(false)}
         overlayProps={{
@@ -259,36 +269,55 @@ const ConfirmationModal = ({ item }) => {
         }}
       >
         <Box>
-          You are now {action} the trial mentor period for <Text span fw={700}>{discordName}</Text>.
-          <Space mb='lg' mt='lg' />
+          You are now {action} the trial mentor period for{" "}
+          <Text span fw={700}>
+            {discordName}
+          </Text>
+          .
+          <Space mb="lg" mt="lg" />
         </Box>
-        <Flex justify='flex-end'>
+        <Flex justify="flex-end">
           <Box>
-            {action === 'starting' &&
-              <Button color='teal' onClick={() => handleConfirmClicked('confirmMentor')}>
-                <Text tt='capitalize'>Confirm</Text>
+            {action === "starting" && (
+              <Button
+                color="teal"
+                onClick={() => handleConfirmClicked("confirmMentor")}
+              >
+                <Text tt="capitalize">Confirm</Text>
               </Button>
-            }
-            {action === 'ending' &&
+            )}
+            {action === "ending" && (
               <>
-                <Button color='teal' ml='xs' onClick={() => handleConfirmClicked('confirmMentor')}>
-                  <Text tt='capitalize'>Accept as mentor</Text>
+                <Button
+                  color="teal"
+                  ml="xs"
+                  onClick={() => handleConfirmClicked("confirmMentor")}
+                >
+                  <Text tt="capitalize">Accept as mentor</Text>
                 </Button>
-                <Button color='red' ml='xs' onClick={() => handleConfirmClicked('denyMentor')}>
-                  <Text tt='capitalize'>Deny as mentor</Text>
+                <Button
+                  color="red"
+                  ml="xs"
+                  onClick={() => handleConfirmClicked("denyMentor")}
+                >
+                  <Text tt="capitalize">Deny as mentor</Text>
                 </Button>
               </>
-            }
-            <Button color='gray' ml='xs' onClick={() => setOpen(false)}>Cancel</Button>
+            )}
+            <Button color="gray" ml="xs" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
           </Box>
         </Flex>
       </Modal>
-      <Flex justify='flex-end'>
-        <Button ml='xs' onClick={() => handleButtonClick(appStatus)}>{appStatus == "trial" ? "Finish Trial" : "Start Trial"}</Button>
+      <Flex justify="flex-end">
+        <Button ml="xs" onClick={() => handleButtonClick(appStatus)}>
+          {appStatus == "trial" ? "Finish Trial" : "Start Trial"}
+        </Button>
       </Flex>
     </>
-  )
-}
+  );
+};
 const AddCommentSection = ({ item }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState("");
@@ -301,70 +330,62 @@ const AddCommentSection = ({ item }) => {
       .catch(() => setError("Error occurred"));
   };
 
-  return (
-    isEditing ? (
-      <>
-        <SimpleGrid cols={2}>
-          <Textarea
-            autosize
-            minRows={3}
-            onChange={(e) => setContent(e.currentTarget.value)}
-            error={error}
-            mb="0.5rem"
-            mt="1rem"
-          />
-        </SimpleGrid>
-        <Button variant="outline" size='xs' onClick={addComment}>
-          Submit
-        </Button>
-        <Button
-          variant="outline"
-          size='xs'
-          color="gray"
-          ml="0.3rem"
-          onClick={() => setIsEditing(false)}
-        >
-          Cancel
-        </Button>
-      </>
-    ) : (
-      <>
-        <Button
-          variant="outline"
-          size='xs'
-          color="gray"
-          mt="1rem"
-          onClick={() => setIsEditing(true)}
-        >
-          Add Comment
-        </Button>
-      </>
-    )
-  );
-};
-
-const ReviewedList = ({ item }) => {
-  const [open, setOpen] = useState(false);
-
-  return (
+  return isEditing ? (
     <>
-      <Tooltip
-        withArrow
-        arrowSize={8}
-        color='dark'
-        opened={open}
-        label={
-          <Box>
-            <StyledLabel>Reviewed by:</StyledLabel>
-            {item.voted.map((reviewer, i) => (
-              <Text key={`AppVotedCount${i}`}>{reviewer.discordName}</Text>
-            ))}
-          </Box>
-        }>
-        <Flex ml='xs' size='xs' variant='default' onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-          <Icon type='eyeglass' strokeWidth={1} />
-        </Flex>
-      </Tooltip>
+      <SimpleGrid cols={2}>
+        <Textarea
+          autosize
+          minRows={3}
+          onChange={(e) => setContent(e.currentTarget.value)}
+          error={error}
+          mb="0.5rem"
+          mt="1rem"
+        />
+      </SimpleGrid>
+      <Button variant="outline" size="xs" onClick={addComment}>
+        Submit
+      </Button>
+      <Button
+        variant="outline"
+        size="xs"
+        color="gray"
+        ml="0.3rem"
+        onClick={() => setIsEditing(false)}
+      >
+        Cancel
+      </Button>
+    </>
+  ) : (
+    <>
+      <Button
+        variant="outline"
+        size="xs"
+        color="gray"
+        mt="1rem"
+        onClick={() => setIsEditing(true)}
+      >
+        Add Comment
+      </Button>
     </>
   );
 };
+
+const ReviewedList = ({ item }) => (
+  <Tooltip
+    withArrow
+    arrowSize={8}
+    color="dark"
+    label={
+      <Box>
+        <StyledLabel>Reviewed by:</StyledLabel>
+        {item.voted.map((reviewer, i) => (
+          <Text key={`AppVotedCount${i}`}>{reviewer.discordName}</Text>
+        ))}
+      </Box>
+    }
+  >
+    <Flex ml="xs" size="xs" variant="default">
+      <Icon type="eyeglass" strokeWidth={1} />
+    </Flex>
+  </Tooltip>
+);
