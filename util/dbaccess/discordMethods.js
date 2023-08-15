@@ -1,4 +1,8 @@
 import axios from "axios";
+import mongoose from "mongoose";
+import dbConnect from "../mongodb";
+mongoose.set("strictQuery", false);
+dbConnect();
 
 export const getLatestDiscordProfile = async (id) => {
   return await axios

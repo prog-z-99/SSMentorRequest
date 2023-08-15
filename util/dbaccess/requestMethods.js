@@ -4,7 +4,6 @@ import dbConnect from "../mongodb";
 import { getCleanedDiscordUser, getMonthsAgo } from "../helper";
 import dayjs from "dayjs";
 import { ObjectId } from "mongodb";
-
 mongoose.set("strictQuery", false);
 dbConnect();
 

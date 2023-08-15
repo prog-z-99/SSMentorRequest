@@ -1,7 +1,11 @@
 import MentorApp from "../../models/mentorAppModel";
 import Request from "../../models/requestModel";
 import Users from "../../models/userModel";
+import dbConnect from "../mongodb";
 import { getUserById, getUsersById, tryRegisterMentor } from "./userMethods";
+import mongoose from "mongoose";
+mongoose.set("strictQuery", false);
+dbConnect();
 
 export async function checkAppStatus(id) {
   const appStatus = MentorApp.findOne({ discordId: id });

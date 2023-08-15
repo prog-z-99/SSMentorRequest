@@ -13,10 +13,10 @@ if (!MONGODB_URI) {
  * in development. This prevents connections growing exponentially
  * during API Route usage.
  */
-let cached = global.mongoose;
+let cached = global.mongo;
 
 if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+  cached = global.mongo = { conn: null, promise: null };
 }
 
 async function dbConnect() {
@@ -26,22 +26,18 @@ async function dbConnect() {
 
   if (!cached.promise) {
     const opts = {
-      // bufferCommands: true,
-      // strictQuery: false,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose;
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((client) => {
+      return {
+        client,
+        // db: client.db(MONGODB_DB),
+      };
     });
   }
-
-  try {
-    cached.conn = await cached.promise;
-  } catch (e) {
-    cached.promise = null;
-    throw e;
-  }
-
+  cached.conn = await cached.promise;
   return cached.conn;
 }
 

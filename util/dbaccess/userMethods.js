@@ -11,6 +11,10 @@ import {
 } from "../helper";
 import { trialAcceptText } from "../datalist";
 import { getLatestDiscordProfile, sendDMToUser } from "./discordMethods";
+import mongoose from "mongoose";
+import dbConnect from "../mongodb";
+mongoose.set("strictQuery", false);
+dbConnect();
 
 export const getAllUsers = async () => {
   const users = await User.find()
