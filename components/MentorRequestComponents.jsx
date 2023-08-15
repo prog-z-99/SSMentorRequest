@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   // getStatusColor,
   getStatusIcon,
@@ -17,17 +17,12 @@ import {
   SimpleGrid,
   Space,
   Box,
+  Loader,
 } from "@mantine/core";
 import axios from "axios";
 import { statuses, rtHeader } from "../util/datalist";
 import Link from "next/link";
 import Icon from "./Icon";
-
-// interface MentorRequestTableProps {
-//   requests: [],
-//   isAdmin?: boolean,
-//   setRequests?
-// }
 
 export const MentorRequestTable = ({
   requests,
@@ -119,7 +114,7 @@ export const RequestRow = ({ row, isAdmin }) => {
         <tr>
           <td colSpan={12}>
             <Box p="xs">
-              <Details item={row} isAdmin={isAdmin} />
+              <Details id={row._id} isAdmin={isAdmin} />
             </Box>
           </td>
         </tr>
@@ -128,30 +123,30 @@ export const RequestRow = ({ row, isAdmin }) => {
   );
 };
 
-const Details = ({ item, isAdmin }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const { _id } = item;
-
-  const handleIsEditing = () => {
-    setIsEditing(!isEditing);
-  };
+const Details = ({ id, isAdmin }) => {
+  const [item, setItem] = useState(null);
+  useEffect(() => {
+    axios.get(`/api/request/${id}`).then(({ data }) => {
+      setItem(data);
+    });
+  }, [id]);
 
   const handleArchive = () => {
     if (confirm("Are you sure you want to archive this request?")) {
-      axios.put("/api/request/change", { _id, type: "archive" });
+      axios.put("/api/request/change", { id, type: "archive" });
     } else console.log("not");
   };
   const handleDelete = () => {
     if (confirm("Are you ABSOLUTELY sure you want to delete this request?")) {
       axios
-        .delete(`/api/request/${_id}`)
+        .delete(`/api/request/${id}`)
         .then(({ data }) => alert(data))
         .catch(() =>
           alert("Something didn't work. Notify Z if the request is not deleted")
         );
     } else console.log("not");
   };
-  return (
+  return item ? (
     <Container fluid>
       {item.accepted && (
         <>
@@ -181,25 +176,20 @@ const Details = ({ item, isAdmin }) => {
       <Space h="sm" />
       <Text>
         <StyledLabel>Mentor comments:</StyledLabel>
-        {/* TODO: add functional comment code here */}
-        <SimpleGrid cols={1}>
+        <SimpleGrid cols={1} spacing={0}>
           {(item.comments?.length > 0 &&
-            item.comments.map((comment, i) => {
+            item.comments.map((comment, i) => (
               <Text key={`Comment${i}`}>
                 <Text fs="italic" span>
                   {comment.commenter.discordName}
                 </Text>
                 : {comment.content}
-              </Text>;
-            })) ||
+              </Text>
+            ))) ||
             "N/A"}
         </SimpleGrid>
       </Text>
-      <Remarks
-        item={item}
-        isEditing={isEditing}
-        handleIsEditing={handleIsEditing}
-      />
+      <Remarks item={item} />
       <Space h="lg" />
       <Text>
         <StyledLabel>Other Actions:</StyledLabel>
@@ -227,6 +217,8 @@ const Details = ({ item, isAdmin }) => {
         </>
       )}
     </Container>
+  ) : (
+    <Loader />
   );
 };
 
@@ -286,22 +278,21 @@ const TableHeader = ({ header, setRequests, requests }) => {
   );
 };
 
-const Remarks = ({ item, isEditing, handleIsEditing }) => {
+const Remarks = ({ item }) => {
   const [content, setContent] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState("");
   const [loading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
     setIsLoading(true);
     await axios
-      .put(`/api/request/${item._id}`, {
-        content,
-        type: "remarks",
-      })
-      .then(() => setIsLoading(false))
+      .patch(`/api/request/${item._id}`, { content })
+      .then(() => setIsEditing(false))
       .catch(() => {
         setError("An error occurred");
       });
+    setIsLoading(false);
   };
 
   return isEditing ? (
@@ -328,7 +319,7 @@ const Remarks = ({ item, isEditing, handleIsEditing }) => {
         size="xs"
         color="gray"
         ml="0.3rem"
-        onClick={handleIsEditing}
+        onClick={() => setIsEditing(false)}
       >
         Cancel
       </Button>
@@ -340,9 +331,9 @@ const Remarks = ({ item, isEditing, handleIsEditing }) => {
         size="xs"
         color="gray"
         mt="1rem"
-        onClick={handleIsEditing}
+        onClick={() => setIsEditing(true)}
       >
-        Edit Comments
+        Add Comment
       </Button>
     </>
   );

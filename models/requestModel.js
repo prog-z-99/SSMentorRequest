@@ -16,9 +16,6 @@ const requestSchema = mongoose.Schema(
       required: true,
       enum: ranks,
     },
-    opgg: {
-      type: String,
-    },
     summonerName: {
       type: String,
     },
@@ -68,10 +65,6 @@ const requestSchema = mongoose.Schema(
     },
     completed: {
       type: Date,
-      required: false,
-    },
-    remarks: {
-      type: String,
       required: false,
     },
     archived: {
