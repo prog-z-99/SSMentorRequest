@@ -23,6 +23,7 @@ import axios from "axios";
 import { statuses, rtHeader } from "../util/datalist";
 import Link from "next/link";
 import Icon from "./Icon";
+import { Comments } from "./DetailsComponents";
 
 export const MentorRequestTable = ({
   requests,
@@ -176,18 +177,7 @@ const Details = ({ id, isAdmin }) => {
       <Space h="sm" />
       <Text>
         <StyledLabel>Mentor comments:</StyledLabel>
-        <SimpleGrid cols={1} spacing={0}>
-          {(item.comments?.length > 0 &&
-            item.comments.map((comment, i) => (
-              <Text key={`Comment${i}`}>
-                <Text fs="italic" span>
-                  {comment.commenter.discordName}
-                </Text>
-                : {comment.content}
-              </Text>
-            ))) ||
-            "N/A"}
-        </SimpleGrid>
+        <Comments comments={item.comments} />
       </Text>
       <Remarks item={item} />
       <Space h="lg" />

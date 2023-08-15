@@ -22,6 +22,7 @@ import { ClickToCopy, StyledClickableContainer, StyledLabel } from "./Styles";
 import dayjs from "dayjs";
 import Icon from "./Icon";
 import Link from "next/link";
+import { Comments } from "./DetailsComponents";
 
 export const AppList = ({ allApps, reviewerId }) => {
   const [applications, setApplications] = useState(
@@ -206,18 +207,7 @@ const AppDetails = ({ item, reviewerId }) => {
         </Grid.Col>
         <Grid.Col span={12}>
           <StyledLabel>Reviewer comments</StyledLabel>
-          <SimpleGrid cols={1} spacing={0}>
-            {(item.comments?.length > 0 &&
-              item.comments?.map((comment, i) => (
-                <Text key={`Comment${i}`}>
-                  <Text fs="italic" span>
-                    {comment.commenter.discordName}
-                  </Text>
-                  : {comment.content}
-                </Text>
-              ))) ||
-              "N/A"}
-          </SimpleGrid>
+          <Comments comments={item.comments} />
           <AddCommentSection item={item} />
           <Space h="md" />
         </Grid.Col>

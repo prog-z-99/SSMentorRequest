@@ -25,11 +25,6 @@ export default async function requestByID(req, res) {
         res.status(404);
         break;
       }
-      // case "GET": {
-      //   const requests = await getStudentRequestsByDiscordId(req.query.id);
-      //   res.status(200).send({ requests });
-      //   break;
-      // }
       case "GET": {
         const request = await getRequestDetails(req.query.id);
         res.status(200).send(request);
