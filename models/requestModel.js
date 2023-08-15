@@ -78,6 +78,19 @@ const requestSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    comments: [
+      {
+        commenter: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        content: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import styled from "@emotion/styled";
 import {
   // getStatusColor,
   getStatusIcon,
   ClickToCopy,
   StyledClickableContainer,
-  StyledLabel
+  StyledLabel,
 } from "./Styles";
 import dayjs from "dayjs";
 import {
@@ -115,7 +114,7 @@ export const RequestRow = ({ row, isAdmin }) => {
         <td>
           <TableSelect request={row} />
         </td>
-      </tr >
+      </tr>
       {rowOpen && (
         <tr>
           <td colSpan={12}>
@@ -124,8 +123,7 @@ export const RequestRow = ({ row, isAdmin }) => {
             </Box>
           </td>
         </tr>
-      )
-      }
+      )}
     </>
   );
 };
@@ -183,11 +181,18 @@ const Details = ({ item, isAdmin }) => {
       <Space h="sm" />
       <Text>
         <StyledLabel>Mentor comments:</StyledLabel>
-        <SimpleGrid cols={2}>{item.comments?.map((comment, i) => {
-          <Text key={`Comment${i}`}>
-            <Text fs="italic" span>{comment.commenter.discordName}</Text>: {comment.content}
-          </Text>
-        }) || "N/A"}
+        {/* TODO: add functional comment code here */}
+        <SimpleGrid cols={1}>
+          {(item.comments?.length > 0 &&
+            item.comments.map((comment, i) => {
+              <Text key={`Comment${i}`}>
+                <Text fs="italic" span>
+                  {comment.commenter.discordName}
+                </Text>
+                : {comment.content}
+              </Text>;
+            })) ||
+            "N/A"}
         </SimpleGrid>
       </Text>
       <Remarks
@@ -196,35 +201,31 @@ const Details = ({ item, isAdmin }) => {
         handleIsEditing={handleIsEditing}
       />
       <Space h="lg" />
-      {!isEditing ? (
+      <Text>
+        <StyledLabel>Other Actions:</StyledLabel>
+      </Text>
+      <Space h="xs" />
+      <Button size="xs" variant="outline" onClick={handleArchive}>
+        Archive Request
+      </Button>
+      {isAdmin && (
         <>
-          <Text>
-            <StyledLabel>Other Actions:</StyledLabel>
-          </Text>
-          <Space h="xs" />
-          <Button size='xs' variant="outline" onClick={handleArchive}>
-            Archive Request
-          </Button>
-          {isAdmin && (
-            <>
-              <Button
-                size='xs'
-                ml='xs'
-                variant="outline"
-                color="red"
-                onClick={handleDelete}
-              >
-                Delete Request
-              </Button>{" "}
-              <Link href={`/admin/student/${item.discordId}`}>
-                <Button size='xs' ml='xs' variant="outline" color="teal">
-                  All requests by this student
-                </Button>
-              </Link>
-            </>
-          )}
+          <Button
+            size="xs"
+            ml="xs"
+            variant="outline"
+            color="red"
+            onClick={handleDelete}
+          >
+            Delete Request
+          </Button>{" "}
+          <Link href={`/admin/student/${item.discordId}`}>
+            <Button size="xs" ml="xs" variant="outline" color="teal">
+              All requests by this student
+            </Button>
+          </Link>
         </>
-      ) : null}
+      )}
     </Container>
   );
 };
@@ -287,17 +288,19 @@ const TableHeader = ({ header, setRequests, requests }) => {
 
 const Remarks = ({ item, isEditing, handleIsEditing }) => {
   const [content, setContent] = useState("");
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+  const [loading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
+    setIsLoading(true);
     await axios
       .put(`/api/request/${item._id}`, {
         content,
         type: "remarks",
       })
-      .then(() => setIsEditing(false))
-      .catch((err) => {
-        setError("An error occurred")
+      .then(() => setIsLoading(false))
+      .catch(() => {
+        setError("An error occurred");
       });
   };
 
@@ -312,12 +315,17 @@ const Remarks = ({ item, isEditing, handleIsEditing }) => {
           mb="0.5rem"
         />
       </SimpleGrid>
-      <Button variant="outline" size='xs' onClick={handleSubmit}>
+      <Button
+        variant="outline"
+        size="xs"
+        onClick={handleSubmit}
+        disabled={loading}
+      >
         Submit
       </Button>
       <Button
         variant="outline"
-        size='xs'
+        size="xs"
         color="gray"
         ml="0.3rem"
         onClick={handleIsEditing}
@@ -329,7 +337,7 @@ const Remarks = ({ item, isEditing, handleIsEditing }) => {
     <>
       <Button
         variant="outline"
-        size='xs'
+        size="xs"
         color="gray"
         mt="1rem"
         onClick={handleIsEditing}

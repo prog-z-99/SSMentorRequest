@@ -41,6 +41,7 @@ export const AppList = ({ allApps, reviewerId }) => {
           <Tabs.Tab value="processed">Processed</Tabs.Tab>
         </Tabs.List>
       </Tabs>
+
       <Table striped>
         <thead>
           <tr>
@@ -48,9 +49,6 @@ export const AppList = ({ allApps, reviewerId }) => {
           </tr>
         </thead>
         <tbody>
-          {applications?.length == 0 && (
-            <Box p="xs">There are no applications to review at this time.</Box>
-          )}
           {applications?.map((app, i) => (
             <AppRow
               app={app}
@@ -60,6 +58,9 @@ export const AppList = ({ allApps, reviewerId }) => {
           ))}
         </tbody>
       </Table>
+      {applications?.length == 0 && (
+        <Box p="xs">There are no applications to review at this time.</Box>
+      )}
     </div>
   );
 };
@@ -205,21 +206,18 @@ const AppDetails = ({ item, reviewerId }) => {
         </Grid.Col>
         <Grid.Col span={12}>
           <StyledLabel>Reviewer comments</StyledLabel>
-          <SimpleGrid cols={2}>
-            {(
-              <div>
-                {item.comments?.map((comment, i) => (
-                  <Text key={`Comment${i}`}>
-                    <Text fs="italic" span>
-                      {comment.commenter.discordName}
-                    </Text>
-                    : {comment.content}
+          <SimpleGrid cols={1} spacing={0}>
+            {(item.comments?.length > 0 &&
+              item.comments?.map((comment, i) => (
+                <Text key={`Comment${i}`}>
+                  <Text fs="italic" span>
+                    {comment.commenter.discordName}
                   </Text>
-                ))}
-              </div>
-            ) || "N/A"}
+                  : {comment.content}
+                </Text>
+              ))) ||
+              "N/A"}
           </SimpleGrid>
-          <Text></Text>
           <AddCommentSection item={item} />
           <Space h="md" />
         </Grid.Col>
@@ -231,27 +229,16 @@ const AppDetails = ({ item, reviewerId }) => {
 const ConfirmationModal = ({ item }) => {
   const { discordId, discordName, region, appStatus } = item;
   const [open, setOpen] = useState(false);
-  const [action, setAction] = useState("");
-
-  const handleButtonClick = (appStatus) => {
-    setOpen(true);
-    const statusing = appStatus === "trial" ? "ending" : "starting";
-    setAction(statusing);
-  };
 
   const handleConfirmClicked = (actionRequested) => {
-    if (actionRequested === "confirmMentor") {
-      // NOTE: This route is used for both starting a trial and accepting a mentor. See processApp() for more details.
-      axios
-        .post("/api/user/mentor", {
-          user: { discordId, discordName, mentorRegion: region },
-          command: "ACCEPT",
-        })
-        .then(({ data }) => alert(data))
-        .catch((error) => alert("An error has occured."));
-    } else if (actionRequested === "deny") {
-      axios.post("/api/user/mentor", { user: { discordId }, command: "DENY" });
-    }
+    // NOTE: This route is used for both starting a trial and accepting a mentor. See processApp() for more details.
+    axios
+      .post("/api/admin/application", {
+        user: { discordId, discordName, mentorRegion: region },
+        command: actionRequested,
+      })
+      .then(({ data }) => alert(data))
+      .catch(() => alert("An error has occured. Notify Z"));
     setOpen(false);
   };
 
@@ -269,7 +256,8 @@ const ConfirmationModal = ({ item }) => {
         }}
       >
         <Box>
-          You are now {action} the trial mentor period for{" "}
+          You are now {appStatus === "trial" ? "ending" : "starting"} the trial
+          mentor period for{" "}
           <Text span fw={700}>
             {discordName}
           </Text>
@@ -278,27 +266,27 @@ const ConfirmationModal = ({ item }) => {
         </Box>
         <Flex justify="flex-end">
           <Box>
-            {action === "starting" && (
+            {appStatus == "pending" && (
               <Button
                 color="teal"
-                onClick={() => handleConfirmClicked("confirmMentor")}
+                onClick={() => handleConfirmClicked("ACCEPT")}
               >
                 <Text tt="capitalize">Confirm</Text>
               </Button>
             )}
-            {action === "ending" && (
+            {appStatus === "trial" && (
               <>
                 <Button
                   color="teal"
                   ml="xs"
-                  onClick={() => handleConfirmClicked("confirmMentor")}
+                  onClick={() => handleConfirmClicked("ACCEPT")}
                 >
                   <Text tt="capitalize">Accept as mentor</Text>
                 </Button>
                 <Button
                   color="red"
                   ml="xs"
-                  onClick={() => handleConfirmClicked("denyMentor")}
+                  onClick={() => handleConfirmClicked("DENY")}
                 >
                   <Text tt="capitalize">Deny as mentor</Text>
                 </Button>
@@ -311,13 +299,21 @@ const ConfirmationModal = ({ item }) => {
         </Flex>
       </Modal>
       <Flex justify="flex-end">
-        <Button ml="xs" onClick={() => handleButtonClick(appStatus)}>
+        <Button
+          ml="xs"
+          onClick={() => setOpen(true)}
+          disabled={
+            appStatus == "processed" &&
+            process.env.NEXT_PUBLIC_NODE_ENV != "dev"
+          }
+        >
           {appStatus == "trial" ? "Finish Trial" : "Start Trial"}
         </Button>
       </Flex>
     </>
   );
 };
+
 const AddCommentSection = ({ item }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState("");
@@ -356,17 +352,15 @@ const AddCommentSection = ({ item }) => {
       </Button>
     </>
   ) : (
-    <>
-      <Button
-        variant="outline"
-        size="xs"
-        color="gray"
-        mt="1rem"
-        onClick={() => setIsEditing(true)}
-      >
-        Add Comment
-      </Button>
-    </>
+    <Button
+      variant="outline"
+      size="xs"
+      color="gray"
+      mt="1rem"
+      onClick={() => setIsEditing(true)}
+    >
+      Add Comment
+    </Button>
   );
 };
 

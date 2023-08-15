@@ -67,22 +67,31 @@ export async function deleteApp(id) {
   console.log(response);
 }
 
-export async function processApp(user) {
+export async function processApp(user, accepted) {
   const app = await MentorApp.findOne({ discordId: user.discordId });
   switch (app.appStatus) {
     case "pending": {
-      const mentor = await tryRegisterMentor(user);
-      console.log(mentor);
-      app.userLink = mentor._id;
-      app.appStatus = "trial";
+      if (accepted) {
+        const mentor = await tryRegisterMentor(user);
+
+        app.userLink = mentor._id;
+        app.appStatus = "trial";
+
+        //add sendDMToUser() after finalizing code
+      } else app.appStatus = "processed";
       break;
     }
-    case "trial":
+    case "trial": {
+      const mentor = await MentorApp.findOne({ dicordId: app.discordId });
+      mentor.isTrial = false;
+      mentor.isMentor = accepted;
+
       app.appStatus = "processed";
+
       break;
+    }
     case "processed":
-      // This should not exist. only here for easier testing on dev end. either remove or disable later
-      app.appStatus = "pending";
+      if (process.env.ENV == "dev") app.appStatus = "pending";
       break;
   }
   app.save();

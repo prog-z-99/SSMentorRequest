@@ -2,6 +2,7 @@ import { getToken } from "next-auth/jwt";
 import {
   commentApp,
   deleteApp,
+  processApp,
   voteOnApp,
 } from "../../../util/dbaccess/applicationsMethods";
 import {
@@ -23,6 +24,11 @@ const userApplication = async (req, res) => {
       case "PUT": {
         voteOnApp({ ...req.body, reviewer: token.sub });
         message = "Vote success!";
+        break;
+      }
+      case "POST": {
+        await processApp(req.body.user, req.body.command == "ACCEPT");
+        res.status(200).send("Step completed successfully!");
         break;
       }
       case "PATCH": {
