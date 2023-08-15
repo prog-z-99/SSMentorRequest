@@ -8,55 +8,78 @@ import { ObjectId } from "mongodb";
 mongoose.set("strictQuery", false);
 dbConnect();
 
-function requestFunctions(func) {
-  return func
-    .select("-interactedMentors -__v -updatedAt")
+const getRequests = async (fields) => {
+  return await Request.find(fields)
+    .select(
+      "_id discordName summonerName createdAt rank role champions timezone status accepted"
+    )
+    .sort({ createdAt: 1 })
+    .lean();
+};
+
+export async function getAllRequests() {
+  const threeMonthsAgo = getMonthsAgo(3);
+  const yearAgo = getMonthsAgo(12);
+  const requests = await getRequests({
+    archived: { $ne: true },
+    $or: [
+      {
+        $and: [
+          { status: "Completed" },
+          {
+            completed: { $gte: threeMonthsAgo },
+          },
+        ],
+      },
+      {
+        $and: [
+          { status: "Problem" },
+          {
+            $or: [
+              {
+                completed: { $gte: threeMonthsAgo },
+                createdAt: { $gte: yearAgo },
+              },
+            ],
+          },
+        ],
+      },
+      { status: { $nin: ["Completed", "Problem"] } },
+    ],
+  });
+
+  return requests;
+}
+
+export const getRequestDetails = async (id) => {
+  return await Request.findById(id)
     .populate({
       path: "mentor",
       model: "User",
       select: "discordName discordId",
     })
-    .sort({ createdAt: 1 })
-    .lean();
-}
-
-export async function getAllRequests() {
-  const threeMonthsAgo = getMonthsAgo(3);
-  const yearAgo = getMonthsAgo(12);
-  const requests = await requestFunctions(
-    Request.find({
-      archived: { $ne: true },
-      $or: [
-        {
-          $and: [
-            { status: "Completed" },
-            {
-              completed: { $gte: threeMonthsAgo },
-            },
-          ],
-        },
-        {
-          $and: [
-            { status: "Problem" },
-            {
-              $or: [
-                {
-                  completed: { $gte: threeMonthsAgo },
-                  createdAt: { $gte: yearAgo },
-                },
-              ],
-            },
-          ],
-        },
-        { status: { $nin: ["Completed", "Problem"] } },
-      ],
-    })
-  );
-  return requests;
-}
+    .populate({
+      path: "comments.commenter",
+      model: "User",
+      select: "discordName discordId",
+    });
+};
 
 export async function getTypeRequests(status) {
-  const requests = await requestFunctions(Request.find({ status }));
+  return await getRequests({ status });
+}
+
+export const getStudentRequestsByDiscordId = async (id) => {
+  return await getRequests({ discordId: id });
+};
+
+export async function getMentorRequests(_id) {
+  //TODO: verify if this route needs cleanup
+  const requests = await Request.find({
+    mentor: ObjectId(_id),
+  })
+    .sort({ accepted: -1 })
+    .lean();
   return requests;
 }
 
@@ -131,9 +154,6 @@ export async function changeRequest({ body, user }) {
           break;
       }
       break;
-    case "remarks":
-      request.remarks = body.value;
-      break;
     case "archive":
       request.archived = true;
       break;
@@ -147,18 +167,12 @@ export async function changeRequest({ body, user }) {
   await request.save();
 }
 
-export const getStudentRequestsByDiscordId = async (id) => {
-  return await Request.find({ discordId: id })
-    .select("-createdAt -updatedAt -__v")
-    .populate("mentor")
-    .lean();
+export const addRequestComment = async ({
+  commenterId,
+  requestId,
+  content,
+}) => {
+  const request = await Request.findById(requestId);
+  request.comments.push({ commenter: commenterId, content });
+  await request.save();
 };
-
-export async function getMentorRequests(_id) {
-  const requests = await Request.find({
-    mentor: ObjectId(_id),
-  })
-    .sort({ accepted: -1 })
-    .lean();
-  return requests;
-}

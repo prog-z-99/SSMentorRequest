@@ -7,8 +7,7 @@ import { Loader } from "@mantine/core";
 
 export default function StudentRequestsById() {
   const router = useRouter();
-  const { requests, loading } = useAuthTest(`/api/request/${router.query.id}`);
-  //TODO: fix this shit
+  const { requests, loading } = useAuthTest(`/api/student/${router.query.id}`);
 
   if (loading)
     return (

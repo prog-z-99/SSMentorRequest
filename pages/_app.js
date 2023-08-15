@@ -7,9 +7,6 @@ import localizedFormat from "dayjs/plugin/localizedFormat";
 // import { createEmotionCache } from "@mantine/core";
 dayjs.extend(localizedFormat);
 
-// const myCache = createEmotionCache({ key: "mantine" });
-// Use the <Provider> to improve performance and allow components that call
-// `useSession()` anywhere in your application to access the `session` object.
 export default function App({ Component, pageProps }) {
   return (
     <MantineProvider

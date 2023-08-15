@@ -2,40 +2,35 @@ import { getToken } from "next-auth/jwt";
 
 import { checkAdmin, checkStaff } from "../../../util/helper";
 import {
+  addRequestComment,
   changeRequest,
   deleteRequest,
-  getStudentRequestsByDiscordId,
+  getRequestDetails,
 } from "../../../util/dbaccess/requestMethods";
 import { getUserById } from "../../../util/dbaccess/userMethods";
 
 export default async function requestByID(req, res) {
-  const fetchToken = getToken({ req });
-  if (req.query.id.length == 18) {
-    res.status(400).send({ error: "invalid id" });
-    return;
-  }
-  const token = await fetchToken;
-  if (!token) {
-    res.status(403).send({ error: "what" });
-    return;
-  }
-  const fetchUser = getUserById(token.sub);
-
   try {
+    const fetchToken = getToken({ req });
+    if (req.query.id.length == 18) throw Error("invalid id");
+
+    const token = await fetchToken;
+    if (!token) throw Error("What");
+
+    const user = await getUserById(token.sub);
+    if (!checkStaff(user)) throw "Not authorized";
+
     switch (req.method) {
       default: {
         res.status(404);
         break;
       }
       case "GET": {
-        const user = await fetchUser;
-        if (!checkAdmin(user)) throw "Not authorized";
-        const requests = await getStudentRequestsByDiscordId(req.query.id);
-        res.status(200).send({ requests });
+        const request = await getRequestDetails(req.query.id);
+        res.status(200).send(request);
         break;
       }
       case "DELETE": {
-        const user = await fetchUser;
         if (!checkAdmin(user)) throw "Not authorized";
 
         await deleteRequest(req.query.id);
@@ -43,10 +38,18 @@ export default async function requestByID(req, res) {
         break;
       }
       case "PUT": {
-        const user = await fetchUser;
-        if (!checkStaff(user)) throw "Not authorized";
         await changeRequest({ body: { ...req.body, id: req.query.id }, user });
         res.status(200).send("Request status updated");
+        break;
+      }
+      case "PATCH": {
+        await addRequestComment({
+          commenterId: user._id,
+          requestId: req.query.id,
+          content: req.body.content,
+        });
+        res.status(200).send("Comment added");
+        break;
       }
     }
   } catch (error) {

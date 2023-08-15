@@ -101,41 +101,36 @@ export async function tryRegisterMentor(user) {
 }
 
 export async function editUser(body) {
-  try {
-    const { userId, command } = body;
-    const user = await User.findById(userId);
-    switch (command) {
-      case "SET_TRIAL":
-        user.isTrial = body.bool;
-        break;
-      case "SET_MENTOR":
-        user.isTrial = false;
-        user.isMentor = body.bool;
-        break;
-      case "SET_ADMIN":
-        user.isAdmin = body.bool;
-        break;
-      case "SET_REVIEWER":
-        user.isReviewer = body.bool;
-        break;
-      case "SET_PEAKRANK":
-        user.peakRank = body.rank;
-        break;
-      case "SET_CHAMPIONS":
-        user.bestChampions = body.value;
-        break;
-      case "SET_REGION":
-        user.mentorRegion = body.value;
-        break;
-      case "SET_ROLES":
-        user.preferredRoles = body.value;
-    }
-    await user.save();
-    return `Sucessfully edited to ${command}`;
-  } catch (error) {
-    console.log(error);
-    return `Error trying to run ${body.command}`;
+  const { userId, command } = body;
+  const user = await User.findById(userId);
+  switch (command) {
+    case "SET_TRIAL":
+      user.isTrial = body.bool;
+      break;
+    case "SET_MENTOR":
+      user.isTrial = false;
+      user.isMentor = body.bool;
+      break;
+    case "SET_ADMIN":
+      user.isAdmin = body.bool;
+      break;
+    case "SET_REVIEWER":
+      user.isReviewer = body.bool;
+      break;
+    case "SET_PEAKRANK":
+      user.peakRank = body.rank;
+      break;
+    case "SET_CHAMPIONS":
+      user.bestChampions = body.value;
+      break;
+    case "SET_REGION":
+      user.mentorRegion = body.value;
+      break;
+    case "SET_ROLES":
+      user.preferredRoles = body.value;
   }
+  await user.save();
+  return `Sucessfully edited to ${command}`;
 }
 
 export async function deleteUser({ user }) {
