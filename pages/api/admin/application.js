@@ -22,7 +22,7 @@ const userApplication = async (req, res) => {
 
     switch (req.method) {
       case "PUT": {
-        voteOnApp({ ...req.body, reviewer: token.sub });
+        await voteOnApp({ ...req.body, reviewer: token.sub });
         message = "Vote success!";
         break;
       }

@@ -8,12 +8,13 @@ mongoose.set("strictQuery", false);
 dbConnect();
 
 const getRequests = async (fields) => {
-  return await Request.find(fields)
+  const requests = await Request.find(fields)
     .select(
       "_id discordName summonerName createdAt rank role champions timezone status accepted"
     )
     .sort({ createdAt: 1 })
     .lean();
+  return requests;
 };
 
 export async function getAllRequests() {
@@ -51,7 +52,7 @@ export async function getAllRequests() {
 }
 
 export const getRequestDetails = async (id) => {
-  return await Request.findById(id)
+  const detail = await Request.findById(id)
     .populate({
       path: "mentor",
       model: "User",
@@ -62,6 +63,8 @@ export const getRequestDetails = async (id) => {
       model: "User",
       select: "discordName discordId",
     });
+
+  return detail;
 };
 
 export async function getTypeRequests(status) {
@@ -74,12 +77,9 @@ export const getStudentRequestsByDiscordId = async (id) => {
 
 export async function getMentorRequests(_id) {
   //TODO: verify if this route needs cleanup
-  const requests = await Request.find({
+  return await getRequests({
     mentor: ObjectId(_id),
-  })
-    .sort({ accepted: -1 })
-    .lean();
-  return requests;
+  });
 }
 
 export async function deleteRequest(id) {
@@ -143,8 +143,6 @@ export async function changeRequest({ body, user }) {
           request.completed = null;
           break;
         case "Completed":
-          request.completed = now;
-          break;
         case "Problem":
           if (!request.accepted) {
             request.accepted = now;
