@@ -96,7 +96,7 @@ export async function processApp(user, accepted) {
       break;
     }
     case "trial": {
-      const mentor = await Users.findOne({ dicordId: app.discordId });
+      const mentor = await Users.findOne({ discordId: app.discordId });
       mentor.isTrial = false;
       mentor.isMentor = accepted;
 
