@@ -9,8 +9,7 @@ import {
   getCleanedDiscordUser,
   getMonthsAgo,
 } from "../helper";
-import { trialAcceptText } from "../datalist";
-import { getLatestDiscordProfile, sendDMToUser } from "./discordMethods";
+import { getLatestDiscordProfile } from "./discordMethods";
 import mongoose from "mongoose";
 import dbConnect from "../mongodb";
 mongoose.set("strictQuery", false);
@@ -100,7 +99,6 @@ export async function tryRegisterMentor(user) {
     isTrial: true,
   });
   await newUser.save();
-  sendDMToUser(user.discordId, trialAcceptText);
   return "mentor created!";
 }
 

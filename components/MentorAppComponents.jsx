@@ -256,13 +256,22 @@ const ConfirmationModal = ({ item }) => {
         </Box>
         <Flex justify="flex-end">
           <Box>
-            {appStatus == "pending" && (
-              <Button
-                color="teal"
-                onClick={() => handleConfirmClicked("ACCEPT")}
-              >
-                <Text tt="capitalize">Confirm</Text>
-              </Button>
+            {appStatus != "trial" && (
+              <>
+                <Button
+                  color="teal"
+                  onClick={() => handleConfirmClicked("ACCEPT")}
+                >
+                  <Text tt="capitalize">Accept as trial</Text>
+                </Button>
+                <Button
+                  color="red"
+                  ml="xs"
+                  onClick={() => handleConfirmClicked("DENY")}
+                >
+                  <Text tt="capitalize">Deny as trial</Text>
+                </Button>
+              </>
             )}
             {appStatus === "trial" && (
               <>
@@ -293,8 +302,9 @@ const ConfirmationModal = ({ item }) => {
           ml="xs"
           onClick={() => setOpen(true)}
           disabled={
-            appStatus == "processed" &&
-            process.env.NEXT_PUBLIC_NODE_ENV != "dev"
+            process.env.NEXT_PUBLIC_ENV == "dev"
+              ? false
+              : appStatus == "processed"
           }
         >
           {appStatus == "trial" ? "Finish Trial" : "Start Trial"}
