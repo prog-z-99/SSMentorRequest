@@ -10,7 +10,7 @@ dbConnect();
 const getRequests = async (fields) => {
   const requests = await Request.find(fields)
     .select(
-      "_id discordName summonerName createdAt rank role champions timezone status accepted"
+      "_id discordName summonerName createdAt rank role champions timezone status accepted region"
     )
     .sort({ createdAt: 1 })
     .lean();
