@@ -103,7 +103,20 @@ const mentorFormFields = [
   "experience",
 ];
 
-export const trialAcceptText = `Thank you for your interest in being a mentor at Summoner School. We have reviewed your application and would like to move you forward in the process by giving you a trial period! To get started please say hi in #mentor-chat and read the pins in #important-chat.`;
+export const trialAcceptText = `Thank you for your interest in being a mentor at Summoner School. We have reviewed your application and would like to move you forward in the process by giving you a trial period! To get started please say hi in <#${process.env.MENTOR_CHAT}> and read the pins in <#${process.env.IMPORTANT_MENTORCHAT}>.`;
+
+export const trialDenyText = `Thank you for your interest in being a mentor in Summoner School. After reviewing your application we unfortunately have to decline at this time. You may reapply in 3 months. 
+
+If you plan on reapplying, we recommend being active in <#${process.env.VOD_REVIEW}> or any of the other educational channels to practice mentoring.`;
+
+export const mentorAcceptText = `Thank you for your participation with the mentoring team! As a result of your activity, we would like to officially add you as part of the Summoner School mentoring team! 
+You can now head over to [the profile page](${process.env.WEBSITE}/mentors/profile) to update your profile on the mentoring website!
+
+As for your next step, come to <#${process.env.MENTOR_CHAT}> and say hello! We also have a tradition that dates back to the beginning of time: it is of utmost importance that new mentors post: either a pic of their pet, a haiku or a pun (a good one)`;
+
+export const mentorDenyText = `Thank you for you participation with the mentoring team. After reviewing your activity, we unfortunately have to decline at this time. If you would like, you can reapply after 3 months.
+
+If you plan on reapplying, we recommend being active in <#${process.env.VOD_REVIEW}> or any of the other educational channels to practice mentoring`;
 
 export const mentorFormQuestions = mentorFormValues.map((v, i) => ({
   field: mentorFormFields[i],

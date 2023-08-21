@@ -1,7 +1,14 @@
 import MentorApp from "../../models/mentorAppModel";
 import Request from "../../models/requestModel";
 import Users from "../../models/userModel";
+import {
+  mentorAcceptText,
+  mentorDenyText,
+  trialAcceptText,
+  trialDenyText,
+} from "../datalist";
 import dbConnect from "../mongodb";
+import { sendDMToUser } from "./discordMethods";
 import { getUserById, getUsersById, tryRegisterMentor } from "./userMethods";
 import mongoose from "mongoose";
 mongoose.set("strictQuery", false);
@@ -73,6 +80,7 @@ export async function deleteApp(id) {
 
 export async function processApp(user, accepted) {
   const app = await MentorApp.findOne({ discordId: user.discordId });
+  let message;
   switch (app.appStatus) {
     case "pending": {
       if (accepted) {
@@ -80,18 +88,20 @@ export async function processApp(user, accepted) {
 
         app.userLink = mentor._id;
         app.appStatus = "trial";
-
-        //add sendDMToUser() after finalizing code
-      } else app.appStatus = "processed";
+        message = trialAcceptText;
+      } else {
+        app.appStatus = "processed";
+        message = trialDenyText;
+      }
       break;
     }
     case "trial": {
-      const mentor = await MentorApp.findOne({ dicordId: app.discordId });
+      const mentor = await Users.findOne({ dicordId: app.discordId });
       mentor.isTrial = false;
       mentor.isMentor = accepted;
 
       app.appStatus = "processed";
-
+      message = accepted ? mentorAcceptText : mentorDenyText;
       break;
     }
     case "processed":
@@ -99,6 +109,7 @@ export async function processApp(user, accepted) {
       break;
   }
   app.save();
+  sendDMToUser(user.discordId, message);
 }
 
 export async function commentApp({ commenterId, user, content }) {

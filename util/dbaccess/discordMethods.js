@@ -12,7 +12,10 @@ export const getLatestDiscordProfile = async (id) => {
     .then(({ data }) => data);
 };
 
-export const sendDMToUser = async (id, message) => {
+export const sendDMToUser = async (
+  id,
+  message = `If you see this message, please notify <@153289671483457536>`
+) => {
   axios
     .post(
       `https://discord.com/api/v9/users/@me/channels`,
