@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import dayjs from "dayjs";
-import { Box, Button, Container, Divider, Flex, Group, Select, SimpleGrid, Switch, Table, Text } from "@mantine/core";
+import { Box, Button, Container, Flex, Select, Switch, Table, Text } from "@mantine/core";
 import { fullRanks, userSelectCommand } from "../util/datalist";
 import axios from "axios";
 import { ClickToCopy, StyledClickableContainer } from "./Styles";
@@ -81,8 +81,10 @@ const TableRow = ({ mentor }) => {
           <td></td>
           <td>
             <Text>Preferred Roles</Text>
-            {mentor.preferredRoles.length > 0 ? mentor.preferredRoles?.map((role, i) =>
-              <Text span key={`role${i}`} fs='italic'>{(i ? ', ' : '') + role}</Text>) : <Text fs='italic'>N/A</Text>}
+            {mentor.preferredRoles.length > 0 ?
+              mentor.preferredRoles?.map((role, i) =>
+                <Text span key={`role${i}`} fs='italic'>{(i ? ', ' : '') + role}</Text>)
+              : <Text fs='italic'>N/A</Text>}
           </td>
           <td>
             <Flex justify='space-between' align='center'>
