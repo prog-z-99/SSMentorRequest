@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import dayjs from "dayjs";
-import { Container, Select, Switch, Table, Text } from "@mantine/core";
+import { Box, Button, Container, Divider, Flex, Group, Select, SimpleGrid, Switch, Table, Text } from "@mantine/core";
 import { fullRanks, userSelectCommand } from "../util/datalist";
 import axios from "axios";
 import { ClickToCopy, StyledClickableContainer } from "./Styles";
@@ -32,7 +32,6 @@ export const AdminComponent = ({ users }) => {
 
 const TableRow = ({ mentor }) => {
   const [rowOpen, setRowOpen] = useState(false);
-
   return (
     <>
       <tr>
@@ -79,41 +78,57 @@ const TableRow = ({ mentor }) => {
       </tr>
       {rowOpen && (
         <tr>
-          <td colSpan={12}>
-            <Container fluid>
-              <Text>
-                Toggle Trial
+          <td></td>
+          <td>
+            <Text>Preferred Roles</Text>
+            {mentor.preferredRoles.length > 0 ? mentor.preferredRoles?.map((role, i) =>
+              <Text span key={`role${i}`} fs='italic'>{(i ? ', ' : '') + role}</Text>) : <Text fs='italic'>N/A</Text>}
+          </td>
+          <td>
+            <Flex justify='space-between' align='center'>
+              <Box>
+                <Text>Toggle Trial</Text>
                 <UserTypeUpdate
                   user={mentor}
                   type={"trial"}
                   defChecked={mentor.isTrial}
                 />
-                Toggle Mentor
+              </Box>
+              <Box>
+                <Text>Toggle Mentor</Text>
                 <UserTypeUpdate
                   user={mentor}
                   type={"mentor"}
                   defChecked={mentor.isMentor}
                 />
-                Toggle Admin
+              </Box>
+              <Box>
+                <Text>Toggle Admin</Text>
                 <UserTypeUpdate
                   user={mentor}
                   type={"admin"}
                   defChecked={mentor.isAdmin}
                 />
-                Toggle Reviewer
+              </Box>
+              <Box>
+                <Text>Toggle Reviewer</Text>
                 <UserTypeUpdate
                   user={mentor}
                   type={"reviewer"}
                   defChecked={mentor.isReviewer}
                 />
-                <UserRankSelect user={mentor} />
-                {/* <Button disabled={true} onClick={() => DeleteUser(mentor)}>
-                  Delete
-                </Button> */}
-              </Text>
+              </Box>
+            </Flex>
+          </td>
+          <td></td>
+          <td colSpan={2}>
+            <Container pl='0'>
+              <Text>Peak rank</Text>
+              <UserRankSelect user={mentor} />
             </Container>
           </td>
-        </tr>
+          <td><Button size='xs' disabled>Send DM</Button></td>
+        </tr >
       )}
     </>
   );
@@ -137,6 +152,7 @@ const UserRankSelect = ({ user }) => {
   };
   return (
     <Select
+      size='xs'
       defaultValue={user.peakRank}
       data={fullRanks()}
       onChange={handleOnChange}
