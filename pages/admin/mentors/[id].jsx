@@ -4,7 +4,7 @@ import { MentorRequestTable } from "../../../components/MentorRequestComponents"
 
 import { useRouter } from "next/router";
 
-import { useAuthTest } from "../../../hooks/useAuthTest";
+import useAuthTest from "../../../hooks/useAuthTest";
 import { LoaderWithLayout } from "../../../components/Styles";
 
 export default function MentorById() {

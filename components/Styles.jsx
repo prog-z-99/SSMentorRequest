@@ -1,32 +1,11 @@
-import { Loader, MultiSelect, Select, Tooltip } from "@mantine/core";
+import { Loader, MultiSelect, Tooltip } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { copyClip } from "../util/helper";
 import { getAllChampions } from "../util/helper";
 import Layout from "./layout";
 import styled from "@emotion/styled";
 
-export const FormSelect = ({
-  className,
-  title,
-  name,
-  options,
-  onChange,
-  error,
-  value,
-}) => {
-  return (
-    <Select
-      className={className}
-      label={title}
-      error={error}
-      value={value}
-      data={options}
-      onChange={(e) => onChange(e, name)}
-    />
-  );
-};
-
-export const ChampionSelect = ({ className, onChange, error }) => {
+export const ChampionSelect = (props) => {
   const [champions, setChampions] = useState([]);
 
   useEffect(() => {
@@ -38,14 +17,7 @@ export const ChampionSelect = ({ className, onChange, error }) => {
   }, []);
 
   return (
-    <MultiSelect
-      className={className}
-      label={"Champions"}
-      data={champions}
-      searchable
-      onChange={(e) => onChange(e, "champions")}
-      error={error}
-    />
+    <MultiSelect {...props} label="Champions" data={champions} searchable />
   );
 };
 

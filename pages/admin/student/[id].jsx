@@ -2,7 +2,7 @@ import Layout from "../../../components/layout";
 import React from "react";
 import { MentorRequestTable } from "../../../components/MentorRequestComponents";
 import { useRouter } from "next/router";
-import { useAuthTest } from "../../../hooks/useAuthTest";
+import useAuthTest from "../../../hooks/useAuthTest";
 import { Loader } from "@mantine/core";
 
 export default function StudentRequestsById() {

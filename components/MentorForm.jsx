@@ -1,91 +1,82 @@
 import React, { useState } from "react";
-import * as Yup from "yup";
-import { Form, withFormik } from "formik";
 import { fullRanks, mentorFormQuestions, regions } from "../util/datalist";
-import { FormSelect } from "./Styles";
 import axios from "axios";
-import { useRouter } from "next/router";
-import { Button, Textarea, TextInput } from "@mantine/core";
+import {
+  Button,
+  Container,
+  Select,
+  Stack,
+  Textarea,
+  TextInput,
+} from "@mantine/core";
+import { isNotEmpty, useForm } from "@mantine/form";
 
-const FormEnhancer = withFormik({
-  validationSchema: Yup.object().shape({
-    rank: Yup.string().required("Please select your Rank "),
-    summonerName: Yup.string().required("Please enter your Summoner Name"),
-    region: Yup.string().required("Please select your region"),
-    appReason: Yup.string().required("*Required"),
-    loseMatchupEx: Yup.string().required("*Required"),
-    rebuttalEx: Yup.string().required("*Required"),
-    winConEx: Yup.string().required("*Required"),
-  }),
-});
+const MentorApplicationForm = ({ setSent }) => {
+  const { isValid, values, getInputProps } = useForm({
+    initialValues: {
+      rank: "",
+      summonerName: "",
+      region: "",
+      appReason: "",
+    },
+    validate: {
+      rank: isNotEmpty("Please select your Rank "),
+      summonerName: isNotEmpty("Please enter your Summoner Name"),
+      region: isNotEmpty("Please select your region"),
+      appReason: isNotEmpty("*Required"),
+      loseMatchupEx: isNotEmpty("*Required"),
+      rebuttalEx: isNotEmpty("*Required"),
+      winConEx: isNotEmpty("*Required"),
+    },
+    validateInputOnBlur: true,
+  });
 
-const MentorRequestForm = (props) => {
-  const { isValid, values, errors, handleChange, handleBlur, setFieldValue } =
-    props;
-
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setLoading(true);
-    if (isValid) {
-      axios
+
+    if (isValid()) {
+      await axios
         .post("/api/user/application", values)
         .then(() => {
-          alert("Request has been sent! We will reach you back in 1-2 weeks");
-          router.push("/");
+          setSent(true);
         })
         .catch((error) => {
-          alert(error.response.data.error);
-          setLoading(false);
+          setSent(true);
+          console.log(error);
         });
     }
-  };
-
-  const onChange = (obj, field) => {
-    setFieldValue(field, obj);
+    setLoading(false);
   };
 
   return (
-    <Form>
-      <TextInput
-        label="Summoner name"
-        id="summonerName"
-        placeholder="Only put your main account"
-        value={values.summonerName}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={errors.summonerName}
-      />
-      <FormSelect
-        title="Region"
-        name="region"
-        options={regions}
-        error={errors.region}
-        onChange={onChange}
-      />
-      <FormSelect
-        title="Rank"
-        name="rank"
-        options={fullRanks()}
-        onChange={onChange}
-        error={errors.rank}
-      />
-      {mentorFormQuestions.map((question, i) => (
-        <Textarea
-          key={`MentorFormQuestion${i}`}
-          onChange={handleChange}
-          label={question.title}
-          id={question.field}
-          error={errors[question.field]}
-        />
-      ))}
+    <Container>
+      <form onSubmit={handleSubmit}>
+        <Stack>
+          <TextInput
+            label="Summoner name"
+            placeholder="Only put your main account"
+            {...getInputProps("summonerName")}
+          />
+          <Select label="Region" data={regions} {...getInputProps("region")} />
+          <Select label="Rank" data={fullRanks()} {...getInputProps("rank")} />
+          {mentorFormQuestions.map((question, i) => (
+            <Textarea
+              key={`MentorFormQuestion${i}`}
+              label={question.title}
+              {...getInputProps(question.field)}
+            />
+          ))}
 
-      <Button onClick={handleSubmit} disabled={loading && isValid}>
-        Send application
-      </Button>
-    </Form>
+          <Button type="submit" disabled={loading || !isValid()}>
+            Send application
+          </Button>
+        </Stack>
+      </form>
+    </Container>
   );
 };
 
-export default FormEnhancer(MentorRequestForm);
+export default MentorApplicationForm;

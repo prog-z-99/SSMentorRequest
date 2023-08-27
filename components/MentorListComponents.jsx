@@ -1,4 +1,11 @@
-import { Button, MultiSelect, Select, Table, Title } from "@mantine/core";
+import {
+  Button,
+  Container,
+  MultiSelect,
+  Select,
+  Table,
+  Title,
+} from "@mantine/core";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { regions, roles, userSelectCommand } from "../util/datalist";
@@ -15,7 +22,7 @@ export const MentorList = ({ mentors }) => {
           <tr>
             <th>Mentor name</th>
             <th>Preferred roles</th>
-            <th>Main champions</th>
+            <th>Additionally experienced in:</th>
             <th>Peak Rank</th>
             <th>Region</th>
           </tr>
@@ -42,6 +49,7 @@ export const MentorProfileComponent = ({
   const [champions, setChampions] = useState([]);
   const [selectedChampions, setSelectedChampions] = useState(bestChampions);
   const [selectedRoles, setSelectedRoles] = useState(preferredRoles);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const getChampions = async () => {
       setChampions(await getAllMentorChampions());
@@ -50,18 +58,23 @@ export const MentorProfileComponent = ({
   }, []);
 
   const handleSelect = (value, field) => {
+    setLoading(true);
     axios
       .put("/api/user/mentor", {
         userId: _id,
         command: userSelectCommand(field),
         value,
       })
-      .then(({ data }) => alert(data))
+      .then(({ data }) => {
+        //TODO change this to popup
+        alert(data);
+        setLoading(false);
+      })
       .catch((error) => console.log(error));
   };
 
   return (
-    <>
+    <Container>
       {discordName}
       <MultiSelect
         label="Main champions"
@@ -69,8 +82,12 @@ export const MentorProfileComponent = ({
         value={selectedChampions}
         onChange={setSelectedChampions}
         searchable
+        disabled={champions.length == 0}
       />
-      <Button onClick={() => handleSelect(selectedChampions, "champions")}>
+      <Button
+        onClick={() => handleSelect(selectedChampions, "champions")}
+        disabled={loading}
+      >
         Save
       </Button>
 
@@ -80,13 +97,18 @@ export const MentorProfileComponent = ({
         data={roles}
         onChange={setSelectedRoles}
       />
-      <Button onClick={() => handleSelect(selectedRoles, "roles")}>Save</Button>
+      <Button
+        onClick={() => handleSelect(selectedRoles, "roles")}
+        disabled={loading}
+      >
+        Save
+      </Button>
       <Select
         label="Region"
         defaultValue={mentorRegion}
         data={regions}
         onChange={(e) => handleSelect(e, "region")}
       />
-    </>
+    </Container>
   );
 };

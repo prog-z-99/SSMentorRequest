@@ -1,7 +1,7 @@
 import { React } from "react";
 import Layout from "../../components/layout";
 import { AdminComponent } from "../../components/AdminComponent";
-import { useAuthTest } from "../../hooks/useAuthTest";
+import useAuthTest from "../../hooks/useAuthTest";
 import { Loader } from "@mantine/core";
 
 export default function Admins() {

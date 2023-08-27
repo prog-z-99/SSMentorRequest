@@ -1,43 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Layout from "../components/layout";
 import Terms, { Pending } from "../components/Terms";
-import Form from "../components/Form";
+import RequestForm from "../components/RequestForm";
 import { Container } from "@mantine/core";
-import axios from "axios";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
+import useAuthTest from "../hooks/useAuthTest";
 
 export default function Page() {
-  const { status } = useSession();
-  const router = useRouter();
+  const { loading, pending } = useAuthTest("/api/request");
+
+  const [sent, setSent] = useState(pending);
   const [terms, setTerms] = useState(false);
-  const [pending, setPending] = useState(false);
-  const [loading, setLoading] = useState(true);
-  let content = <Terms setTerms={setTerms} loading={loading} />;
-
-  useEffect(() => {
-    switch (status) {
-      case "unauthenticated":
-        router.push("/api/auth/signin");
-        break;
-      case "authenticated":
-        axios.get("/api/request").then(({ data }) => {
-          setPending(data);
-          setLoading(false);
-        });
-        break;
-    }
-  }, [status, router]);
-
-  if (pending) content = <Pending />;
-
-  if (terms) content = <Form />;
 
   return (
     <Layout>
       <Container>
         <h1>Mentor Request Form</h1>
-        {content}
+        {sent || pending ? (
+          <Pending />
+        ) : terms ? (
+          <RequestForm setSent={setSent} />
+        ) : (
+          <Terms setTerms={setTerms} loading={loading} />
+        )}
       </Container>
     </Layout>
   );

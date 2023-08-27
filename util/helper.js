@@ -84,3 +84,11 @@ export const getMonthsAgo = (months) => {
   const ago = dayjs().subtract(months, "months");
   return ago;
 };
+
+export const timeZones = () => {
+  const zones = [];
+  for (let i = -11; i <= 12; i++) {
+    zones.push(`UTC ${i}`);
+  }
+  return zones;
+};

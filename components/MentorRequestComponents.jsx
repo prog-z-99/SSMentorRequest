@@ -134,7 +134,7 @@ const Details = ({ id, isAdmin }) => {
 
   const handleArchive = () => {
     if (confirm("Are you sure you want to archive this request?")) {
-      axios.put("/api/request/change", { id, type: "archive" });
+      axios.put(`/api/request/${id}`, { type: "archive" });
     } else console.log("not");
   };
   const handleDelete = () => {
@@ -185,11 +185,16 @@ const Details = ({ id, isAdmin }) => {
         <StyledLabel>Other Actions:</StyledLabel>
       </Text>
       <Space h="xs" />
-      <Button size="xs" variant="outline" onClick={handleArchive}>
-        Archive Request
-      </Button>
+      <Link href={`/admin/student/${item.discordId}`}>
+        <Button size="xs" variant="outline" color="teal">
+          All requests by this student
+        </Button>
+      </Link>
       {isAdmin && (
         <>
+          <Button size="xs" ml="xs" variant="outline" onClick={handleArchive}>
+            Archive Request
+          </Button>
           <Button
             size="xs"
             ml="xs"
@@ -199,11 +204,6 @@ const Details = ({ id, isAdmin }) => {
           >
             Delete Request
           </Button>{" "}
-          <Link href={`/admin/student/${item.discordId}`}>
-            <Button size="xs" ml="xs" variant="outline" color="teal">
-              All requests by this student
-            </Button>
-          </Link>
         </>
       )}
     </Container>

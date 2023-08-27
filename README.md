@@ -4,7 +4,7 @@ Built with [Next.js](https://nextjs.org/docs), [Next-Auth](https://next-auth.js.
 
 ## Prerequisites:
 
-Get the latest version of `yarn` for the closest environment
+Works on `yarn v3.5.1` and node `v16.20.1`
 
 ## Setup
 

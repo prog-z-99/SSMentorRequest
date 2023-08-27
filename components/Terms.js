@@ -53,9 +53,16 @@ export default function Terms({ setTerms, loading }) {
 
 export function Pending() {
   return (
-    <p>
-      Sorry, either your request is currently pending, or it hasn&apos;t been
-      long since your last session was finished.
-    </p>
+    <>
+      <p>
+        Request has been sent! Please make sure to have your DMs open for our
+        mentors to reach you!
+      </p>
+
+      <p>
+        If you have recently finished a review and would like to send another,
+        please note that there is a limit of 1 request per month.
+      </p>
+    </>
   );
 }

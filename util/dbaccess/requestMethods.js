@@ -19,28 +19,14 @@ const getRequests = async (fields) => {
 
 export async function getAllRequests() {
   const threeMonthsAgo = getMonthsAgo(3);
-  const yearAgo = getMonthsAgo(12);
   const requests = await getRequests({
     archived: { $ne: true },
     $or: [
       {
         $and: [
-          { status: "Completed" },
+          { status: { $in: ["Completed", "Problem"] } },
           {
             completed: { $gte: threeMonthsAgo },
-          },
-        ],
-      },
-      {
-        $and: [
-          { status: "Problem" },
-          {
-            $or: [
-              {
-                completed: { $gte: threeMonthsAgo },
-                createdAt: { $gte: yearAgo },
-              },
-            ],
           },
         ],
       },
@@ -104,18 +90,14 @@ export async function createRequest({ values, user }) {
 export async function isRequestPending(id) {
   const request = await Request.findOne({
     discordId: id,
+    archived: false,
+    $or: [
+      { completed: { $exists: false } },
+      { completed: { $gte: dayjs().subtract(1, "month") } },
+    ],
   }).sort({ createdAt: -1 });
 
-  if (
-    request &&
-    !request?.archived &&
-    (!request.completed ||
-      dayjs(request.completed).add(1, "months").isBefore(dayjs()))
-  ) {
-    return true;
-  }
-
-  return false;
+  return request ? true : false;
 }
 
 export async function changeRequest({ body, user }) {
@@ -152,7 +134,7 @@ export async function changeRequest({ body, user }) {
       }
       break;
     case "archive":
-      request.archived = true;
+      request.archived = !request.archived;
       break;
   }
 
