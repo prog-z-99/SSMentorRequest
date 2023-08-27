@@ -16,7 +16,7 @@ export const sendDMToUser = async (
   id,
   message = `If you see this message, please notify <@153289671483457536>`
 ) => {
-  axios
+  const { data } = await axios
     .post(
       `https://discord.com/api/v9/users/@me/channels`,
       { recipient_id: id },
@@ -24,17 +24,37 @@ export const sendDMToUser = async (
         headers: { Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}` },
       }
     )
+    .catch(({ response }) => console.log(id, response.status));
+
+  axios
+    .post(
+      `https://discord.com/api/v9/channels/${data.id}/messages`,
+      { content: message },
+      {
+        headers: { Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}` },
+      }
+    )
     .catch(({ response }) => console.log(id, response.status))
-    .then(({ data }) => {
-      axios
-        .post(
-          `https://discord.com/api/v9/channels/${data.id}/messages`,
-          { content: message },
-          {
-            headers: { Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}` },
-          }
-        )
-        .catch(({ response }) => console.log(id, response.status))
-        .then(() => console.log(id, "---Success!"));
-    });
+    .then(() => console.log(id, "---Success!"));
+};
+
+export const getDMHistory = async (discordId) => {
+  const { data } = await axios
+    .post(
+      `https://discord.com/api/v9/users/@me/channels`,
+      { recipient_id: discordId },
+      {
+        headers: { Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}` },
+      }
+    )
+    .catch(({ response }) => console.log(discordId, response.status));
+
+  const response = await axios.get(
+    `https://discord.com/api/v9/channels/${data.id}/messages`,
+    {
+      headers: { Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}` },
+    }
+  );
+
+  console.log(response.data);
 };

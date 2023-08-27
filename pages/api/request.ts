@@ -15,12 +15,12 @@ export default async function Request(req, res) {
     switch (req.method) {
       case "GET": {
         const pending = await isRequestPending(token.sub);
-        res.status(200).send(pending);
+        res.status(200).json({ pending });
         break;
       }
       case "POST": {
         await createRequest({ values: req.body, user: token });
-        res.send({ content: "Success!" });
+        res.status(200).json({ content: "Success!" });
         break;
       }
       default:

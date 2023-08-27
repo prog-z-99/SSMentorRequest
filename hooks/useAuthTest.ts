@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-export const useAuthTest = (link, shouldBoot) => {
+const useAuthTest = (link, shouldBoot) => {
   const { status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -34,3 +34,5 @@ export const useAuthTest = (link, shouldBoot) => {
     ...data,
   };
 };
+
+export default useAuthTest;

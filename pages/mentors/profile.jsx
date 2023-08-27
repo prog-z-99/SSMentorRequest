@@ -3,7 +3,7 @@ import { React } from "react";
 import Layout from "../../components/layout";
 import { MentorProfileComponent } from "../../components/MentorListComponents";
 import { RequestRow } from "../../components/MentorRequestComponents";
-import { useAuthTest } from "../../hooks/useAuthTest";
+import useAuthTest from "../../hooks/useAuthTest";
 
 export default function Mentors() {
   const { mentor, requests, loading, error } = useAuthTest(`/api/mentor`);

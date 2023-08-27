@@ -15,6 +15,7 @@ export const AdminComponent = ({ users }) => {
           <th />
           <th>Mentor Name</th>
           <th>Mentor ID</th>
+          <th>Status</th>
           <th>Last completed</th>
           <th>Last taken</th>
           <th>Completed lately</th>
@@ -47,6 +48,12 @@ const TableRow = ({ mentor }) => {
         </td>
         <td>
           <ClickToCopy>{mentor.discordId}</ClickToCopy>
+        </td>
+        <td>
+          {" "}
+          {mentor.isTrial && "🟩"}
+          {mentor.isMentor && "🟦"}
+          {mentor.isAdmin && "🟥"}
         </td>
         <td>
           {mentor.lastCompleted && (
