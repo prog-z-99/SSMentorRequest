@@ -6,13 +6,10 @@ import { RequestRow } from "../../components/MentorRequestComponents";
 import useAuthTest from "../../hooks/useAuthTest";
 
 export default function Mentors() {
-  const { mentor, requests, loading, error } = useAuthTest(`/api/mentor`);
+  const { mentor, requests, loading, notAuth } = useAuthTest(`/api/mentor`);
 
-  if (loading) return <Layout>loading</Layout>;
-
-  if (error) alert(error);
   return (
-    <Layout>
+    <Layout loading={loading} notAuth={notAuth}>
       <MentorProfileComponent mentor={mentor} />
       <Table highlightOnHover striped>
         <tbody>

@@ -49,8 +49,9 @@ export async function getAllApps(processed) {
   const newApps = await Promise.all(
     apps.map(async (app) => {
       if (app.appStatus == "trial") {
+        // console.log(app);
         app.requestCount = await Request.countDocuments({
-          mentor: app.userLink?._id,
+          $and: [{ mentor: app.userLink?._id }],
         });
       }
       return {
@@ -85,10 +86,12 @@ export async function processApp(user, accepted) {
     case "pending": {
       if (accepted) {
         const mentor = await tryRegisterMentor(user);
-
         app.userLink = mentor._id;
         app.appStatus = "trial";
         message = trialAcceptText;
+        app.yay = [];
+        app.nay = [];
+        app.meh = [];
       } else {
         app.appStatus = "processed";
         message = trialDenyText;
@@ -96,12 +99,15 @@ export async function processApp(user, accepted) {
       break;
     }
     case "trial": {
-      const mentor = await Users.findOne({ discordId: app.discordId });
-      mentor.isTrial = false;
-      mentor.isMentor = accepted;
+      delete app.userLink;
+      app.appStatus = "pending";
 
-      app.appStatus = "processed";
-      message = accepted ? mentorAcceptText : mentorDenyText;
+      // const mentor = await Users.findOne({ discordId: app.discordId });
+      // mentor.isTrial = false;
+      // mentor.isMentor = accepted;
+      // mentor.save()
+      // app.appStatus = "processed";
+      // message = accepted ? mentorAcceptText : mentorDenyText;
       break;
     }
     case "processed":
@@ -109,7 +115,7 @@ export async function processApp(user, accepted) {
       break;
   }
   app.save();
-  sendDMToUser(user.discordId, message);
+  // sendDMToUser(user.discordId, message);
 }
 
 export async function commentApp({ commenterId, user, content }) {

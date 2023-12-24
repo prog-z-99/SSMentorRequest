@@ -1,7 +1,16 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import dayjs from "dayjs";
-import { Box, Button, Container, Flex, Select, Switch, Table, Text } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  Select,
+  Switch,
+  Table,
+  Text,
+} from "@mantine/core";
 import { fullRanks, userSelectCommand } from "../util/datalist";
 import axios from "axios";
 import { ClickToCopy, StyledClickableContainer } from "./Styles";
@@ -50,10 +59,10 @@ const TableRow = ({ mentor }) => {
           <ClickToCopy>{mentor.discordId}</ClickToCopy>
         </td>
         <td>
-          {" "}
           {mentor.isTrial && "🟩"}
           {mentor.isMentor && "🟦"}
           {mentor.isAdmin && "🟥"}
+          {mentor.isReviewer && "🟧"}
         </td>
         <td>
           {mentor.lastCompleted && (
@@ -88,13 +97,18 @@ const TableRow = ({ mentor }) => {
           <td></td>
           <td>
             <Text>Preferred Roles</Text>
-            {mentor.preferredRoles.length > 0 ?
-              mentor.preferredRoles?.map((role, i) =>
-                <Text span key={`role${i}`} fs='italic'>{(i ? ', ' : '') + role}</Text>)
-              : <Text fs='italic'>N/A</Text>}
+            {mentor.preferredRoles.length > 0 ? (
+              mentor.preferredRoles?.map((role, i) => (
+                <Text span key={`role${i}`} fs="italic">
+                  {(i ? ", " : "") + role}
+                </Text>
+              ))
+            ) : (
+              <Text fs="italic">N/A</Text>
+            )}
           </td>
-          <td>
-            <Flex justify='space-between' align='center'>
+          <td colSpan={2}>
+            <Flex justify="space-between" align="center">
               <Box>
                 <Text>Toggle Trial</Text>
                 <UserTypeUpdate
@@ -129,15 +143,18 @@ const TableRow = ({ mentor }) => {
               </Box>
             </Flex>
           </td>
-          <td></td>
-          <td colSpan={2}>
-            <Container pl='0'>
+          <td colSpan={3}>
+            <Container pl="0">
               <Text>Peak rank</Text>
               <UserRankSelect user={mentor} />
             </Container>
           </td>
-          <td><Button size='xs' disabled>Send DM</Button></td>
-        </tr >
+          <td>
+            <Button size="xs" disabled>
+              Send DM
+            </Button>
+          </td>
+        </tr>
       )}
     </>
   );
@@ -161,7 +178,7 @@ const UserRankSelect = ({ user }) => {
   };
   return (
     <Select
-      size='xs'
+      size="xs"
       defaultValue={user.peakRank}
       data={fullRanks()}
       onChange={handleOnChange}

@@ -19,7 +19,12 @@ const RequestForm = ({ setSent }) => {
     },
     validate: {
       rank: isNotEmpty("Please select your Rank "),
-      summonerName: isNotEmpty("Please enter your Summoner Name"),
+      summonerName: (value) =>
+        /^(http(s):\/\/.)[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)$/g.test(
+          value
+        )
+          ? "Please put your summoner name, not a link"
+          : isNotEmpty("Please enter your Summoner Name")(value),
       role: isNotEmpty("Please select your role"),
       region: isNotEmpty("Please select your region"),
       timezone: isNotEmpty("Please select your timezone"),

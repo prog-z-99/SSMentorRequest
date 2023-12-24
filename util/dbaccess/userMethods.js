@@ -93,13 +93,11 @@ export async function tryRegisterMentor(user) {
   if (registeredUser) {
     return registeredUser;
   }
-
   const newUser = new User({
     ...user,
     isTrial: true,
   });
-  await newUser.save();
-  return "mentor created!";
+  return await newUser.save();
 }
 
 export async function editUser(body) {
@@ -135,7 +133,7 @@ export async function editUser(body) {
   return `Sucessfully edited to ${command}`;
 }
 
-export async function deleteUser({ user }) {
+export async function deleteUser(user) {
   try {
     const response = await User.deleteOne({ _id: ObjectId(user) });
     console.log(response);
