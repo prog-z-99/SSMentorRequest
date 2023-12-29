@@ -75,6 +75,12 @@ export const getLatestRequestInteractions = async (mentor) => {
     completed: { $gt: threeMonthsAgo },
   });
 
+  const fetchProblemPeriod = Request.countDocuments({
+    mentor: mentor._id,
+    status: "Problem",
+    completed: { $gt: threeMonthsAgo },
+  });
+
   const fetchLastCompleted = Request.findOne({
     mentor: mentor._id,
     status: "Completed",
@@ -85,6 +91,7 @@ export const getLatestRequestInteractions = async (mentor) => {
     lastCompleted: (await fetchLastCompleted)?.completed,
     takenPeriod: await fetchTakenPeriod,
     completedPeriod: await fetchCompletedPeriod,
+    problemPeriod: await fetchProblemPeriod,
   };
 };
 

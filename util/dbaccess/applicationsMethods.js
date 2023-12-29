@@ -99,15 +99,12 @@ export async function processApp(user, accepted) {
       break;
     }
     case "trial": {
-      delete app.userLink;
-      app.appStatus = "pending";
-
-      // const mentor = await Users.findOne({ discordId: app.discordId });
-      // mentor.isTrial = false;
-      // mentor.isMentor = accepted;
-      // mentor.save()
-      // app.appStatus = "processed";
-      // message = accepted ? mentorAcceptText : mentorDenyText;
+      const mentor = await Users.findOne({ discordId: app.discordId });
+      mentor.isTrial = false;
+      mentor.isMentor = accepted;
+      mentor.save();
+      app.appStatus = "processed";
+      message = accepted ? mentorAcceptText : mentorDenyText;
       break;
     }
     case "processed":
@@ -115,7 +112,7 @@ export async function processApp(user, accepted) {
       break;
   }
   app.save();
-  // sendDMToUser(user.discordId, message);
+  sendDMToUser(user.discordId, message);
 }
 
 export async function commentApp({ commenterId, user, content }) {

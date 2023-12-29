@@ -25,10 +25,11 @@ export const AdminComponent = ({ users }) => {
           <th>Mentor Name</th>
           <th>Mentor ID</th>
           <th>Status</th>
-          <th>Last completed</th>
           <th>Last taken</th>
-          <th>Completed lately</th>
+          <th>Last completed</th>
           <th>Taken lately</th>
+          <th>Completed lately</th>
+          <th>Problem lately</th>
         </tr>
       </thead>
       <tbody>
@@ -64,6 +65,19 @@ const TableRow = ({ mentor }) => {
           {mentor.isAdmin && "🟥"}
           {mentor.isReviewer && "🟧"}
         </td>
+
+        <td>
+          {mentor.lastTaken && (
+            <Text
+              color={
+                dayjs(mentor.lastTaken).add(2, "months").isBefore(dayjs()) &&
+                "red"
+              }
+            >
+              {dayjs(mentor.lastTaken).format("DD / MMM / YYYY")}
+            </Text>
+          )}
+        </td>
         <td>
           {mentor.lastCompleted && (
             <Text
@@ -77,20 +91,9 @@ const TableRow = ({ mentor }) => {
             </Text>
           )}
         </td>
-        <td>
-          {mentor.lastTaken && (
-            <Text
-              color={
-                dayjs(mentor.lastTaken).add(2, "months").isBefore(dayjs()) &&
-                "red"
-              }
-            >
-              {dayjs(mentor.lastTaken).format("DD / MMM / YYYY")}
-            </Text>
-          )}
-        </td>
-        <td>{mentor.lastCompleted && mentor.completedPeriod}</td>
         <td>{mentor.lastTaken && mentor.takenPeriod}</td>
+        <td>{mentor.lastCompleted && mentor.completedPeriod}</td>
+        <td>{mentor.lastTaken && mentor.problemPeriod}</td>
       </tr>
       {rowOpen && (
         <tr>
