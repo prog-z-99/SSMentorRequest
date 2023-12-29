@@ -42,9 +42,27 @@ export const regions = [
   "TW",
   "PH",
   "TH",
-  "VN",
   "CN",
-  "Garena",
+  "VN",
+];
+
+export const regionsCode = [
+  "BR1",
+  "EUW1",
+  "EUN1",
+  "NA1",
+  "LA1",
+  "LA2",
+  "OC1",
+  "RU",
+  "TR1",
+  "JP1",
+  "KR",
+  "TW2",
+  "PH2",
+  "TH2",
+  "SG2",
+  "VN2",
 ];
 
 export const userType = ["user", "mentor", "admin"];
