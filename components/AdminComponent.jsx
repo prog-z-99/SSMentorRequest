@@ -1,7 +1,16 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import dayjs from "dayjs";
-import { Box, Button, Container, Flex, Select, Switch, Table, Text } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  Select,
+  Switch,
+  Table,
+  Text,
+} from "@mantine/core";
 import { fullRanks, userSelectCommand } from "../util/datalist";
 import axios from "axios";
 import { ClickToCopy, StyledClickableContainer } from "./Styles";
@@ -16,10 +25,11 @@ export const AdminComponent = ({ users }) => {
           <th>Mentor Name</th>
           <th>Mentor ID</th>
           <th>Status</th>
-          <th>Last completed</th>
           <th>Last taken</th>
-          <th>Completed lately</th>
+          <th>Last completed</th>
           <th>Taken lately</th>
+          <th>Completed lately</th>
+          <th>Problem lately</th>
         </tr>
       </thead>
       <tbody>
@@ -50,10 +60,23 @@ const TableRow = ({ mentor }) => {
           <ClickToCopy>{mentor.discordId}</ClickToCopy>
         </td>
         <td>
-          {" "}
           {mentor.isTrial && "🟩"}
           {mentor.isMentor && "🟦"}
           {mentor.isAdmin && "🟥"}
+          {mentor.isReviewer && "🟧"}
+        </td>
+
+        <td>
+          {mentor.lastTaken && (
+            <Text
+              color={
+                dayjs(mentor.lastTaken).add(2, "months").isBefore(dayjs()) &&
+                "red"
+              }
+            >
+              {dayjs(mentor.lastTaken).format("DD / MMM / YYYY")}
+            </Text>
+          )}
         </td>
         <td>
           {mentor.lastCompleted && (
@@ -68,33 +91,27 @@ const TableRow = ({ mentor }) => {
             </Text>
           )}
         </td>
-        <td>
-          {mentor.lastTaken && (
-            <Text
-              color={
-                dayjs(mentor.lastTaken).add(2, "months").isBefore(dayjs()) &&
-                "red"
-              }
-            >
-              {dayjs(mentor.lastTaken).format("DD / MMM / YYYY")}
-            </Text>
-          )}
-        </td>
-        <td>{mentor.lastCompleted && mentor.completedPeriod}</td>
         <td>{mentor.lastTaken && mentor.takenPeriod}</td>
+        <td>{mentor.lastCompleted && mentor.completedPeriod}</td>
+        <td>{mentor.lastTaken && mentor.problemPeriod}</td>
       </tr>
       {rowOpen && (
         <tr>
           <td></td>
           <td>
             <Text>Preferred Roles</Text>
-            {mentor.preferredRoles.length > 0 ?
-              mentor.preferredRoles?.map((role, i) =>
-                <Text span key={`role${i}`} fs='italic'>{(i ? ', ' : '') + role}</Text>)
-              : <Text fs='italic'>N/A</Text>}
+            {mentor.preferredRoles.length > 0 ? (
+              mentor.preferredRoles?.map((role, i) => (
+                <Text span key={`role${i}`} fs="italic">
+                  {(i ? ", " : "") + role}
+                </Text>
+              ))
+            ) : (
+              <Text fs="italic">N/A</Text>
+            )}
           </td>
-          <td>
-            <Flex justify='space-between' align='center'>
+          <td colSpan={2}>
+            <Flex justify="space-between" align="center">
               <Box>
                 <Text>Toggle Trial</Text>
                 <UserTypeUpdate
@@ -129,15 +146,18 @@ const TableRow = ({ mentor }) => {
               </Box>
             </Flex>
           </td>
-          <td></td>
-          <td colSpan={2}>
-            <Container pl='0'>
+          <td colSpan={3}>
+            <Container pl="0">
               <Text>Peak rank</Text>
               <UserRankSelect user={mentor} />
             </Container>
           </td>
-          <td><Button size='xs' disabled>Send DM</Button></td>
-        </tr >
+          <td>
+            <Button size="xs" disabled>
+              Send DM
+            </Button>
+          </td>
+        </tr>
       )}
     </>
   );
@@ -161,7 +181,7 @@ const UserRankSelect = ({ user }) => {
   };
   return (
     <Select
-      size='xs'
+      size="xs"
       defaultValue={user.peakRank}
       data={fullRanks()}
       onChange={handleOnChange}

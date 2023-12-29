@@ -1,9 +1,10 @@
 import { Button } from "@mantine/core";
 import React from "react";
 
-export default function Terms({ setTerms, loading }) {
+export default function Terms({ setTerms }) {
   return (
     <div className="terms">
+      {process.env.NEXT_PUBLIC_REQUEST_STATUS == "closed" && <Closed />}
       <p>
         Welcome to the Summoner School Discord’s mentor request system! Our
         mentors are here to help those who are serious about improvement, so
@@ -44,9 +45,12 @@ export default function Terms({ setTerms, loading }) {
         Discord’s role-specific chats or use #vod-review for a community review
         (check the pins for details).
       </p>
-      <Button onClick={() => setTerms(true)} disabled={loading}>
-        By clicking this box, I acknowledge that I have read all of the above.
-      </Button>
+
+      {process.env.NEXT_PUBLIC_REQUEST_STATUS != "closed" && (
+        <Button onClick={() => setTerms(true)}>
+          By clicking this box, I acknowledge that I have read all of the above.
+        </Button>
+      )}
     </div>
   );
 }
@@ -64,5 +68,18 @@ export function Pending() {
         please note that there is a limit of 1 request per month.
       </p>
     </>
+  );
+}
+
+export function Closed() {
+  return (
+    <div>
+      <h1>
+        We have closed our mentor request in preparation for the new season! We
+        will be coming back 1 month after the start of the new season, on
+        February 10th, so make sure to meet the requirements if you wish to make
+        a mentor request when we re-open!
+      </h1>
+    </div>
   );
 }

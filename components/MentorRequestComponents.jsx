@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import {
   // getStatusColor,
   getStatusIcon,
@@ -18,6 +18,7 @@ import {
   Space,
   Box,
   Loader,
+  Tabs,
 } from "@mantine/core";
 import axios from "axios";
 import { statuses, rtHeader } from "../util/datalist";
@@ -332,4 +333,97 @@ const Remarks = ({ item }) => {
 const sortRequests = ({ requests, reverse, sorter }) => {
   if (!sorter) return;
   return [...requests.sort((a, b) => sorter(reverse ? b : a, reverse ? a : b))];
+};
+
+export const MentorRequestComponent = ({ allRequests, isAdmin }) => {
+  //TODO use useTransition for cleaner updates
+  const [isPending, startTransition] = useTransition();
+  const [requests, setRequests] = useState(allRequests);
+  const [requestsPile, setRequestsPile] = useState({ All: allRequests });
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("All");
+  const onTabChange = (value) => {
+    startTransition(() => {
+      setActiveTab(value);
+      setIsLoading(true);
+      if (requestsPile[value]) {
+        setRequests(requestsPile[value]);
+        setIsLoading(false);
+      } else {
+        axios.put("/api/admin/requests", { type: value }).then(({ data }) => {
+          const newPile = requestsPile;
+          newPile[value] = data;
+          setRequestsPile(newPile);
+          setRequests(data);
+          setIsLoading(false);
+        });
+      }
+    });
+  };
+
+  return (
+    <>
+      <Tabs defaultValue="All" onTabChange={onTabChange}>
+        <Tabs.List>
+          <Tabs.Tab
+            value="All"
+            rightSection={
+              isLoading &&
+              activeTab === "All" && <Loader size="xs" variant="dots" />
+            }
+          >
+            All
+          </Tabs.Tab>
+          <Tabs.Tab
+            value="Not Accepted"
+            rightSection={
+              isLoading &&
+              activeTab === "Not Accepted" && (
+                <Loader size="xs" variant="dots" />
+              )
+            }
+          >
+            Not Accepted
+          </Tabs.Tab>
+          <Tabs.Tab
+            value="In-Progress"
+            rightSection={
+              isLoading &&
+              activeTab === "In-Progress" && <Loader size="xs" variant="dots" />
+            }
+          >
+            In-Progress
+          </Tabs.Tab>
+          <Tabs.Tab
+            value="Completed"
+            rightSection={
+              isLoading &&
+              activeTab === "Completed" && <Loader size="xs" variant="dots" />
+            }
+          >
+            Completed
+          </Tabs.Tab>
+          <Tabs.Tab
+            value="Problem"
+            rightSection={
+              isLoading &&
+              activeTab === "Problem" && <Loader size="xs" variant="dots" />
+            }
+          >
+            Problem
+          </Tabs.Tab>
+        </Tabs.List>
+      </Tabs>
+      {isPending ? (
+        <Loader />
+      ) : (
+        <MentorRequestTable
+          isAdmin={isAdmin}
+          requests={requests}
+          setRequests={setRequests}
+          isLoading={isLoading}
+        />
+      )}
+    </>
+  );
 };

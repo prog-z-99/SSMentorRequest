@@ -21,6 +21,7 @@ export async function getAllRequests() {
   const threeMonthsAgo = getMonthsAgo(3);
   const requests = await getRequests({
     archived: { $ne: true },
+    $expr: { $gte: [{ $year: "$createdAt" }, { $year: new Date() }] },
     $or: [
       {
         $and: [
@@ -30,7 +31,9 @@ export async function getAllRequests() {
           },
         ],
       },
-      { status: { $nin: ["Completed", "Problem"] } },
+      {
+        $and: [{ status: { $nin: ["Completed", "Problem"] } }],
+      },
     ],
   });
 

@@ -2,15 +2,15 @@ import React from "react";
 import Layout from "../../components/layout";
 import { AppList } from "../../components/MentorAppComponents";
 import useAuthTest from "../../hooks/useAuthTest";
-import { LoaderWithLayout } from "../../components/Styles";
 
 export default function MentorApplications() {
-  const { allApps, reviewerId, loading } = useAuthTest("/api/admin/apps");
-
-  if (loading) return <LoaderWithLayout />;
+  const { allApps, reviewerId, loading, notAuth } = useAuthTest(
+    "/api/admin/apps",
+    true
+  );
 
   return (
-    <Layout>
+    <Layout loading={loading} notAuth={notAuth}>
       <AppList allApps={allApps} reviewerId={reviewerId} />
     </Layout>
   );

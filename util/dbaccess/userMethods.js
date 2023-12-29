@@ -75,6 +75,12 @@ export const getLatestRequestInteractions = async (mentor) => {
     completed: { $gt: threeMonthsAgo },
   });
 
+  const fetchProblemPeriod = Request.countDocuments({
+    mentor: mentor._id,
+    status: "Problem",
+    completed: { $gt: threeMonthsAgo },
+  });
+
   const fetchLastCompleted = Request.findOne({
     mentor: mentor._id,
     status: "Completed",
@@ -85,6 +91,7 @@ export const getLatestRequestInteractions = async (mentor) => {
     lastCompleted: (await fetchLastCompleted)?.completed,
     takenPeriod: await fetchTakenPeriod,
     completedPeriod: await fetchCompletedPeriod,
+    problemPeriod: await fetchProblemPeriod,
   };
 };
 
@@ -93,13 +100,11 @@ export async function tryRegisterMentor(user) {
   if (registeredUser) {
     return registeredUser;
   }
-
   const newUser = new User({
     ...user,
     isTrial: true,
   });
-  await newUser.save();
-  return "mentor created!";
+  return await newUser.save();
 }
 
 export async function editUser(body) {
@@ -135,7 +140,7 @@ export async function editUser(body) {
   return `Sucessfully edited to ${command}`;
 }
 
-export async function deleteUser({ user }) {
+export async function deleteUser(user) {
   try {
     const response = await User.deleteOne({ _id: ObjectId(user) });
     console.log(response);

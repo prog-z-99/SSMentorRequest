@@ -1,5 +1,5 @@
 import { getToken } from "next-auth/jwt";
-import { isUserStaff } from "../../../util/dbaccess/userMethods";
+import { isUserAdmin, isUserStaff } from "../../../util/dbaccess/userMethods";
 import {
   getAllRequests,
   getTypeRequests,
@@ -16,9 +16,9 @@ export default async function AdminRequests(req, res) {
     switch (req.method) {
       case "GET": {
         if (!isStaff) throw "Not authorized";
-
-        const requests = await getAllRequests();
-        res.status(200).send(requests);
+        const isAdmin = await isUserAdmin(token.sub);
+        const allRequests = await getAllRequests();
+        res.status(200).send({ allRequests, isAdmin });
         break;
       }
       case "PUT": {

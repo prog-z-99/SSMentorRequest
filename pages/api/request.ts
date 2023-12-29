@@ -19,6 +19,12 @@ export default async function Request(req, res) {
         break;
       }
       case "POST": {
+        if (process.env.NEXT_PUBLIC_REQUEST_STATUS == "closed") {
+          res
+            .status(400)
+            .send({ message: "The requests are currently closed!" });
+          break;
+        }
         await createRequest({ values: req.body, user: token });
         res.status(200).json({ content: "Success!" });
         break;
