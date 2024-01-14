@@ -27,12 +27,7 @@ const RequestForm = ({ setSent }) => {
       },
       validate: {
         rank: isNotEmpty("Please select your Rank "),
-        summonerName: (value) =>
-          /^(http(s):\/\/.)[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)$/g.test(
-            value
-          )
-            ? "Please put your summoner name, not a link"
-            : isNotEmpty("Please enter your Summoner Name")(value),
+        summonerName: isNotEmpty("Please enter your Summoner Name"),
         role: isNotEmpty("Please select your role"),
         region: isNotEmpty("Please select your region"),
         timezone: isNotEmpty("Please select your timezone"),
@@ -70,7 +65,11 @@ const RequestForm = ({ setSent }) => {
 
           <TextInput
             label="Riot ID"
-            placeholder="Entire code with #"
+            placeholder={
+              values.region
+                ? "Your full Riot ID with the # code"
+                : "Enter your region first"
+            }
             description={
               values.summonerName &&
               !values.rank &&
@@ -82,8 +81,10 @@ const RequestForm = ({ setSent }) => {
                 error={errors.summonerName}
                 setValues={setValues}
                 setErrors={setErrors}
+                isApply={false}
               />
             }
+            disabled={!values.region}
             {...getInputProps("summonerName")}
           />
 
@@ -109,11 +110,12 @@ const RequestForm = ({ setSent }) => {
 };
 export default RequestForm;
 
-const RiotIdChecker = ({
+export const RiotIdChecker = ({
   values: { summonerName, region, rank },
   setValues,
   setErrors,
   error,
+  isApply,
 }) => {
   const [loading, setLoading] = useState(false);
 
@@ -125,11 +127,8 @@ const RiotIdChecker = ({
       .then(({ data }) => {
         const rank = data.tier;
         const games = data.wins + data.losses;
-        setErrors({
-          summonerName: `${summonerName} \n ${rank} \n games: ${games}`,
-        });
         setLoading(false);
-        if (games >= 25) setValues({ rank });
+        if (isApply || games >= 25) setValues({ rank });
         else {
           setValues({ rank: null });
           setErrors({
