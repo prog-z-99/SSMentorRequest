@@ -3,6 +3,7 @@ import Layout from "../components/layout";
 import MentorForm from "../components/MentorForm";
 import Link from "next/link";
 import useAuthTest from "../hooks/useAuthTest";
+import { Container } from "@mantine/core";
 
 export default function Apply() {
   const { isPending, isMentor, loading, notAuth } = useAuthTest(
@@ -21,16 +22,13 @@ export default function Apply() {
     page = (
       <>
         Mentor already registered! You can head over to{" "}
-        <Link href="https://ssmentor-request.vercel.app/mentors/requests">
-          this link
-        </Link>
-        to now see the requests
+        <Link href="/mentors/requests">this link</Link> to now see the requests
       </>
     );
 
   return (
     <Layout loading={loading} notAuth={notAuth}>
-      {page}
+      <Container>{page}</Container>
     </Layout>
   );
 }

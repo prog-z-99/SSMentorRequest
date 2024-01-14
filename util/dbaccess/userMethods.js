@@ -28,7 +28,7 @@ export const getAllUsers = async () => {
     }))
   );
 
-  return data;
+  return data.sort((a, b) => b.isMentor + b.isAdmin - (a.isMentor + a.isAdmin));
 };
 
 export const getAllMentors = async () => {

@@ -1,37 +1,40 @@
 import React, { useState } from "react";
-import { ranks, regions, roles } from "../util/datalist";
+import { regions, roles } from "../util/datalist";
 import { ChampionSelect } from "./Styles";
 import axios from "axios";
-import { Button, Container, Select, Stack, TextInput } from "@mantine/core";
+import {
+  ActionIcon,
+  Button,
+  Container,
+  Select,
+  Stack,
+  TextInput,
+} from "@mantine/core";
 import { useForm, isNotEmpty, hasLength } from "@mantine/form";
 import { timeZones } from "../util/helper";
 
 const RequestForm = ({ setSent }) => {
-  const { isValid, values, getInputProps } = useForm({
-    initialValues: {
-      rank: "",
-      summonerName: "",
-      role: "",
-      region: "",
-      timezone: "",
-      info: "",
-      champions: [],
-    },
-    validate: {
-      rank: isNotEmpty("Please select your Rank "),
-      summonerName: (value) =>
-        /^(http(s):\/\/.)[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)$/g.test(
-          value
-        )
-          ? "Please put your summoner name, not a link"
-          : isNotEmpty("Please enter your Summoner Name")(value),
-      role: isNotEmpty("Please select your role"),
-      region: isNotEmpty("Please select your region"),
-      timezone: isNotEmpty("Please select your timezone"),
-      champions: hasLength({ min: 1 }, "Please select at least one champion"),
-    },
-    validateInputOnBlur: true,
-  });
+  const { isValid, values, getInputProps, setValues, setErrors, errors } =
+    useForm({
+      initialValues: {
+        rank: "",
+        summonerName: "",
+        role: "",
+        region: "",
+        timezone: "",
+        info: "",
+        champions: [],
+      },
+      validate: {
+        rank: isNotEmpty("Please select your Rank "),
+        summonerName: isNotEmpty("Please enter your Summoner Name"),
+        role: isNotEmpty("Please select your role"),
+        region: isNotEmpty("Please select your region"),
+        timezone: isNotEmpty("Please select your timezone"),
+        champions: hasLength({ min: 1 }, "Please select at least one champion"),
+      },
+      validateInputOnBlur: true,
+    });
 
   const [loading, setLoading] = useState(false);
 
@@ -58,13 +61,33 @@ const RequestForm = ({ setSent }) => {
     <Container>
       <form onSubmit={handleSubmit}>
         <Stack>
+          <Select label="Region" data={regions} {...getInputProps("region")} />
+
           <TextInput
-            label="Summoner name"
-            placeholder="Only put in your main account"
+            label="Riot ID"
+            placeholder={
+              values.region
+                ? "Your full Riot ID with the # code"
+                : "Enter your region first"
+            }
+            description={
+              values.summonerName &&
+              !values.rank &&
+              "Check if your account is valid with button on the right"
+            }
+            rightSection={
+              <RiotIdChecker
+                values={values}
+                error={errors.summonerName}
+                setValues={setValues}
+                setErrors={setErrors}
+                isApply={false}
+              />
+            }
+            disabled={!values.region}
             {...getInputProps("summonerName")}
           />
-          <Select label="Rank" data={ranks} {...getInputProps("rank")} />
-          <Select label="Region" data={regions} {...getInputProps("region")} />
+
           <Select label="Role" data={roles} {...getInputProps("role")} />
           <ChampionSelect {...getInputProps("champions")} />
           <Select
@@ -86,3 +109,51 @@ const RequestForm = ({ setSent }) => {
   );
 };
 export default RequestForm;
+
+export const RiotIdChecker = ({
+  values: { summonerName, region, rank },
+  setValues,
+  setErrors,
+  error,
+  isApply,
+}) => {
+  const [loading, setLoading] = useState(false);
+
+  const checkAccount = () => {
+    setLoading(true);
+    setErrors({ summonerName: false });
+    axios
+      .put("/api/request", { riotId: summonerName, region })
+      .then(({ data }) => {
+        const rank = data.tier;
+        const games = data.wins + data.losses;
+        setLoading(false);
+        if (isApply || games >= 25) setValues({ rank });
+        else {
+          setValues({ rank: null });
+          setErrors({
+            summonerName:
+              "You do not meet the required number of games. Please apply after meeting the requirements",
+          });
+        }
+      })
+      .catch(() => {
+        setValues({ rank: null });
+        setErrors({
+          summonerName:
+            "An error has occurred. Please check if you entered the correct ID",
+        });
+        setLoading(false);
+      });
+  };
+  return (
+    <ActionIcon
+      loading={loading}
+      onClick={checkAccount}
+      variant={"filled"}
+      color={rank ? "green" : error ? "red" : "blue"}
+    >
+      {loading ? null : error ? "!" : "O"}
+    </ActionIcon>
+  );
+};

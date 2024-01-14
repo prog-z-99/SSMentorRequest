@@ -92,7 +92,7 @@ export const RequestRow = ({ row, isAdmin }) => {
         </td>
         <td>
           <a
-            href={`https://${row.region}.op.gg/summoner/userName=${row.summonerName}`}
+            href={`https://op.gg/summoners/${row.region}/${row.summonerName}`}
             rel={"noreferrer"}
             target={"_blank"}
           >

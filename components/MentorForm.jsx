@@ -1,40 +1,30 @@
 import React, { useState } from "react";
-import { fullRanks, mentorFormQuestions, regions } from "../util/datalist";
+import { mentorFormQuestions, regions } from "../util/datalist";
 import axios from "axios";
-import {
-  Button,
-  Container,
-  Select,
-  Stack,
-  Textarea,
-  TextInput,
-} from "@mantine/core";
+import { Button, Select, Stack, Textarea, TextInput } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
+import { RiotIdChecker } from "./RequestForm";
 
 const MentorApplicationForm = ({ setSent }) => {
-  const { isValid, values, getInputProps } = useForm({
-    initialValues: {
-      rank: "",
-      summonerName: "",
-      region: "",
-      appReason: "",
-    },
-    validate: {
-      rank: isNotEmpty("Please select your Rank "),
-      summonerName: (value) =>
-        /^(http(s):\/\/.)[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)$/g.test(
-          value
-        )
-          ? "This is a link"
-          : isNotEmpty("Please enter your Summoner Name")(value),
-      region: isNotEmpty("Please select your region"),
-      appReason: isNotEmpty("*Required"),
-      loseMatchupEx: isNotEmpty("*Required"),
-      rebuttalEx: isNotEmpty("*Required"),
-      winConEx: isNotEmpty("*Required"),
-    },
-    validateInputOnBlur: true,
-  });
+  const { isValid, values, getInputProps, setValues, setErrors, errors } =
+    useForm({
+      initialValues: {
+        rank: "",
+        summonerName: "",
+        region: "",
+        appReason: "",
+      },
+      validate: {
+        rank: isNotEmpty("Please select your Rank "),
+        summonerName: isNotEmpty("Please enter your Summoner Name"),
+        region: isNotEmpty("Please select your region"),
+        appReason: isNotEmpty("*Required"),
+        loseMatchupEx: isNotEmpty("*Required"),
+        rebuttalEx: isNotEmpty("*Required"),
+        winConEx: isNotEmpty("*Required"),
+      },
+      validateInputOnBlur: true,
+    });
 
   const [loading, setLoading] = useState(false);
 
@@ -57,30 +47,42 @@ const MentorApplicationForm = ({ setSent }) => {
   };
 
   return (
-    <Container>
-      <form onSubmit={handleSubmit}>
-        <Stack>
-          <TextInput
-            label="Summoner name"
-            placeholder="Only put your main account"
-            {...getInputProps("summonerName")}
-          />
-          <Select label="Region" data={regions} {...getInputProps("region")} />
-          <Select label="Rank" data={fullRanks()} {...getInputProps("rank")} />
-          {mentorFormQuestions.map((question, i) => (
-            <Textarea
-              key={`MentorFormQuestion${i}`}
-              label={question.title}
-              {...getInputProps(question.field)}
+    <form onSubmit={handleSubmit}>
+      <Stack>
+        <Select label="Region" data={regions} {...getInputProps("region")} />
+        <TextInput
+          label="Riot ID"
+          placeholder="Only put your main account"
+          description={
+            values.summonerName &&
+            !values.rank &&
+            "Check if your account is valid with button on the right"
+          }
+          rightSection={
+            <RiotIdChecker
+              values={values}
+              error={errors.summonerName}
+              setValues={setValues}
+              setErrors={setErrors}
+              isApply={true}
             />
-          ))}
+          }
+          disabled={!values.region}
+          {...getInputProps("summonerName")}
+        />
+        {mentorFormQuestions.map((question, i) => (
+          <Textarea
+            key={`MentorFormQuestion${i}`}
+            label={question.title}
+            {...getInputProps(question.field)}
+          />
+        ))}
 
-          <Button type="submit" disabled={loading || !isValid()}>
-            Send application
-          </Button>
-        </Stack>
-      </form>
-    </Container>
+        <Button type="submit" disabled={loading || !isValid()}>
+          Send application
+        </Button>
+      </Stack>
+    </form>
   );
 };
 

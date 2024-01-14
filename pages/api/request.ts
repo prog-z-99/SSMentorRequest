@@ -3,6 +3,7 @@ import {
   createRequest,
   isRequestPending,
 } from "../../util/dbaccess/requestMethods";
+import { checkRiotAccount } from "../../util/dbaccess/riotMethods";
 
 export default async function Request(req, res) {
   const token = await getToken({ req });
@@ -27,6 +28,11 @@ export default async function Request(req, res) {
         }
         await createRequest({ values: req.body, user: token });
         res.status(200).json({ content: "Success!" });
+        break;
+      }
+      case "PUT": {
+        const data = await checkRiotAccount(req.body);
+        res.status(200).json(data);
         break;
       }
       default:
