@@ -21,7 +21,7 @@ export async function getAllRequests() {
   const threeMonthsAgo = getMonthsAgo(3);
   const requests = await getRequests({
     archived: { $ne: true },
-    $expr: { $gte: [{ $year: "$createdAt" }, { $year: new Date() }] },
+    createdAt: { $gte: dayjs(process.env.REOPEN) },
     $or: [
       {
         $and: [

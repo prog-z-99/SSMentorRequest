@@ -48,10 +48,9 @@ export async function getAllApps(processed) {
   //This should be simpler, but at least it works atm
   const newApps = await Promise.all(
     apps.map(async (app) => {
-      if (app.appStatus == "trial") {
-        // console.log(app);
+      if (app.appStatus != "trial") {
         app.requestCount = await Request.countDocuments({
-          $and: [{ mentor: app.userLink?._id }],
+           mentor: app.userLink 
         });
       }
       return {

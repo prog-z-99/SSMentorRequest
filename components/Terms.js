@@ -80,9 +80,9 @@ export function Closed() {
     <div>
       <h1>
         We have closed our mentor request in preparation for the new season! We
-        will be coming back 1 month after the start of the new season, on
-        February 10th, so make sure to meet the requirements if you wish to make
-        a mentor request when we re-open!
+        will be coming back about one month after the start of the new season,
+        around late January ~ early February, so make sure to meet the
+        requirements if you wish to make a mentor request when we re-open!
       </h1>
     </div>
   );
