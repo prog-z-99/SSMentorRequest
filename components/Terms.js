@@ -63,8 +63,8 @@ export function Pending() {
   return (
     <>
       <p>
-        Request has been sent! Please make sure to have your DMs open for our
-        mentors to reach you!
+        Request has been sent! Our mentors will reach out to you soon, so please
+        make sure to have your DMs open for our mentors to reach you!
       </p>
 
       <p>
