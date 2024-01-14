@@ -50,7 +50,7 @@ export async function getAllApps(processed) {
     apps.map(async (app) => {
       if (app.appStatus != "trial") {
         app.requestCount = await Request.countDocuments({
-           mentor: app.userLink 
+          mentor: app.userLink,
         });
       }
       return {
@@ -78,7 +78,8 @@ export async function deleteApp(id) {
   console.log(response);
 }
 
-export async function processApp(user, accepted) {
+export async function processApp({ user, command, denyReason }) {
+  const accepted = command == "ACCEPT";
   const app = await MentorApp.findOne({ discordId: user.discordId });
   let message;
   switch (app.appStatus) {
@@ -93,7 +94,7 @@ export async function processApp(user, accepted) {
         app.meh = [];
       } else {
         app.appStatus = "processed";
-        message = trialDenyText;
+        message = trialDenyText(denyReason);
       }
       break;
     }
@@ -103,7 +104,7 @@ export async function processApp(user, accepted) {
       mentor.isMentor = accepted;
       mentor.save();
       app.appStatus = "processed";
-      message = accepted ? mentorAcceptText : mentorDenyText;
+      message = accepted ? mentorAcceptText : mentorDenyText(denyReason);
       break;
     }
     case "processed":

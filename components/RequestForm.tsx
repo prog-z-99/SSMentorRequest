@@ -128,12 +128,13 @@ export const RiotIdChecker = ({
         const rank = data.tier;
         const games = data.wins + data.losses;
         setLoading(false);
-        if (isApply || games >= 25) setValues({ rank });
+        if ((isApply && games) || games >= 25) setValues({ rank });
         else {
           setValues({ rank: null });
           setErrors({
-            summonerName:
-              "You do not meet the required number of games. Please apply after meeting the requirements",
+            summonerName: isApply
+              ? "We are unable to verify your rank. Please make sure you have the correct account or you are ranked"
+              : "You do not meet the required number of games. Please apply after meeting the requirements",
           });
         }
       })

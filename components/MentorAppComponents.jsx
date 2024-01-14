@@ -219,17 +219,41 @@ const AppDetails = ({ item, reviewerId }) => {
 const ConfirmationModal = ({ item }) => {
   const { discordId, discordName, region, appStatus } = item;
   const [open, setOpen] = useState(false);
+  const [denyOpen, setDenyOpen] = useState(false);
+  const [denyReason, setDenyReason] = useState("");
+  const messages =
+    appStatus == "trial"
+      ? { details: "trial", status: "ending", button: "Finish Trial" }
+      : { details: "mentor", status: "starting", button: "Start Trial" };
 
   const handleConfirmClicked = (actionRequested) => {
     // NOTE: This route is used for both starting a trial and accepting a mentor. See processApp() for more details.
     axios
       .post("/api/admin/application", {
         user: { discordId, discordName, mentorRegion: region },
+        denyReason,
         command: actionRequested,
       })
       .then(({ data }) => alert(data))
       .catch(() => alert("An error has occured. Notify Z"));
     setOpen(false);
+  };
+
+  const ModalDetails = () => {
+    return (
+      <>
+        <Button
+          color="teal"
+          ml="xs"
+          onClick={() => handleConfirmClicked("ACCEPT")}
+        >
+          <Text tt="capitalize">Accept as {messages.details}</Text>
+        </Button>
+        <Button color="red" ml="xs" onClick={() => setDenyOpen(true)}>
+          <Text tt="capitalize">Deny as {messages.details}</Text>
+        </Button>
+      </>
+    );
   };
 
   return (
@@ -246,8 +270,7 @@ const ConfirmationModal = ({ item }) => {
         }}
       >
         <Box>
-          You are now {appStatus === "trial" ? "ending" : "starting"} the trial
-          mentor period for{" "}
+          You are now {messages.status} the trial mentor period for{" "}
           <Text span fw={700}>
             {discordName}
           </Text>
@@ -256,46 +279,31 @@ const ConfirmationModal = ({ item }) => {
         </Box>
         <Flex justify="flex-end">
           <Box>
-            {appStatus != "trial" && (
-              <>
-                <Button
-                  color="teal"
-                  onClick={() => handleConfirmClicked("ACCEPT")}
-                >
-                  <Text tt="capitalize">Accept as trial</Text>
-                </Button>
-                <Button
-                  color="red"
-                  ml="xs"
-                  onClick={() => handleConfirmClicked("DENY")}
-                >
-                  <Text tt="capitalize">Deny as trial</Text>
-                </Button>
-              </>
-            )}
-            {appStatus === "trial" && (
-              <>
-                <Button
-                  color="teal"
-                  ml="xs"
-                  onClick={() => handleConfirmClicked("ACCEPT")}
-                >
-                  <Text tt="capitalize">Accept as mentor</Text>
-                </Button>
-                <Button
-                  color="red"
-                  ml="xs"
-                  onClick={() => handleConfirmClicked("DENY")}
-                >
-                  <Text tt="capitalize">Deny as mentor</Text>
-                </Button>
-              </>
-            )}
+            <ModalDetails />
             <Button color="gray" ml="xs" onClick={() => setOpen(false)}>
               Cancel
             </Button>
           </Box>
         </Flex>
+        {denyOpen && (
+          <Flex justify="flex-end">
+            <Box>
+              <Textarea
+                placeholder="Denial reason"
+                onChange={({ currentTarget: { value } }) =>
+                  setDenyReason(value)
+                }
+              />
+              <Button
+                color="red"
+                ml="xs"
+                onClick={() => handleConfirmClicked("DENY")}
+              >
+                Deny
+              </Button>
+            </Box>
+          </Flex>
+        )}
       </Modal>
       <Flex justify="flex-end">
         <Button
@@ -307,7 +315,7 @@ const ConfirmationModal = ({ item }) => {
               : appStatus == "processed"
           }
         >
-          {appStatus == "trial" ? "Finish Trial" : "Start Trial"}
+          {messages.button}
         </Button>
       </Flex>
     </>

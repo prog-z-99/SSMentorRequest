@@ -27,7 +27,7 @@ const userApplication = async (req, res) => {
         break;
       }
       case "POST": {
-        await processApp(req.body.user, req.body.command == "ACCEPT");
+        await processApp(req.body);
         res.status(200).send("Step completed successfully!");
         break;
       }
