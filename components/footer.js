@@ -7,7 +7,7 @@ export default function Footer() {
     <footer>
       <Divider size='sm' />
       <Box p='md'>
-        <Text color='dimmed' size='xs' fs='italic'>Made by @z_the_dev and @uselessfishlol</Text>
+        <Text color='dimmed' size='xs' fs='italic'>Made by @z_the_dev and @oldretiredfish</Text>
       </Box>
     </footer>
   );
