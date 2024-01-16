@@ -96,7 +96,18 @@ export async function isRequestPending(id) {
     archived: false,
     $or: [
       { completed: { $exists: false } },
-      { completed: { $gte: dayjs().subtract(1, "month") } },
+      {
+        $and: [
+          { completed: { $gte: dayjs().subtract(1, "month") } },
+          { status: "Completed" },
+        ],
+      },
+      {
+        $and: [
+          { completed: { $gte: dayjs().subtract(3, "month") } },
+          { status: "Problem" },
+        ],
+      },
     ],
   }).sort({ createdAt: -1 });
 

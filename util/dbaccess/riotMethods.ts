@@ -21,7 +21,7 @@ export const checkRiotAccount = async ({ riotId, region }) => {
       `https://${regionCode}.api.riotgames.com/lol/league/v4/entries/by-summoner/${id}`,
       { headers: { "X-Riot-Token": process.env.RIOT_ACCESS_TOKEN } }
     )
-    .then(({ data }) => {
-      return data.find((queue) => queue.queueType == "RANKED_SOLO_5x5");
-    });
+    .then(({ data }) =>
+      data.find((queue) => queue.queueType == "RANKED_SOLO_5x5")
+    );
 };

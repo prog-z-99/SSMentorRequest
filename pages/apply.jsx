@@ -13,7 +13,8 @@ export default function Apply() {
 
   let page = <MentorForm setSent={setSent} />;
 
-  if (isPending)
+  if (process.env.NEXT_PUBLIC_ENV == "dev");
+  else if (isPending)
     page = "We have received your application! We will reach you back soon";
   else if (sent)
     page =
