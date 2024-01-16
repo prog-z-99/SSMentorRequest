@@ -12,6 +12,10 @@ hr {
   border: 1px solid #ddd;
 }
 
+.terms ul {
+  margin: 0;
+}
+
 .terms > p {
-  margin: 2rem 0;
+  margin: 1rem 0;
 }

@@ -9,6 +9,7 @@ import {
   Select,
   Stack,
   TextInput,
+  Textarea,
 } from "@mantine/core";
 import { useForm, isNotEmpty, hasLength } from "@mantine/form";
 import { timeZones } from "../util/helper";
@@ -95,7 +96,7 @@ const RequestForm = ({ setSent }) => {
             data={timeZones()}
             {...getInputProps("timezone")}
           />
-          <TextInput
+          <Textarea
             label="Any additional information you would like the mentors to know (if nothing, leave blank)"
             {...getInputProps("info")}
           />
