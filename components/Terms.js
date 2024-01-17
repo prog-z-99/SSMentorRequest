@@ -32,7 +32,7 @@ export default function Terms({ setTerms }) {
           </ul>
           <Space h="lg" />
           <Title size="h4">How to prepare for mentoring?</Title>
-          <Text>We encourage you to consider a game that is representative of YOUR average solo queue experience. Before submitting a game, review it briefly to understand what went wrong or well. Identify major weaknesses and areas for improvement. Focus on overarching habits and general gameplay, not specific details. Ask yourself things like "Do I keep dying to jungler ganks?" or "Do my waves somehow end up in bad positions?" Come up with some questions to ask your mentor so you can get the most out of the session.
+          <Text>We encourage you to consider a game that is representative of YOUR average solo queue experience. Before submitting a game, review it briefly to understand what went wrong or well. Identify major weaknesses and areas for improvement. Focus on overarching habits and general gameplay, not specific details. Ask yourself things like &#34Do I keep dying to jungler ganks?&#34 or &#34Do my waves somehow end up in bad positions?&#34 Come up with some questions to ask your mentor so you can get the most out of the session.
           </Text>
           <p>
             <Text>
