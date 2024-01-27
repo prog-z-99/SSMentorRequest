@@ -29,7 +29,7 @@ ___
 
 ### II. What is a trial?
 
-We put our mentors through a two-week trial period to make sure they are a good fit for mentoring on our server. Trial mentors have access to the form, can complete requests, and can do almost everything else mentors can do. The main difference is that full mentors will appear on the mentor list in `#mentor-request`, and role-specific mentor roles have the “manage messages” power in their respective rooms. This is used for keeping the educational chats clean, pinning content, and removing old pins.
+A trial is a two-week period to make sure potential mentors are a good fit for mentoring on our server. Trial mentors have access to the form, can complete requests, and can do almost everything else mentors can do. The main difference is that full mentors will appear on the mentor list in `#mentor-request`, and role-specific mentor roles have the “manage messages” power in their respective rooms. This is used for keeping the educational chats clean, pinning content, and removing old pins.
 
  At the end of the trial period we will evaluate your involvement in the server—that you were being respectful in your interactions with others, engaged in the educational channels, and that you completed the minimum VOD review request requirement below. If you pass the trial period you will receive full, lane-specific mentor roles and will be added to the mentor list in `#mentor-request`.
 
@@ -44,6 +44,7 @@ ___
   * **If you are going to be busy for the month, please let a mod or senior mentor know in `#important-mentorchat` ahead of time.**
 * Engage with other members of Summoner School in the educational channels of the server in a **civil and respectful** manner.
   * You are a public figure in the server and should be a good model for our `#rules`
+  * You have the ability to remove irrelevant messages from your respective role chats if necessary
 * _Optional_: produce additional materials, host classroom sessions, public VOD reviews. 
   * If you choose to host an educational event, please let the mod team know in advance so we can provide support and advanced notice to students/participants
 
@@ -114,12 +115,12 @@ Yes, as long as they do not promote paid services.
 &nbsp;
 
 ##### Q: I can manage messages now! Does this mean I should delete rule-breaking stuff?
-Generally, no. If it’s super extreme (like gore or NSFW), then please do — otherwise, let a moderator handle it. Mods are better equipped to resolve issues in the discord. It also helps for moderators to catch things as they happen so we can screen/participate in them ourselves.
+Generally no, unless it appears in your respective role chats. You may warn users if they are going off topic or are posting irrelevant content in educational chats. If it is super extreme (like gore or NSFW), then please do—otherwise let a moderator handle it. You can either open up a ticket or ping the `@Moderator` tag in the mentor chat. Mods are better equipped to resolve rule-breaking issues in the Discord. It also helps for moderators to catch things as they happen so they can participate in screening/be aware of them as a team.
 &nbsp;
 
 _Any other questions? Anything we should add here? Let us know, ping a mod or mentor reviewer in `#mentor-chat!`_
 ___
-#### VII. Archive:
+#### VII. Archive
 Tier lists are no longer required or common to create due to the hundreds of tier list websites. You’re free to still create one if you’d like, however consulting with other mentors is highly advised to eliminate bias.
 
 **How to make a tier list**
