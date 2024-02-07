@@ -8,8 +8,6 @@ import { Container } from "@mantine/core";
 export default function Page() {
   const { pending, loading, notAuth } = useAuthTest("/api/request");
 
-  console.log(pending, notAuth);
-
   const [sent, setSent] = useState(false);
   const [terms, setTerms] = useState(false);
 
