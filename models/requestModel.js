@@ -1,6 +1,21 @@
 import mongoose from "mongoose";
 import { ranks, regions, roles, statuses } from "../util/datalist";
 
+const CommentSchema = mongoose.Schema(
+  {
+    commenter: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    content: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
 const requestSchema = mongoose.Schema(
   {
     discordId: {
@@ -71,19 +86,7 @@ const requestSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    comments: [
-      {
-        commenter: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-          required: true,
-        },
-        content: {
-          type: String,
-          required: true,
-        },
-      },
-    ],
+    comments: [CommentSchema],
   },
   {
     timestamps: true,
