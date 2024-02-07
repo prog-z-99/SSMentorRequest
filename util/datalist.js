@@ -1,14 +1,14 @@
 export const ranks = [
-  "Iron",
-  "Bronze",
-  "Silver",
-  "Gold",
-  "Platinum",
-  "Emerald",
-  "Diamond",
-  "Masters",
-  "Grandmasters",
-  "Challenger",
+  "IRON",
+  "BRONZE",
+  "SILVER",
+  "GOLD",
+  "PLATINUM",
+  "EMERALD",
+  "DIAMOND",
+  "MASTERS",
+  "GRANDMASTERS",
+  "CHALLENGER",
 ];
 
 export const fullRanks = () => {

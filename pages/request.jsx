@@ -3,6 +3,7 @@ import Layout from "../components/layout";
 import Terms, { Pending } from "../components/Terms";
 import RequestForm from "../components/RequestForm";
 import useAuthTest from "../hooks/useAuthTest";
+import { Container } from "@mantine/core";
 
 export default function Page() {
   const { pending, loading, notAuth } = useAuthTest("/api/request");
@@ -17,7 +18,7 @@ export default function Page() {
 
   return (
     <Layout loading={loading} notAuth={notAuth}>
-      {page}
+      <Container>{page}</Container>
     </Layout>
   );
 }
