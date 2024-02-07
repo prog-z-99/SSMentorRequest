@@ -53,9 +53,9 @@ export default function Terms({ setTerms }) {
           briefly to understand what went wrong or well. Identify major
           weaknesses and areas for improvement. Focus on overarching habits and
           general gameplay, not specific details. Ask yourself things like
-          &#34Do I keep dying to jungler ganks?&#34 or &#34Do my waves somehow
-          end up in bad positions?&#34 Come up with some questions to ask your
-          mentor so you can get the most out of the session.
+          &#34;Do I keep dying to jungler ganks?&#34; or &#34;Do my waves
+          somehow end up in bad positions?&#34; Come up with some questions to
+          ask your mentor so you can get the most out of the session.
         </Text>
         <p>
           <Text>
