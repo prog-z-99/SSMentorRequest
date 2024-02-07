@@ -8,12 +8,12 @@ import { Container } from "@mantine/core";
 export default function Page() {
   const { pending, loading, notAuth } = useAuthTest("/api/request");
 
-  const [sent, setSent] = useState(pending);
+  const [sent, setSent] = useState(false);
   const [terms, setTerms] = useState(false);
 
   let page = <Terms setTerms={setTerms} />;
 
-  if (sent) page = <Pending />;
+  if (pending || sent) page = <Pending />;
   else if (terms) page = <RequestForm setSent={setSent} />;
 
   return (
