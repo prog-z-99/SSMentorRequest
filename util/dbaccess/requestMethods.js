@@ -127,7 +127,7 @@ export async function changeRequest({ body, user }) {
   switch (body.type) {
     case "status":
       request.mentor = user._id;
-      request.status = body.value;
+      request.status = body.value.toUpperCase();
       action = body.value;
 
       switch (body.value) {
