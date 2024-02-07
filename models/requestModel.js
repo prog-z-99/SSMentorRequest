@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ranks, regions, roles, statuses } from "../util/datalist";
+import { regions, roles, statuses } from "../util/datalist";
 
 const CommentSchema = mongoose.Schema(
   {
@@ -29,7 +29,7 @@ const requestSchema = mongoose.Schema(
     rank: {
       type: String,
       required: true,
-      enum: ranks,
+      // enum: ranks, FIX LATER
     },
     summonerName: {
       type: String,
