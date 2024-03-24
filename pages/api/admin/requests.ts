@@ -28,7 +28,6 @@ export default async function AdminRequests(req, res) {
         res.status(200).send(requests);
         break;
       }
-
       default:
         res.status(404);
     }
