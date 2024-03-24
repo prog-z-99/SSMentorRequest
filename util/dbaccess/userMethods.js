@@ -9,9 +9,10 @@ import {
   getCleanedDiscordUser,
   getMonthsAgo,
 } from "../helper";
-import { getLatestDiscordProfile } from "./discordMethods";
+import { getLatestDiscordProfile, sendDMToUser } from "./discordMethods";
 import mongoose from "mongoose";
 import dbConnect from "../mongodb";
+import { mentorActivityReminderText } from "../datalist";
 mongoose.set("strictQuery", false);
 dbConnect();
 
@@ -28,7 +29,13 @@ export const getAllUsers = async () => {
     }))
   );
 
-  return data.sort((a, b) => b.isMentor + b.isAdmin - (a.isMentor + a.isAdmin));
+  return data.sort(
+    (a, b) =>
+      b.isMentor +
+      b.isAdmin * 4 +
+      b.isReviewer * 4 -
+      (a.isMentor + a.isAdmin * 4 + a.isReviewer * 4)
+  );
 };
 
 export const getAllMentors = async () => {
@@ -102,6 +109,7 @@ export async function tryRegisterMentor(user) {
   }
   const newUser = new User({
     ...user,
+    discordName: getCleanedDiscordUser(user),
     isTrial: true,
   });
   return await newUser.save();
@@ -171,7 +179,9 @@ export const updateAllUserDiscordDetail = async () => {
   //Need timer because discord has 50 request per second limit on APIs.
   //Currently not in any API route. Might be good to set it somewhere.
   const timer = (ms) => new Promise((res) => setTimeout(res, ms));
-  const users = await User.find();
+  const users = await User.find({
+    $or: [{ isMentor: true }, { isAdmin: true }, { isReviewer: true }],
+  });
 
   for (const user of users) {
     await timer(10);
@@ -181,4 +191,46 @@ export const updateAllUserDiscordDetail = async () => {
       user.save();
     }
   }
+};
+
+export const activityCheck = async () => {
+  const users = await User.find({
+    isMentor: true,
+    isAdmin: false,
+    isReviewer: false,
+  })
+    .collation({ locale: "en" })
+    .sort("discordName")
+    .lean();
+
+  var count = 0;
+  for (const user of users) {
+    count += await checkActivitySendDM(user);
+  }
+
+  return count;
+};
+
+export const checkActivitySendDM = async (mentor) => {
+  const threeMonthsAgo = getMonthsAgo(3);
+  const monthAgo = getMonthsAgo(1);
+
+  const fetchRecentActivity = Request.findOne({
+    mentor: mentor._id,
+    $or: [{ accepted: { $gt: monthAgo } }, { completed: { $gt: monthAgo } }],
+  });
+
+  const recentCompleted = await Request.countDocuments({
+    mentor: mentor._id,
+    status: "Completed",
+    completed: { $gt: threeMonthsAgo },
+  });
+
+  const recentActivity = await fetchRecentActivity;
+
+  if (!recentActivity && recentCompleted <= 3) {
+    sendDMToUser(mentor.discordId, mentorActivityReminderText);
+    return true;
+  }
+  return false;
 };

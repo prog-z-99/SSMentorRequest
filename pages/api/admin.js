@@ -2,6 +2,7 @@ import {
   editUser,
   deleteUser,
   getUserById,
+  activityCheck,
 } from "../../util/dbaccess/userMethods";
 import { getAllUsers } from "../../util/dbaccess/userMethods";
 import { checkAdmin } from "../../util/helper";
@@ -30,6 +31,11 @@ export default async function Admin(req, res) {
       }
       case "POST": {
         const response = await deleteUser(req.body);
+        res.status(200).send(response);
+        break;
+      }
+      case "PATCH": {
+        const response = await activityCheck();
         res.status(200).send(response);
         break;
       }

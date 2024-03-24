@@ -149,6 +149,9 @@ If you plan on reapplying, we recommend being active in <#${
   process.env.VOD_REVIEW
 }> or any of the other educational channels to practice mentoring`;
 
+export const mentorActivityReminderText = `We have noticed that you have not taken any requests recently. We are coming after you. *This is a joke from Z. Don't take it too seriously*
+  If you think you shouldn't have received this message, please contact Z in <#${process.env.MENTOR_CHAT}>`;
+
 export const mentorFormQuestions = mentorFormValues.map((v, i) => ({
   field: mentorFormFields[i],
   title: v,
