@@ -149,7 +149,8 @@ If you plan on reapplying, we recommend being active in <#${
   process.env.VOD_REVIEW
 }> or any of the other educational channels to practice mentoring`;
 
-export const mentorActivityReminderText = `We have noticed that you have not taken any requests recently. We are coming after you. *This is a joke from Z. Don't take it too seriously*
+export const mentorActivityReminderText = `Hello from the Summoner School team! We noticed that you have not been taking mentor requests lately and want to remind you to complete at least 1 VOD review per month from the mentor request sheet. You are able to bank up to 3 requests for the future if you anticipate being busy. This is also just a reminder that if you have any status changes (ex: will be inactive for a period, no longer wish to be a mentor, etc.) to please notify a Moderator.
+
   If you think you shouldn't have received this message, please contact Z in <#${process.env.MENTOR_CHAT}>`;
 
 export const mentorFormQuestions = mentorFormValues.map((v, i) => ({

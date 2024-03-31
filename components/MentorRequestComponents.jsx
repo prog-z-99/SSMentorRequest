@@ -177,6 +177,19 @@ const Details = ({ id, isAdmin }) => {
         <StyledLabel>Student notes:</StyledLabel>
         <SimpleGrid cols={2}>{item.info || "N/A"}</SimpleGrid>
       </Text>
+      {item.interactedMentors && (
+        <Text>
+          <StyledLabel>Interacted Mentors:</StyledLabel>
+          {item.interactedMentors.map((instance, id) => (
+            <ClickToCopy
+              data={instance.mentor.discordId}
+              key={`interatedMentor${id}${item._id}`}
+            >
+              {" "} {instance.mentor.discordName},
+            </ClickToCopy>
+          ))}
+        </Text>
+      )}
       <Space h="sm" />
       <Text>
         <StyledLabel>Mentor comments:</StyledLabel>
