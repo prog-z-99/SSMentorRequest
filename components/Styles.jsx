@@ -53,13 +53,13 @@ export const getStatusIcon = (status) => {
   }
 };
 
-export const ClickToCopy = ({ children }) => {
+export const ClickToCopy = ({ children, data }) => {
   return (
     <Tooltip.Floating label="Click to copy">
       <a
         style={{ cursor: "pointer" }}
         onClick={() => {
-          copyClip(children);
+          copyClip(data ? data: children);
         }}
       >
         {children}
