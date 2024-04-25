@@ -31,10 +31,11 @@ export const getAllUsers = async () => {
 
   return data.sort(
     (a, b) =>
-      b.isMentor +
+      b.isTrial + 
+      b.isMentor * 2 +
       b.isAdmin * 4 +
-      b.isReviewer * 4 -
-      (a.isMentor + a.isAdmin * 4 + a.isReviewer * 4)
+      b.isReviewer * 6 -
+      (a.isTrial + a.isMentor * 2 + a.isAdmin * 4 + a.isReviewer * 6)
   );
 };
 

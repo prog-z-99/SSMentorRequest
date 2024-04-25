@@ -42,7 +42,7 @@ export const regions = [
   "TW",
   "PH",
   "TH",
-  "CN",
+  "SG",
   "VN",
 ];
 
