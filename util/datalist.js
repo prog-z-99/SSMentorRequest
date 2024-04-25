@@ -44,6 +44,7 @@ export const regions = [
   "TH",
   "SG",
   "VN",
+  "CN"
 ];
 
 export const regionsCode = [
@@ -63,6 +64,7 @@ export const regionsCode = [
   "TH2",
   "SG2",
   "VN2",
+  "CN"
 ];
 
 export const userType = ["user", "mentor", "admin"];
