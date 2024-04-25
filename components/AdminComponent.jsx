@@ -17,27 +17,44 @@ import { ClickToCopy, StyledClickableContainer } from "./Styles";
 import Icon from "./Icon";
 
 export const AdminComponent = ({ users }) => {
+  const [loading, setLoading] = useState(false);
+  const reminderClick = () => {
+    setLoading(true);
+    axios
+      .patch("api/admin")
+      .catch(() => alert("An error has occurred, tell Z now pls ty"))
+      .then(({ data }) => {
+        setLoading(false);
+        alert(`${data} number of mentors notified`);
+      });
+  };
+
   return (
-    <Table striped highlightOnHover>
-      <thead>
-        <tr>
-          <th />
-          <th>Mentor Name</th>
-          <th>Mentor ID</th>
-          <th>Status</th>
-          <th>Last taken</th>
-          <th>Last completed</th>
-          <th>Taken lately</th>
-          <th>Completed lately</th>
-          <th>Problem lately</th>
-        </tr>
-      </thead>
-      <tbody>
-        {users.map((mentor, i) => (
-          <TableRow mentor={mentor} key={`Row${i}`} />
-        ))}
-      </tbody>
-    </Table>
+    <>
+      <Button loading={loading} onClick={() => reminderClick()}>
+        Send Activity Reminder
+      </Button>
+      <Table striped highlightOnHover>
+        <thead>
+          <tr>
+            <th />
+            <th>Mentor Name</th>
+            <th>Mentor ID</th>
+            <th>Status</th>
+            <th>Last taken</th>
+            <th>Last completed</th>
+            <th>Taken lately</th>
+            <th>Completed lately</th>
+            <th>Problem lately</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((mentor, i) => (
+            <TableRow mentor={mentor} key={`Row${i}`} />
+          ))}
+        </tbody>
+      </Table>
+    </>
   );
 };
 

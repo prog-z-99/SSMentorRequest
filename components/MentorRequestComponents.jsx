@@ -92,7 +92,9 @@ export const RequestRow = ({ row, isAdmin }) => {
         </td>
         <td>
           <a
-            href={`https://op.gg/summoners/${row.region}/${row.summonerName}`}
+            href={`https://op.gg/summoners/${
+              row.region
+            }/${row.summonerName.replace("#", "-")}`}
             rel={"noreferrer"}
             target={"_blank"}
           >
@@ -175,6 +177,19 @@ const Details = ({ id, isAdmin }) => {
         <StyledLabel>Student notes:</StyledLabel>
         <SimpleGrid cols={2}>{item.info || "N/A"}</SimpleGrid>
       </Text>
+      {item.interactedMentors && (
+        <Text>
+          <StyledLabel>Interacted Mentors:</StyledLabel>
+          {item.interactedMentors.map((instance, id) => (
+            <ClickToCopy
+              data={instance.mentor.discordId}
+              key={`interatedMentor${id}${item._id}`}
+            >
+              {" "} {instance.mentor.discordName},
+            </ClickToCopy>
+          ))}
+        </Text>
+      )}
       <Space h="sm" />
       <Text>
         <StyledLabel>Mentor comments:</StyledLabel>

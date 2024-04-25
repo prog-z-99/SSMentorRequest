@@ -51,6 +51,11 @@ export const getRequestDetails = async (id) => {
       path: "comments.commenter",
       model: "User",
       select: "discordName discordId",
+    })
+    .populate({
+      path: "interactedMentors.mentor",
+      model: "User",
+      select: "discordName discordId",
     });
 
   return detail;
