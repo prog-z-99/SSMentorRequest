@@ -78,14 +78,14 @@ export async function deleteApp(id) {
   console.log(response);
 }
 
-export async function processApp({ user, command, denyReason }) {
+export async function processApp({ discordId, command, denyReason }) {
   const accepted = command == "ACCEPT";
-  const app = await MentorApp.findOne({ discordId: user.discordId });
+  const app = await MentorApp.findOne({ discordId });
   let message;
   switch (app.appStatus) {
     case "pending": {
       if (accepted) {
-        const mentor = await tryRegisterMentor(user);
+        const mentor = await tryRegisterMentor(app);
         app.userLink = mentor._id;
         app.appStatus = "trial";
         message = trialAcceptText;
@@ -112,7 +112,7 @@ export async function processApp({ user, command, denyReason }) {
       break;
   }
   app.save();
-  sendDMToUser(user.discordId, message);
+  sendDMToUser(discordId, message);
 }
 
 export async function commentApp({ commenterId, user, content }) {

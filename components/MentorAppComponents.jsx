@@ -230,7 +230,7 @@ const ConfirmationModal = ({ item }) => {
     // NOTE: This route is used for both starting a trial and accepting a mentor. See processApp() for more details.
     axios
       .post("/api/admin/application", {
-        user: { discordId, discordName, mentorRegion: region },
+        discordId,
         denyReason,
         command: actionRequested,
       })
