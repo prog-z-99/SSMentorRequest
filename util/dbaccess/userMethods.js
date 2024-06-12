@@ -103,14 +103,15 @@ export const getLatestRequestInteractions = async (mentor) => {
   };
 };
 
-export async function tryRegisterMentor(user) {
-  const registeredUser = await getUserById(user.discordId);
+export async function tryRegisterMentor(app) {
+  const {discordId, discorName} = app
+  const registeredUser = await getUserById(app.discordId);
   if (registeredUser) {
     return registeredUser;
   }
   const newUser = new User({
-    ...user,
-    discordName: getCleanedDiscordUser(user),
+    discorName,
+    discordId,
     isTrial: true,
   });
   return await newUser.save();
