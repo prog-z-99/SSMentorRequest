@@ -44,7 +44,8 @@ export const regions = [
   "TH",
   "SG",
   "VN",
-  "CN"
+  "CN",
+  "ME"
 ];
 
 export const regionsCode = [
@@ -64,7 +65,8 @@ export const regionsCode = [
   "TH2",
   "SG2",
   "VN2",
-  "CN"
+  "CN",
+  "ME1",
 ];
 
 export const userType = ["user", "mentor", "admin"];
@@ -144,7 +146,7 @@ We also have a tradition that dates back to the beginning of time: it is of utmo
 export const mentorDenyText = (
   reason
 ) => `Thank you for you participation with the mentoring team. After reviewing your activity, we unfortunately have decided to decline at this time ${
-  reason && "due to" + reason
+  reason && "due to " + reason
 }. If you would like, you can reapply after 3 months.
 
 If you plan on reapplying, we recommend being active in <#${
