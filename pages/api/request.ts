@@ -6,11 +6,7 @@ import {
 import { checkRiotAccount } from "../../util/dbaccess/riotMethods";
 
 export default async function Request(req, res) {
-  const token = await getToken({ req });
-  if (!token) {
-    res.status(403).send({ error: "what" });
-    return;
-  }
+  const token = req.body.token;
 
   try {
     switch (req.method) {
