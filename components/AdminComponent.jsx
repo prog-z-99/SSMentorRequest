@@ -214,7 +214,8 @@ const UserTypeUpdate = ({ user, type, defChecked }) => {
         command: userSelectCommand(type),
         bool: checked,
       })
-      .then(({ data }) => console.log(data));
+      .then(({ data }) => console.log(data))
+      .catch((error) => console.log(error));
   };
   return (
     <Switch
