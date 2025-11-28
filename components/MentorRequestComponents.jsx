@@ -25,6 +25,7 @@ import { statuses, rtHeader } from "../util/datalist";
 import Link from "next/link";
 import Icon from "./Icon";
 import { Comments } from "./DetailsComponents";
+import { OPGGlink } from "./SummonerComponents";
 
 export const MentorRequestTable = ({
   requests,
@@ -91,15 +92,7 @@ export const RequestRow = ({ row, isAdmin }) => {
           <ClickToCopy>{row.discordName}</ClickToCopy>
         </td>
         <td>
-          <a
-            href={`https://op.gg/summoners/${
-              row.region
-            }/${row.summonerName.replace("#", "-")}`}
-            rel={"noreferrer"}
-            target={"_blank"}
-          >
-            {row.summonerName}
-          </a>
+          <OPGGlink item={row} />
         </td>
         <td>{row.rank}</td>
         <td>{row.region}</td>
@@ -185,7 +178,8 @@ const Details = ({ id, isAdmin }) => {
               data={instance.mentor.discordId}
               key={`interatedMentor${id}${item._id}`}
             >
-              {" "} {instance.mentor.discordName},
+              {" "}
+              {instance.mentor.discordName},
             </ClickToCopy>
           ))}
         </Text>

@@ -23,6 +23,7 @@ import dayjs from "dayjs";
 import Icon from "./Icon";
 import Link from "next/link";
 import { Comments } from "./DetailsComponents";
+import { OPGGlink } from "./SummonerComponents";
 
 export const AppList = ({ allApps, reviewerId }) => {
   const [applications, setApplications] = useState(
@@ -136,14 +137,7 @@ const AppDetails = ({ item, reviewerId }) => {
       <Grid>
         <Grid.Col span={6}>
           <Text>
-            <StyledLabel>Summoner:</StyledLabel>{" "}
-            <a
-              href={`https://${item.region}.op.gg/summoner/userName=${item.summonerName}`}
-              rel={"noreferrer"}
-              target={"_blank"}
-            >
-              {item.summonerName}
-            </a>
+            <StyledLabel>Summoner:</StyledLabel> <OPGGlink item={item} />
           </Text>
           <Text>
             <StyledLabel>Rank:</StyledLabel> {item.rank}
