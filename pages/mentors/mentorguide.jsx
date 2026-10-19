@@ -1,7 +1,7 @@
 import { Button, Flex } from "@mantine/core";
 import { useRouter } from "next/router";
 import MdxLayout from "../../components/mdx-layout";
-import MentorGuide from "../../components/Mentorguide.mdx";
+import MentorGuide from "../../components/md/Mentorguide.mdx";
 import Link from "next/link";
 import Layout from "../../components/layout";
 
@@ -34,7 +34,6 @@ export default function MentorGuidePage() {
     p: CustomP,
   };
 
-  const router = useRouter();
 
   return (
     <Layout>
