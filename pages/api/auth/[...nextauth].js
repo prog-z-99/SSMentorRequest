@@ -7,6 +7,7 @@ export default NextAuth({
       clientId: process.env.DISCORD_CLIENT_ID,
       clientSecret: process.env.DISCORD_CLIENT_SECRET,
       authorization: { params: { scope: "identify" } },
+      issuer: "https://discord.com",
       profile(profile) {
         if (profile.avatar === null) {
           const defaultAvatarNumber = parseInt(profile.discriminator) % 5;
