@@ -64,7 +64,7 @@ export const MentorRequestTable = ({
   );
 };
 
-const RequestRow = ({ row, isAdmin }) => {
+export const RequestRow = ({ row, isAdmin }) => {
   const [rowOpen, setRowOpen] = useState(false);
 
   return (
