@@ -34,6 +34,9 @@ const requestSchema = mongoose.Schema(
     summonerName: {
       type: String,
     },
+    puuid: {
+      type: String,
+    },
     role: {
       type: String,
       required: true,

@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useTransition } from "react";
 import {
-  // getStatusColor,
   getStatusIcon,
   ClickToCopy,
   StyledClickableContainer,
@@ -19,6 +18,7 @@ import {
   Box,
   Loader,
   Tabs,
+  Tooltip,
 } from "@mantine/core";
 import axios from "axios";
 import { statuses, rtHeader } from "../util/datalist";
@@ -64,7 +64,7 @@ export const MentorRequestTable = ({
   );
 };
 
-export const RequestRow = ({ row, isAdmin }) => {
+const RequestRow = ({ row, isAdmin }) => {
   const [rowOpen, setRowOpen] = useState(false);
 
   return (
@@ -76,17 +76,16 @@ export const RequestRow = ({ row, isAdmin }) => {
           </StyledClickableContainer>
         </td>
         <td>
-          <Text
-            color={
-              row.accepted &&
-              row.status != "Completed" &&
-              row.status != "Problem" &&
-              dayjs(row.accepted).add(2, "months").isBefore(dayjs()) &&
-              "red"
-            }
-          >
-            {dayjs(row.createdAt).format("DD/MMM/YYYY")}
-          </Text>
+          {(row.status == "In-Progress" &&
+            dayjs(row.accepted).add(2, "months").isBefore(dayjs()) && (
+              <Tooltip.Floating
+                label={`This request has not been closed for ${dayjs().diff(row.accepted, "month")} months!`}
+              >
+                <Text color={"red"}>
+                  {dayjs(row.createdAt).format("DD/MMM/YYYY")}
+                </Text>
+              </Tooltip.Floating>
+            )) || <Text>{dayjs(row.createdAt).format("DD/MMM/YYYY")}</Text>}
         </td>
         <td>
           <ClickToCopy>{row.discordName}</ClickToCopy>
@@ -130,7 +129,7 @@ const Details = ({ id, isAdmin }) => {
 
   const handleArchive = () => {
     if (confirm("Are you sure you want to archive this request?")) {
-      axios.put(`/api/request/${id}`, { type: "archive" });
+      axios.patch(`/api/request/${id}`, { type: "archive" });
     } else console.log("not");
   };
   const handleDelete = () => {
@@ -139,10 +138,24 @@ const Details = ({ id, isAdmin }) => {
         .delete(`/api/request/${id}`)
         .then(({ data }) => alert(data))
         .catch(() =>
-          alert("Something didn't work. Notify Z if the request is not deleted")
+          alert(
+            "Something didn't work. Notify Z if the request is not deleted",
+          ),
         );
     } else console.log("not");
   };
+  const handleReFetch = () => {
+    axios
+      .patch(`/api/request/${id}`, {
+        type: "update_riot_id",
+        puuid: item.puuid,
+      })
+      .then(({ data }) => alert(data))
+      .catch(() =>
+        alert("Something didn't work. Notify Z if the request is not deleted"),
+      );
+  };
+
   return item ? (
     <Container fluid>
       {item.accepted && (
@@ -200,6 +213,19 @@ const Details = ({ id, isAdmin }) => {
           All requests by this student
         </Button>
       </Link>
+      {item.puuid && (
+        <Tooltip.Floating label="Click here if OPGG link does not work">
+          <Button
+            size="xs"
+            ml="xs"
+            variant="outline"
+            color="yellow"
+            onClick={handleReFetch}
+          >
+            Update student RiotID
+          </Button>
+        </Tooltip.Floating>
+      )}
       {isAdmin && (
         <>
           <Button size="xs" ml="xs" variant="outline" onClick={handleArchive}>
@@ -225,7 +251,7 @@ const Details = ({ id, isAdmin }) => {
 const TableSelect = ({ request }) => {
   const handleStatusChange = (value) => {
     axios
-      .put(`/api/request/${request._id}`, { value, type: "status" })
+      .patch(`/api/request/${request._id}`, { value, type: "status" })
       .then(({ data }) => {
         alert(data);
       })
@@ -287,7 +313,7 @@ const Remarks = ({ item }) => {
   const handleSubmit = async () => {
     setIsLoading(true);
     await axios
-      .patch(`/api/request/${item._id}`, { content })
+      .patch(`/api/request/${item._id}`, { type: "comment", content })
       .then(() => setIsEditing(false))
       .catch(() => {
         setError("An error occurred");

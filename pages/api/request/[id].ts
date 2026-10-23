@@ -2,7 +2,6 @@ import { getToken } from "next-auth/jwt";
 
 import { checkAdmin, checkStaff } from "../../../util/helper";
 import {
-  addRequestComment,
   changeRequest,
   deleteRequest,
   getRequestDetails,
@@ -37,18 +36,12 @@ export default async function requestByID(req, res) {
         res.status(200).send("Request successfully deleted");
         break;
       }
-      case "PUT": {
-        await changeRequest({ body: { ...req.body, id: req.query.id }, user });
-        res.status(200).send("Request status updated");
-        break;
-      }
       case "PATCH": {
-        await addRequestComment({
-          commenterId: user._id,
-          requestId: req.query.id,
-          content: req.body.content,
+        await changeRequest({
+          body: { ...req.body, id: req.query.id },
+          user,
         });
-        res.status(200).send("Comment added");
+        res.status(200).send("Request status updated");
         break;
       }
     }

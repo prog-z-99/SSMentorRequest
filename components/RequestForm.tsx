@@ -13,6 +13,7 @@ const RequestForm = ({ setSent }) => {
       initialValues: {
         rank: "",
         summonerName: "",
+        puuid: "",
         role: "",
         region: "",
         timezone: "",

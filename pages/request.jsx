@@ -15,13 +15,12 @@ export default function Page() {
   const [terms, setTerms] = useState(false);
 
   let page = <Terms setTerms={setTerms} />;
-  console.log(pending);
 
   if (pending || sent) {
     if (
+      sent ||
       pending.status == "Not Accepted" ||
-      pending.status == "In-Progress" ||
-      sent
+      pending.status == "In-Progress"
     )
       page = <Pending />;
     else if (pending.status == "Completed") {

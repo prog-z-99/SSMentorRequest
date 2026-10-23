@@ -45,7 +45,7 @@ export const regions = [
   "SG",
   "VN",
   "CN",
-  "ME"
+  "ME",
 ];
 
 export const regionsCode = [
@@ -128,7 +128,7 @@ const mentorFormFields = [
 export const trialAcceptText = `Thank you for your interest in being a mentor at Summoner School. We have reviewed your application and would like to move you forward in the process by giving you a trial period! To get started please say hi in <#${process.env.MENTOR_CHAT}> and read the pins in <#${process.env.IMPORTANT_MENTORCHAT}>.`;
 
 export const trialDenyText = (
-  reason
+  reason,
 ) => `Thank you for your interest in being a mentor in Summoner School. After reviewing your application we unfortunately have decided to decline at this time ${
   reason && "due to: " + reason
 }. You may reapply in 3 months. 
@@ -144,7 +144,7 @@ As for your next step, come to <#${process.env.MENTOR_CHAT}> and say hello!
 We also have a tradition that dates back to the beginning of time: it is of utmost importance that new mentors post: either a pic of their pet, a haiku or a pun (a good one)`;
 
 export const mentorDenyText = (
-  reason
+  reason,
 ) => `Thank you for you participation with the mentoring team. After reviewing your activity, we unfortunately have decided to decline at this time ${
   reason && "due to " + reason
 }. If you would like, you can reapply after 3 months.

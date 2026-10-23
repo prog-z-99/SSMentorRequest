@@ -4,13 +4,14 @@ import dbConnect from "../mongodb";
 import { getCleanedDiscordUser, getMonthsAgo } from "../helper";
 import dayjs from "dayjs";
 import { ObjectId } from "mongodb";
+import { getRiotAccount } from "./riotMethods";
 mongoose.set("strictQuery", false);
 dbConnect();
 
 const getRequests = async (fields) => {
   const requests = await Request.find(fields)
     .select(
-      "_id discordName summonerName createdAt rank role champions timezone status accepted region"
+      "_id discordName summonerName createdAt rank role champions timezone status accepted region",
     )
     .sort({ createdAt: 1 })
     .lean();
@@ -78,7 +79,6 @@ export async function getMentorRequests(_id) {
 
 export async function deleteRequest(id) {
   const state = await Request.findByIdAndDelete(id);
-  console.log(state);
 }
 
 export async function createRequest({ values, user }) {
@@ -157,6 +157,13 @@ export async function changeRequest({ body, user }) {
     case "archive":
       request.archived = !request.archived;
       break;
+    case "comment":
+      request.comments.push({ commenter: commenterId, content });
+      break;
+    case "update_riot_id":
+      const { gameName, tagLine } = await getRiotAccount(body.puuid);
+      request.summonerName = `${gameName}#${tagLine}`;
+      break;
   }
 
   request.interactedMentors.push({
@@ -166,13 +173,3 @@ export async function changeRequest({ body, user }) {
   });
   await request.save();
 }
-
-export const addRequestComment = async ({
-  commenterId,
-  requestId,
-  content,
-}) => {
-  const request = await Request.findById(requestId);
-  request.comments.push({ commenter: commenterId, content });
-  await request.save();
-};

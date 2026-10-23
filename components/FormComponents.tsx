@@ -53,8 +53,9 @@ const RiotIdChecker = ({
       .then(({ data }) => {
         const rank = data.tier;
         const games = data.wins + data.losses;
+        const puuid = data.puuid
         setLoading(false);
-        if ((isApply && games) || games >= 25) setValues({ rank });
+        if ((isApply && games) || games >= 25) setValues({ rank, puuid });
         else {
           setValues({ rank: null });
           setErrors({
@@ -64,11 +65,11 @@ const RiotIdChecker = ({
           });
         }
       })
-      .catch(() => {
+      .catch(({response: {status}}) => {
         setValues({ rank: null });
         setErrors({
-          summonerName:
-            "An error has occurred. Please check if you entered the correct ID",
+          summonerName: status < 400 ? 
+            `An error has occurred. Please check if you entered the correct ID`: `Error ${status} has occurred. Please notify the mods in the discord server channel #website-support`
         });
         setLoading(false);
       });
